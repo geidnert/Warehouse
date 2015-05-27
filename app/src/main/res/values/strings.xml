@@ -11,6 +11,7 @@
     <string name="action_add_item_name">Name</string>
     <string name="action_add_item_description">Description</string>
     <string name="action_add_item_image">Image</string>
+    <string name="action_add_item_button_add">Add Image</string>
 
     <string name="action_scan">Scan QR code</string>
 
