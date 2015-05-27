@@ -25,7 +25,8 @@
         android:id="@+id/button2"
         android:layout_below="@+id/button"
         android:layout_alignLeft="@+id/button"
-        android:layout_alignStart="@+id/button" />
+        android:layout_alignStart="@+id/button"
+        android:onClick="onAddItem"/>
 
     <Button
         android:layout_width="fill_parent"
