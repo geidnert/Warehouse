@@ -13,6 +13,9 @@
     <string name="action_add_item_image">Image</string>
     <string name="action_add_item_button_add">Add Image</string>
 
+    <string name="button_save">Save</string>
+    <string name="button_cancle">Cancle</string>
+
     <string name="action_scan">Scan QR code</string>
 
     <string name="hello_world">Hello world!</string>

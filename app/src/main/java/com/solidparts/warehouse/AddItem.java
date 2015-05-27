@@ -1,17 +1,28 @@
 package com.solidparts.warehouse;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageView;
 
 
 public class AddItem extends ActionBarActivity {
+
+    public static final int CAMERA_REQUEST = 1;
+
+    private ImageView itemImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_item);
+        itemImage = ((ImageView)findViewById(R.id.itemImage));
     }
 
     @Override
@@ -34,5 +45,29 @@ public class AddItem extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void onSave(View view){
+        String name = ((EditText)findViewById(R.id.name)).getText().toString();
+        String description = ((EditText)findViewById(R.id.description)).getText().toString();
+
+
+    }
+
+    public void onAddImage(View view){
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(intent, CAMERA_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode == RESULT_OK) {
+            if (requestCode == CAMERA_REQUEST) {
+                Bitmap image = (Bitmap) data.getExtras().get("data");
+                itemImage.setImageBitmap(image);
+            }
+        }
     }
 }
