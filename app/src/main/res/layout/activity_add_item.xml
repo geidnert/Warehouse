@@ -77,12 +77,11 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/action_add_item_button_add"
+        android:text="@string/button_take_photo"
         android:id="@+id/addImage"
+        android:onClick="onTakePhoto"
         android:layout_alignBottom="@+id/textView5"
-        android:layout_alignLeft="@+id/description"
-        android:layout_alignStart="@+id/description"
-        android:onClick="onAddImage" />
+        android:layout_centerHorizontal="true" />
 
     <Button
         android:layout_width="wrap_content"
@@ -102,5 +101,15 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_add_existing"
+        android:id="@+id/button4"
+        android:layout_alignTop="@+id/addImage"
+        android:layout_alignRight="@+id/itemImage"
+        android:layout_alignEnd="@+id/itemImage"
+        android:onClick="onAddExistingImage" />
 
 </RelativeLayout>

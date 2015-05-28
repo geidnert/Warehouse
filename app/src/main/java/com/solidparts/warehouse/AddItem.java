@@ -2,6 +2,9 @@ package com.solidparts.warehouse;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -10,11 +13,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 public class AddItem extends ActionBarActivity {
 
     public static final int CAMERA_REQUEST = 1;
+    public static final int IMAGE_GALLERY_REQUEST = 2;
 
     private ImageView itemImage;
 
@@ -54,9 +65,35 @@ public class AddItem extends ActionBarActivity {
 
     }
 
-    public void onAddImage(View view){
+    public void onAddExistingImage(View view){
+        Intent intent = new Intent(Intent.ACTION_PICK);
+
+        File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        String pictureDirectoryPath = pictureDirectory.getPath();
+
+        Uri data = Uri.parse(pictureDirectoryPath);
+
+        intent.setDataAndType(data, "image/*");
+
+        startActivityForResult(intent, IMAGE_GALLERY_REQUEST);
+    }
+
+    public void onTakePhoto(View view){
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        //File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        //String pictureName = getPictureName();
+        //File imageFile = new File(pictureDirectory, pictureName);
+        //Uri pictureUri = Uri.fromFile(imageFile);
+        //intent.putExtra(MediaStore.EXTRA_OUTPUT, pictureUri);
         startActivityForResult(intent, CAMERA_REQUEST);
+    }
+
+    private String getPictureName() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyMMdd_HHmmss");
+        String timestamp = sdf.format(new Date());
+
+        return "itemImage" + timestamp + ".jpg";
     }
 
     @Override
@@ -66,8 +103,28 @@ public class AddItem extends ActionBarActivity {
         if(resultCode == RESULT_OK) {
             if (requestCode == CAMERA_REQUEST) {
                 Bitmap image = (Bitmap) data.getExtras().get("data");
-                itemImage.setImageBitmap(image);
+                showImage(image);
+            }
+
+            if (requestCode == IMAGE_GALLERY_REQUEST) {
+                Uri imageUri = data.getData();
+                InputStream inputStream;
+
+                try {
+                    inputStream = getContentResolver().openInputStream(imageUri);
+                    Bitmap image = BitmapFactory.decodeStream(inputStream);
+                    showImage(image);
+                } catch (FileNotFoundException e){
+                    e.printStackTrace();
+                    Toast.makeText(this, "Unable to open image", Toast.LENGTH_LONG).show();
+                }
             }
         }
+    }
+
+    // ---- Private ---
+
+    private void showImage(Bitmap image){
+        itemImage.setImageBitmap(image);
     }
 }
