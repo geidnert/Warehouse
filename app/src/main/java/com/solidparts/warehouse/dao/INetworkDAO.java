@@ -9,6 +9,6 @@ import java.io.IOException;
  */
 public interface INetworkDAO {
 
-    public String request(String uri) throws IOException, ClientProtocolException;
+    public String request(String uri) throws IOException;
 
 }

@@ -16,11 +16,11 @@ import java.util.List;
 /**
  * Created by geidnert on 28/05/15.
  */
-public class ItemDAO implements IItemDAO {
+public class OnlineItemDAO implements IItemDAO {
 
     private final NetworkDAO networkDAO;
 
-    public ItemDAO(){
+    public OnlineItemDAO(){
         networkDAO = new NetworkDAO();
     }
 

@@ -14,13 +14,13 @@ import java.io.IOException;
  */
 public class NetworkDAO implements INetworkDAO{
     @Override
-    public String request(String uri) throws IOException, ClientProtocolException {
+    public String request(String uri) throws IOException {
         String returnString ="";
 
         HttpClient httpClient = new DefaultHttpClient();
         HttpGet httpGet = new HttpGet(uri);
         ResponseHandler<String> responseHandler = new BasicResponseHandler();
-        httpClient.execute(httpGet, responseHandler);
+        returnString = httpClient.execute(httpGet, responseHandler);
 
 
         return returnString;
