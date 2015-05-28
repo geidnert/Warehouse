@@ -15,6 +15,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.solidparts.warehouse.service.ItemService;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -28,12 +30,14 @@ public class AddItem extends ActionBarActivity {
     public static final int IMAGE_GALLERY_REQUEST = 2;
 
     private ImageView itemImage;
+    private ItemService itemService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_item);
         itemImage = ((ImageView)findViewById(R.id.itemImage));
+        itemService = new ItemService();
     }
 
     @Override
@@ -59,10 +63,10 @@ public class AddItem extends ActionBarActivity {
     }
 
     public void onSave(View view){
-        String name = ((EditText)findViewById(R.id.name)).getText().toString();
-        String description = ((EditText)findViewById(R.id.description)).getText().toString();
+        //String name = ((EditText)findViewById(R.id.name)).getText().toString();
+        //String description = ((EditText)findViewById(R.id.description)).getText().toString();
 
-
+        itemService.getItem("motor");
     }
 
     public void onAddExistingImage(View view){

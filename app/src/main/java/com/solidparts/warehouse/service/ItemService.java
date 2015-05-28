@@ -23,15 +23,15 @@ public class ItemService implements IItemService {
     }
 
     @Override
-    public List<ItemDTO> getItem(ItemDTO itemDTO) {
+    public List<ItemDTO> getItem(String searchString) {
 
         List<ItemDTO> items = null;
         try {
-            items = onlineIItemDAO.getItems("motor");
+            items = onlineIItemDAO.getItems(searchString);
         } catch (IOException e) {
             // No network, use offline mode
             try {
-                items = offlineIItemDAO.getItems("motor");
+                items = offlineIItemDAO.getItems(searchString);
             } catch (IOException e1) {
                 e1.printStackTrace();
             } catch (JSONException e1) {

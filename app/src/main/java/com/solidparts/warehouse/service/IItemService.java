@@ -8,5 +8,5 @@ import java.util.List;
  * Created by geidnert on 28/05/15.
  */
 public interface IItemService {
-    public List<ItemDTO> getItem(ItemDTO itemDTO) throws Exception;
+    public List<ItemDTO> getItem(String searchString) throws Exception;
 }
