@@ -2,6 +2,8 @@ package com.solidparts.warehouse.dao;
 
 import android.database.sqlite.SQLiteDatabase;
 
+import com.solidparts.warehouse.dto.ItemDTO;
+
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -12,7 +14,7 @@ import java.util.List;
  */
 public interface IItemDAO {
 
-    public List<ItemDAO> getItems(String searchTerm) throws IOException, JSONException;
+    public List<ItemDTO> getItems(String searchTerm) throws IOException, JSONException;
 
     public void onCreate(SQLiteDatabase db);
 

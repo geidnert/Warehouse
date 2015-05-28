@@ -31,7 +31,7 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
     }
 
     @Override
-    public List<ItemDAO> getItems(String searchTerm) throws IOException, JSONException {
+    public List<ItemDTO> getItems(String searchTerm) throws IOException, JSONException {
         return null;
     }
 
