@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
@@ -11,17 +12,26 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.solidparts.warehouse.dao.IItemDAO;
+import com.solidparts.warehouse.dao.OnlineItemDAO;
+import com.solidparts.warehouse.dto.ItemDTO;
 import com.solidparts.warehouse.service.ItemService;
+
+import org.json.JSONException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 
 public class AddItem extends ActionBarActivity {
@@ -38,6 +48,10 @@ public class AddItem extends ActionBarActivity {
         setContentView(R.layout.activity_add_item);
         itemImage = ((ImageView)findViewById(R.id.itemImage));
         itemService = new ItemService();
+
+        ItemSearchTask itemSearchTask = new ItemSearchTask();
+
+        itemSearchTask.execute("motor");
     }
 
     @Override
@@ -130,5 +144,59 @@ public class AddItem extends ActionBarActivity {
 
     private void showImage(Bitmap image){
         itemImage.setImageBitmap(image);
+    }
+
+
+    class ItemSearchTask extends AsyncTask<String, Integer, List<ItemDTO>> {
+
+
+        /**
+         * The steps in this method will run in a separate (non-UI) thread.
+         */
+        @Override
+        protected List<ItemDTO> doInBackground(String... searchTerms) {
+            // we're only getting one String, so let's access that one string.
+            String searchTerm = searchTerms[0];
+            // make a variable that will hold our plant DAO.
+            // IPlantDAO plantDAO = new PlantDAOStub();
+            IItemDAO itemDAO = new OnlineItemDAO();
+
+            // fetch the plants from the DAO.
+            List<ItemDTO> items = null;
+            try {
+                items = itemDAO.getItems(searchTerm);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            // return the matching plants.
+            return items;
+
+        }
+
+
+
+        /**
+         * This method will be called when doInBackground completes.
+         * The paramter result is populated from the return values of doInBackground.
+         * This method runs on the UI thread, and therefore can update UI components.
+         */
+        @Override
+        protected void onPostExecute(List<ItemDTO> allItems) {
+            // adapt the search results returned from doInBackground so that they can be presented on the UI.
+            //ArrayAdapter<ItemDTO> plantAdapter = new ArrayAdapter<Plant>(PlantResultsActivity.this, android.R.layout.simple_list_item_1, allPlants);
+            // show the search resuts in the list.
+            //setListAdapter(plantAdapter);
+
+            //setProgressBarIndeterminateVisibility(false);
+        }
+
+
+        @Override
+        protected void onPreExecute() {
+            setProgressBarIndeterminateVisibility(true);
+        }
     }
 }

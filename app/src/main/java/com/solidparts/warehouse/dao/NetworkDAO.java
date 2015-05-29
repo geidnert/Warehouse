@@ -1,6 +1,5 @@
 package com.solidparts.warehouse.dao;
 
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
@@ -15,7 +14,7 @@ import java.io.IOException;
 public class NetworkDAO implements INetworkDAO{
     @Override
     public String request(String uri) throws IOException {
-        String returnString ="";
+        String returnString = "";
 
         HttpClient httpClient = new DefaultHttpClient();
         HttpGet httpGet = new HttpGet(uri);
