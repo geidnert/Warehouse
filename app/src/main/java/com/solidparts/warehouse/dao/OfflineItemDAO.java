@@ -17,6 +17,7 @@ import java.util.List;
 
 /**
  * Created by geidnert on 28/05/15.
+ * http://www.techotopia.com/index.php/An_Android_Studio_SQLite_Database_Tutorial
  */
 public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
 
@@ -34,27 +35,25 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
     }
 
     @Override
-    public List<ItemDTO> getItems(String searchTerm) throws IOException, JSONException {
+    public void onCreate(SQLiteDatabase db) {
+        String createItems = "CREATE TABLE " + ITEM + " ( " + CACHE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                GUID + " INTEGER, " + NAME + " TEXT, " + DESCRIPTION + " TEXT, " + COUNT + " INTEGER, " + IMAGE +
+                " BLOB, " + QRCODE + " TEXT " + " );";
 
-        List<ItemDTO> itemList = new ArrayList<ItemDTO>();
-        /*ItemDTO itemDto = new ItemDTO();
-        itemDto.setCacheID(1);
-        itemDto.setCount(1);
-        itemDto.setDescription("Motor for a 1971 corvette");
-        itemDto.setName("Corvett Motor");
-        itemDto.setGuid(10);
-        itemDto.setImage("sdwsxvfwadsfeafdzserfsdxdfcdfsdzfxdfvfdxgx");
-        itemDto.setQrCode("QQQQQQQQQQQQQRRRRRRRRRRRRRRR");
+        db.execSQL(createItems);
+    }
 
-        itemList.add(itemDto);
-*/
-        //add(itemDto);
-        String query = "Select * FROM " + ITEM + " WHERE " + NAME + " =  \"" + searchTerm + "\"";
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
+    }
+
+    @Override
+    public ItemDTO getItem(String itemName) throws IOException, JSONException {
+        //List<ItemDTO> itemList = new ArrayList<ItemDTO>();
+        String query = "Select * FROM " + ITEM + " WHERE " + NAME + " =  \"" + itemName + "\"";
         SQLiteDatabase db = this.getWritableDatabase();
-
         Cursor cursor = db.rawQuery(query, null);
-
         ItemDTO itemDto = new ItemDTO();
 
         if (cursor.moveToFirst()) {
@@ -70,32 +69,13 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
         } else {
             itemDto = null;
         }
+
         db.close();
-
-        itemList.add(itemDto);
-
-
-        return itemList;
+        return itemDto;
     }
 
     @Override
-    public void onCreate(SQLiteDatabase db) {
-
-        String createItems = "CREATE TABLE " + ITEM + " ( " + CACHE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                GUID + " INTEGER, " + NAME + " TEXT, " + DESCRIPTION + " TEXT, " + COUNT + " INTEGER, " + IMAGE +
-                " BLOB, " + QRCODE + " TEXT " + " );";
-
-        db.execSQL(createItems);
-    }
-
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
-    }
-
-
-
-    public void add(ItemDTO itemDTO){
+    public void addItem(ItemDTO itemDTO) throws IOException, JSONException{
 
         ContentValues cv = new ContentValues();
 
@@ -109,6 +89,28 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
         long cachceId = getWritableDatabase().insert(ITEM, null, cv);
 
         itemDTO.setCacheID(cachceId);
+    }
 
+    @Override
+    public boolean removeItem(String itemName) throws IOException, JSONException {
+        boolean result = false;
+
+        String query = "Select * FROM " + ITEM + " WHERE " + NAME + " =  \"" + itemName + "\"";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        ItemDTO itemDTO= new ItemDTO();
+
+        if (cursor.moveToFirst()) {
+            itemDTO.setName(cursor.getString(2));
+            db.delete(ITEM, NAME + " = ?",
+                    new String[] { String.valueOf(itemDTO.getName()) });
+            cursor.close();
+            result = true;
+        }
+        db.close();
+        return result;
     }
 }

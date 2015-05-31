@@ -14,10 +14,14 @@ import java.util.List;
  */
 public interface IItemDAO {
 
-    public List<ItemDTO> getItems(String searchTerm) throws IOException, JSONException;
-
     public void onCreate(SQLiteDatabase db);
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion);
+
+    public ItemDTO getItem(String searchTerm) throws IOException, JSONException;
+
+    public void addItem(ItemDTO itemDTO) throws IOException, JSONException;
+
+    public boolean removeItem(String itemName) throws IOException, JSONException;
 
 }

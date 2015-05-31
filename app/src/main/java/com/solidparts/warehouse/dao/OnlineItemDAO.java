@@ -24,8 +24,19 @@ public class OnlineItemDAO implements IItemDAO {
         networkDAO = new NetworkDAO();
     }
 
+
     @Override
-    public List<ItemDTO> getItems(String searchTerm) throws IOException, JSONException {
+    public void onCreate(SQLiteDatabase db) {
+
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
+    }
+
+    @Override
+    public ItemDTO getItem(String searchTerm) throws IOException, JSONException {
         String uri = "http://warehouse.com/perl/mobile/viewItemsjson.pl?Combined_Name=" + searchTerm;
         String request = networkDAO.request(uri);
 
@@ -43,25 +54,25 @@ public class OnlineItemDAO implements IItemDAO {
             String image = jsonItem.getString("image");
             String qrCode = jsonItem.getString("qrCode");
 
-            ItemDTO item = new ItemDTO();
-            item.setGuid(guid);
-            item.setName(name);
-            item.setDescription(description);
-            item.setImage(image);
-            item.setQrCode(qrCode);
+            ItemDTO itemDTO = new ItemDTO();
+            itemDTO.setGuid(guid);
+            itemDTO.setName(name);
+            itemDTO.setDescription(description);
+            itemDTO.setImage(image);
+            itemDTO.setQrCode(qrCode);
 
-            allItems.add(item);
+            allItems.add(itemDTO);
         }
-        return allItems;
+        return allItems.get(0);
     }
 
     @Override
-    public void onCreate(SQLiteDatabase db) {
+    public void addItem(ItemDTO itemDTO) throws IOException, JSONException {
 
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+    public boolean removeItem(String itemName) throws IOException, JSONException {
+        return false;
     }
 }
