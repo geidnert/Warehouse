@@ -1,5 +1,8 @@
 package com.solidparts.warehouse.service;
 
+import android.content.Context;
+
+import com.solidparts.warehouse.ApplicationContextProvider;
 import com.solidparts.warehouse.dao.IItemDAO;
 import com.solidparts.warehouse.dao.OfflineItemDAO;
 import com.solidparts.warehouse.dao.OnlineItemDAO;
@@ -15,11 +18,12 @@ import java.util.List;
  */
 public class ItemService implements IItemService {
 
-    IItemDAO onlineIItemDAO;
-    IItemDAO offlineIItemDAO;
+    IItemDAO onlineItemDAO;
+    IItemDAO offlineItemDAO;
 
-    public ItemService(){
-        onlineIItemDAO = new OnlineItemDAO();
+    public ItemService(Context context){
+        onlineItemDAO = new OnlineItemDAO();
+        offlineItemDAO = new OfflineItemDAO(context);
     }
 
     @Override
@@ -27,11 +31,12 @@ public class ItemService implements IItemService {
 
         List<ItemDTO> items = null;
         try {
-            items = onlineIItemDAO.getItems(searchString);
+            //items = onlineIItemDAO.getItems(searchString);
+            items = offlineItemDAO.getItems(searchString);
         } catch (IOException e) {
             // No network, use offline mode
             try {
-                items = offlineIItemDAO.getItems(searchString);
+                items = offlineItemDAO.getItems(searchString);
             } catch (IOException e1) {
                 e1.printStackTrace();
             } catch (JSONException e1) {

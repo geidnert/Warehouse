@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.solidparts.warehouse.dao.IItemDAO;
+import com.solidparts.warehouse.dao.OfflineItemDAO;
 import com.solidparts.warehouse.dao.OnlineItemDAO;
 import com.solidparts.warehouse.dto.ItemDTO;
 import com.solidparts.warehouse.service.ItemService;
@@ -47,11 +48,11 @@ public class AddItem extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_item);
         itemImage = ((ImageView)findViewById(R.id.itemImage));
-        itemService = new ItemService();
+        itemService = new ItemService(this);
 
-        ItemSearchTask itemSearchTask = new ItemSearchTask();
+        //ItemSearchTask itemSearchTask = new ItemSearchTask();
 
-        itemSearchTask.execute("motor");
+        //itemSearchTask.execute("motor");
     }
 
     @Override
@@ -80,7 +81,7 @@ public class AddItem extends ActionBarActivity {
         //String name = ((EditText)findViewById(R.id.name)).getText().toString();
         //String description = ((EditText)findViewById(R.id.description)).getText().toString();
 
-        itemService.getItem("motor");
+        itemService.getItem("Corvett Motor");
     }
 
     public void onAddExistingImage(View view){
