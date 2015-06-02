@@ -61,7 +61,7 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
             itemDto.setName(cursor.getString(2));
             itemDto.setGuid(cursor.getInt(1));
             itemDto.setImage(cursor.getBlob(5));
-            itemDto.setQrCode(cursor.getString(6));
+            itemDto.setQrCode(cursor.getBlob(6));
             cursor.close();
         } else {
             itemDto = null;

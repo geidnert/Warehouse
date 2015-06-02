@@ -1,5 +1,9 @@
 package com.solidparts.warehouse;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -48,6 +52,7 @@ public class AddItemActivity extends ActionBarActivity {
 
     public static final int CAMERA_REQUEST = 1;
     public static final int IMAGE_GALLERY_REQUEST = 2;
+    public static final int QR_REQUEST = 3;
 
     private ImageView itemImage;
     private ImageView qrCodeImage;
@@ -98,40 +103,23 @@ public class AddItemActivity extends ActionBarActivity {
         itemDTO.setName(((EditText) findViewById(R.id.name)).getText().toString());
         itemDTO.setDescription(((EditText) findViewById(R.id.description)).getText().toString());
 
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        itemImageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
-        byte[] img = bos.toByteArray();
+        ByteArrayOutputStream bos1 = new ByteArrayOutputStream();
+        ByteArrayOutputStream bos2 = new ByteArrayOutputStream();
+        itemImageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos1);
+        qrCodeImageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos2);
+        byte[] itemImg = bos1.toByteArray();
+        byte[] qrCodeImg = bos2.toByteArray();
 
-        itemDTO.setImage(img);
-        itemDTO.setQrCode("uhde782ihdjksy78d9i3hu2dkwhde9si8yufhjeikuywsdf");
+        itemDTO.setImage(itemImg);
+        itemDTO.setQrCode(qrCodeImg);
 
         itemDTO = itemService.addItem(itemDTO);
 
 
     }
 
-    public Bitmap generateQRCode(View view) {
-        /*final int colorQR = Color.BLACK;
-        final int colorBackQR = Color.WHITE;
-        final int width = 400;
-        final int height = 400;
-
-        String stringToEncode = ((EditText) findViewById(R.id.name)).getText().toString() +
-                ((EditText) findViewById(R.id.name)).getText().toString() +
-                ((EditText) findViewById(R.id.name)).getText().toString();
-
-        Bitmap bitmap = null;
-
-        try {
-            bitmap = generateQRCodeBitmap(stringToEncode, width, height,
-                    MARGIN_AUTOMATIC, colorQR, colorBackQR);
-        } catch (WriterException e) {
-            e.printStackTrace();
-        }
-
-        return bitmap;*/
-
-        new AsyncGenerateQRCode().execute(GenerateQR.MARGIN_AUTOMATIC);
+    public void generateQRCode(View view) {
+        new AsyncGenerateQRCode().execute(-1);
     }
 
     public void onAddExistingImage(View view){
@@ -307,8 +295,8 @@ public class AddItemActivity extends ActionBarActivity {
             try {
 
                 String stringToEncode = ((EditText) findViewById(R.id.name)).getText().toString() +
-                        ((EditText) findViewById(R.id.name)).getText().toString() +
-                        ((EditText) findViewById(R.id.name)).getText().toString();
+                        " " +
+                        ((EditText) findViewById(R.id.description)).getText().toString();
 
                 final int colorQR = Color.BLACK;
                 final int colorBackQR = Color.WHITE;
@@ -350,4 +338,6 @@ public class AddItemActivity extends ActionBarActivity {
         @Override
         protected void onProgressUpdate(Void... values) {}
     }
+
+
 }

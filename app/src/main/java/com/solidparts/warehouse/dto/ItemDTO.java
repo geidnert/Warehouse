@@ -10,7 +10,7 @@ public class ItemDTO {
     String name;
     String description;
     byte[] image;
-    String qrCode;
+    byte[] qrCode;
 
     public int getGuid() {
         return guid;
@@ -52,11 +52,11 @@ public class ItemDTO {
         this.image = image;
     }
 
-    public String getQrCode() {
+    public byte[] getQrCode() {
         return qrCode;
     }
 
-    public void setQrCode(String qrCode) {
+    public void setQrCode(byte[] qrCode) {
         this.qrCode = qrCode;
     }
 

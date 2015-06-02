@@ -17,8 +17,10 @@
     <string name="button_take_photo">Take Photo</string>
     <string name="button_save">Save</string>
     <string name="button_cancle">Cancle</string>
+    <string name="button_scan">Scan</string>
 
     <string name="action_scan">Scan QR code</string>
 
     <string name="hello_world">Hello world!</string>
+    <string name="title_activity_scan">Scan QR code</string>
 </resources>

@@ -51,7 +51,7 @@ public class OnlineItemDAO implements IItemDAO {
             String name = jsonItem.getString("name");
             String description = jsonItem.getString("description");
             byte[] image = jsonItem.get("image").toString().getBytes("utf-8");
-            String qrCode = jsonItem.getString("qrCode");
+            byte[]  qrCode = jsonItem.get("qrCode").toString().getBytes("utf-8");
 
             ItemDTO itemDTO = new ItemDTO();
             itemDTO.setGuid(guid);

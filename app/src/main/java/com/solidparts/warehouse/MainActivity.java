@@ -42,4 +42,8 @@ public class MainActivity extends ActionBarActivity {
         //setContentView(R.layout.activity_add_item);
         startActivity(new Intent(MainActivity.this, AddItemActivity.class));
     }
+
+    public void onScan(View view){
+        startActivity(new Intent(MainActivity.this, ScanActivity.class));
+    }
 }

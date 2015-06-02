@@ -35,6 +35,7 @@
         android:id="@+id/button3"
         android:layout_below="@+id/button2"
         android:layout_alignLeft="@+id/button2"
-        android:layout_alignStart="@+id/button2" />
+        android:layout_alignStart="@+id/button2"
+        android:onClick="onScan" />
 
 </RelativeLayout>
