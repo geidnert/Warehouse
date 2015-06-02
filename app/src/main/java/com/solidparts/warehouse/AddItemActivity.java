@@ -14,6 +14,7 @@ import android.os.Environment;
 import android.os.Looper;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.print.PrintHelper;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -337,6 +338,16 @@ public class AddItemActivity extends ActionBarActivity {
 
         @Override
         protected void onProgressUpdate(Void... values) {}
+    }
+
+    public void onPrint(View view){
+        PrintHelper printHelper = new PrintHelper(getApplicationContext());
+
+        printHelper.setScaleMode(printHelper.SCALE_MODE_FIT);
+        printHelper.setColorMode(printHelper.COLOR_MODE_MONOCHROME);
+
+
+        printHelper.printBitmap("Printing QR code", qrCodeImageBitmap);
     }
 
 

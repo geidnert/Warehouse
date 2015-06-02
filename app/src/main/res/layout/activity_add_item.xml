@@ -87,10 +87,10 @@
         android:layout_height="wrap_content"
         android:text="@string/button_save"
         android:id="@+id/button5"
+        android:onClick="onSave"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:onClick="onSave"/>
+        android:layout_toRightOf="@+id/button6"
+        android:layout_toEndOf="@+id/button6" />
 
     <Button
         android:layout_width="wrap_content"
@@ -115,10 +115,20 @@
         android:layout_width="150dp"
         android:layout_height="200dp"
         android:id="@+id/qrCodeImage"
-        android:layout_alignBottom="@+id/itemImage"
-        android:layout_alignRight="@+id/button5"
-        android:layout_alignEnd="@+id/button5"
         android:background="#ffc7ffe6"
-        android:onClick="generateQRCode"/>
+        android:onClick="generateQRCode"
+        android:layout_alignTop="@+id/itemImage"
+        android:layout_toRightOf="@+id/itemImage"
+        android:layout_toEndOf="@+id/itemImage" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_print"
+        android:id="@+id/btn_print"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:onClick="onPrint" />
 
 </RelativeLayout>

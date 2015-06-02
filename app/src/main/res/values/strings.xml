@@ -18,6 +18,7 @@
     <string name="button_save">Save</string>
     <string name="button_cancle">Cancle</string>
     <string name="button_scan">Scan</string>
+    <string name="button_print">Print</string>
 
     <string name="action_scan">Scan QR code</string>
 
