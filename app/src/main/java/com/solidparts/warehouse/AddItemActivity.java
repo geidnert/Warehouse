@@ -3,12 +3,16 @@ package com.solidparts.warehouse;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.os.Looper;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,6 +20,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
 import com.solidparts.warehouse.dao.IItemDAO;
 import com.solidparts.warehouse.dao.OnlineItemDAO;
 import com.solidparts.warehouse.dto.ItemDTO;
@@ -30,7 +39,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class AddItemActivity extends ActionBarActivity {
@@ -39,14 +50,17 @@ public class AddItemActivity extends ActionBarActivity {
     public static final int IMAGE_GALLERY_REQUEST = 2;
 
     private ImageView itemImage;
+    private ImageView qrCodeImage;
     private ItemService itemService;
     private Bitmap itemImageBitmap;
+    private Bitmap qrCodeImageBitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_item);
         itemImage = ((ImageView)findViewById(R.id.itemImage));
+        qrCodeImage = ((ImageView)findViewById(R.id.qrCodeImage));
         itemService = new ItemService(this);
 
         //ItemSearchTask itemSearchTask = new ItemSearchTask();
@@ -91,7 +105,33 @@ public class AddItemActivity extends ActionBarActivity {
         itemDTO.setImage(img);
         itemDTO.setQrCode("uhde782ihdjksy78d9i3hu2dkwhde9si8yufhjeikuywsdf");
 
-        itemService.addItem(itemDTO);
+        itemDTO = itemService.addItem(itemDTO);
+
+
+    }
+
+    public Bitmap generateQRCode(View view) {
+        /*final int colorQR = Color.BLACK;
+        final int colorBackQR = Color.WHITE;
+        final int width = 400;
+        final int height = 400;
+
+        String stringToEncode = ((EditText) findViewById(R.id.name)).getText().toString() +
+                ((EditText) findViewById(R.id.name)).getText().toString() +
+                ((EditText) findViewById(R.id.name)).getText().toString();
+
+        Bitmap bitmap = null;
+
+        try {
+            bitmap = generateQRCodeBitmap(stringToEncode, width, height,
+                    MARGIN_AUTOMATIC, colorQR, colorBackQR);
+        } catch (WriterException e) {
+            e.printStackTrace();
+        }
+
+        return bitmap;*/
+
+        new AsyncGenerateQRCode().execute(GenerateQR.MARGIN_AUTOMATIC);
     }
 
     public void onAddExistingImage(View view){
@@ -151,14 +191,50 @@ public class AddItemActivity extends ActionBarActivity {
     }
 
     // ---- Private ---
+    static public int MARGIN_AUTOMATIC = -1;
+    static public int MARGIN_NONE = 0;
 
-    private void generateQRCode(){
+    static public Bitmap generateQRCodeBitmap(@NonNull String contentsToEncode,
+                                        int imageWidth, int imageHeight,
+                                        int marginSize, int color, int colorBack)
+            throws WriterException, IllegalStateException {
 
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            throw new IllegalStateException("Should not be invoked from the UI thread");
+        }
+
+        Map<EncodeHintType, Object> hints = null;
+        if (marginSize != MARGIN_AUTOMATIC) {
+            hints = new EnumMap<>(EncodeHintType.class);
+            // We want to generate with a custom margin size
+            hints.put(EncodeHintType.MARGIN, marginSize);
+        }
+
+        MultiFormatWriter writer = new MultiFormatWriter();
+        BitMatrix result = writer.encode(contentsToEncode, BarcodeFormat.QR_CODE, imageWidth, imageHeight, hints);
+
+        final int width = result.getWidth();
+        final int height = result.getHeight();
+        int[] pixels = new int[width * height];
+        for (int y = 0; y < height; y++) {
+            int offset = y * width;
+            for (int x = 0; x < width; x++) {
+                pixels[offset + x] = result.get(x, y) ? color : colorBack;
+            }
+        }
+
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
+        return bitmap;
     }
 
     private void showImage(Bitmap image){
         itemImageBitmap = image;
         itemImage.setImageBitmap(itemImageBitmap);
+    }
+
+    private void showQRCodeImage(Bitmap image){
+        qrCodeImage.setImageBitmap(itemImageBitmap);
     }
 
 
@@ -207,4 +283,71 @@ public class AddItemActivity extends ActionBarActivity {
         }
     }
     // https://androidbycode.wordpress.com/2015/02/09/generating-and-displaying-qr-codes-on-android-wear-devices/
+
+    /**
+     * AsyncTask to generate QR Code image
+     */
+    private class AsyncGenerateQRCode extends AsyncTask<Integer, Void, Integer> {
+
+        /**
+         * Background thread function to generate image
+         *
+         * @param params margin to use in creating QR Code
+         * @return non zero for success
+         *
+         * Note that is margin is not in pixels.  See the zxing api for details about the margin
+         * for QR code generation
+         */
+        @Override
+        protected Integer doInBackground(Integer... params) {
+            if (params.length != 1) {
+                throw new IllegalArgumentException("Must pass QR Code margin value as argument");
+            }
+
+            try {
+
+                String stringToEncode = ((EditText) findViewById(R.id.name)).getText().toString() +
+                        ((EditText) findViewById(R.id.name)).getText().toString() +
+                        ((EditText) findViewById(R.id.name)).getText().toString();
+
+                final int colorQR = Color.BLACK;
+                final int colorBackQR = Color.WHITE;
+                final int marginSize = params[0];
+                final int width = 400;
+                final int height = 400;
+
+                qrCodeImageBitmap = generateQRCodeBitmap(stringToEncode, width, height,
+                        marginSize, colorQR, colorBackQR);
+            }
+            catch (IllegalArgumentException iae) {
+                Log.e("TAG", "Invalid arguments for encoding QR");
+                iae.printStackTrace();
+                return 0;
+            }
+            catch (WriterException we) {
+                Log.e("TAG", "QR Writer unable to generate code");
+                we.printStackTrace();
+                return 0;
+            }
+            return 1;
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+            //mProgress.setVisibility(View.GONE);
+            if (result != 0) {
+                qrCodeImage.setImageBitmap(qrCodeImageBitmap);
+
+            }else {
+                //mTextDesc.setText(getString(R.string.encode_error));
+
+            }
+        }
+
+        @Override
+        protected void onPreExecute() {}
+
+        @Override
+        protected void onProgressUpdate(Void... values) {}
+    }
 }

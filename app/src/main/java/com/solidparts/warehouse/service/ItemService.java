@@ -10,7 +10,6 @@ import com.solidparts.warehouse.dto.ItemDTO;
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Created by geidnert on 28/05/15.
@@ -48,13 +47,13 @@ public class ItemService implements IItemService {
     }
 
     @Override
-    public void addItem(ItemDTO itemDTO) {
+    public ItemDTO addItem(ItemDTO itemDTO) {
         try {
-            offlineItemDAO.addItem(itemDTO);
+            itemDTO = offlineItemDAO.additem(itemDTO);
         } catch (IOException e) {
             // No network, use offline mode
             try {
-                offlineItemDAO.addItem(itemDTO);
+                itemDTO = offlineItemDAO.additem(itemDTO);
             } catch (IOException e1) {
                 e1.printStackTrace();
             } catch (JSONException e1) {
@@ -63,6 +62,8 @@ public class ItemService implements IItemService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        return itemDTO;
     }
 
     @Override

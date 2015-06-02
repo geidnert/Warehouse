@@ -10,7 +10,7 @@ import java.util.List;
 public interface IItemService {
     public ItemDTO getItem(String searchString) throws Exception;
 
-    public void addItem(ItemDTO itemDTO) throws Exception;
+    public ItemDTO addItem(ItemDTO itemDTO) throws Exception;
 
     public boolean removeItem(String searchString) throws Exception;
 }

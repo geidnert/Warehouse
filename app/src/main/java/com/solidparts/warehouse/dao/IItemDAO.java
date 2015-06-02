@@ -20,7 +20,7 @@ public interface IItemDAO {
 
     public ItemDTO getItem(String searchTerm) throws IOException, JSONException;
 
-    public void addItem(ItemDTO itemDTO) throws IOException, JSONException;
+    public ItemDTO additem(ItemDTO itemDTO) throws IOException, JSONException;
 
     public boolean removeItem(String itemName) throws IOException, JSONException;
 

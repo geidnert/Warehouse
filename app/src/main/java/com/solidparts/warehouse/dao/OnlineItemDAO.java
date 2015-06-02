@@ -1,7 +1,6 @@
 package com.solidparts.warehouse.dao;
 
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 
 import com.solidparts.warehouse.dto.ItemDTO;
 
@@ -67,8 +66,8 @@ public class OnlineItemDAO implements IItemDAO {
     }
 
     @Override
-    public void addItem(ItemDTO itemDTO) throws IOException, JSONException {
-
+    public ItemDTO additem(ItemDTO itemDTO) throws IOException, JSONException {
+        return null;
     }
 
     @Override

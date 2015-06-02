@@ -113,10 +113,11 @@
     <ImageView
         android:layout_width="150dp"
         android:layout_height="200dp"
-        android:id="@+id/qrCode"
+        android:id="@+id/qrCodeImage"
         android:layout_alignBottom="@+id/itemImage"
         android:layout_alignRight="@+id/button5"
         android:layout_alignEnd="@+id/button5"
-        android:background="#ffc7ffe6" />
+        android:background="#ffc7ffe6"
+        android:onClick="generateQRCode"/>
 
 </RelativeLayout>

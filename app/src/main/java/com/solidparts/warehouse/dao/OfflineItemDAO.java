@@ -5,15 +5,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.graphics.Bitmap;
 
 import com.solidparts.warehouse.dto.ItemDTO;
 
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by geidnert on 28/05/15.
@@ -75,7 +72,7 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
     }
 
     @Override
-    public void addItem(ItemDTO itemDTO) throws IOException, JSONException {
+    public ItemDTO additem(ItemDTO itemDTO) throws IOException, JSONException {
         ContentValues cv = new ContentValues();
 
         cv.put(GUID, itemDTO.getGuid());
@@ -88,8 +85,9 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
         long cachceId = getWritableDatabase().insert(ITEM, null, cv);
 
         itemDTO.setCacheID(cachceId);
-    }
 
+        return itemDTO;
+    }
 
     public boolean removeItem(String itemName) throws IOException, JSONException {
         boolean result = false;
