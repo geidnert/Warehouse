@@ -9,7 +9,7 @@ public class ItemDTO {
     int count;
     String name;
     String description;
-    String image;
+    byte[] image;
     String qrCode;
 
     public int getGuid() {
@@ -44,11 +44,11 @@ public class ItemDTO {
         this.description = description;
     }
 
-    public String getImage() {
+    public  byte[] getImage() {
         return image;
     }
 
-    public void setImage(String image) {
+    public void setImage(byte[] image) {
         this.image = image;
     }
 

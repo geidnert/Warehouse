@@ -63,7 +63,7 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
             itemDto.setDescription(cursor.getString(3));
             itemDto.setName(cursor.getString(2));
             itemDto.setGuid(cursor.getInt(1));
-            itemDto.setImage(cursor.getString(5));
+            itemDto.setImage(cursor.getBlob(5));
             itemDto.setQrCode(cursor.getString(6));
             cursor.close();
         } else {
@@ -75,8 +75,7 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
     }
 
     @Override
-    public void addItem(ItemDTO itemDTO) throws IOException, JSONException{
-
+    public void addItem(ItemDTO itemDTO) throws IOException, JSONException {
         ContentValues cv = new ContentValues();
 
         cv.put(GUID, itemDTO.getGuid());
@@ -91,7 +90,7 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
         itemDTO.setCacheID(cachceId);
     }
 
-    @Override
+
     public boolean removeItem(String itemName) throws IOException, JSONException {
         boolean result = false;
 

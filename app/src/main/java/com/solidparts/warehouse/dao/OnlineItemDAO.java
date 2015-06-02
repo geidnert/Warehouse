@@ -51,7 +51,7 @@ public class OnlineItemDAO implements IItemDAO {
             int count = jsonItem.getInt("count");
             String name = jsonItem.getString("name");
             String description = jsonItem.getString("description");
-            String image = jsonItem.getString("image");
+            byte[] image = jsonItem.get("image").toString().getBytes("utf-8");
             String qrCode = jsonItem.getString("qrCode");
 
             ItemDTO itemDTO = new ItemDTO();

@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
@@ -20,7 +21,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AddItem"
+            android:name=".AddItemActivity"
             android:label="@string/title_activity_add_item" >
         </activity>
     </application>

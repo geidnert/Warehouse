@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -22,6 +23,7 @@ import com.solidparts.warehouse.service.ItemService;
 
 import org.json.JSONException;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -31,13 +33,14 @@ import java.util.Date;
 import java.util.List;
 
 
-public class AddItem extends ActionBarActivity {
+public class AddItemActivity extends ActionBarActivity {
 
     public static final int CAMERA_REQUEST = 1;
     public static final int IMAGE_GALLERY_REQUEST = 2;
 
     private ImageView itemImage;
     private ItemService itemService;
+    private Bitmap itemImageBitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,10 +81,15 @@ public class AddItem extends ActionBarActivity {
         //String description = ((EditText)findViewById(R.id.description)).getText().toString();
         ItemDTO itemDTO = new ItemDTO();
         itemDTO.setGuid(2);
-        itemDTO.setName("Volvo Motor");
-        itemDTO.setDescription("Volvo xc 60 motor");
-        itemDTO.setImage("IIIMMMMAAAGGGEEE");
-        itemDTO.setQrCode("QQQQQRRRCCCOOODDDEEE");
+        itemDTO.setName(((EditText) findViewById(R.id.name)).getText().toString());
+        itemDTO.setDescription(((EditText) findViewById(R.id.description)).getText().toString());
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        itemImageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+        byte[] img = bos.toByteArray();
+
+        itemDTO.setImage(img);
+        itemDTO.setQrCode("uhde782ihdjksy78d9i3hu2dkwhde9si8yufhjeikuywsdf");
 
         itemService.addItem(itemDTO);
     }
@@ -133,8 +141,7 @@ public class AddItem extends ActionBarActivity {
 
                 try {
                     inputStream = getContentResolver().openInputStream(imageUri);
-                    Bitmap image = BitmapFactory.decodeStream(inputStream);
-                    showImage(image);
+                    showImage(itemImageBitmap);
                 } catch (FileNotFoundException e){
                     e.printStackTrace();
                     Toast.makeText(this, "Unable to open image", Toast.LENGTH_LONG).show();
@@ -146,16 +153,13 @@ public class AddItem extends ActionBarActivity {
     // ---- Private ---
 
     private void showImage(Bitmap image){
-        itemImage.setImageBitmap(image);
+        itemImageBitmap = image;
+        itemImage.setImageBitmap(itemImageBitmap);
     }
 
 
     class ItemSearchTask extends AsyncTask<String, Integer, ItemDTO> {
 
-
-        /**
-         * The steps in this method will run in a separate (non-UI) thread.
-         */
         @Override
         protected ItemDTO doInBackground(String... itemName) {
             // we're only getting one String, so let's access that one string.
@@ -176,10 +180,7 @@ public class AddItem extends ActionBarActivity {
 
             // return the matching plants.
             return item;
-
         }
-
-
 
         /**
          * This method will be called when doInBackground completes.
@@ -195,7 +196,6 @@ public class AddItem extends ActionBarActivity {
 
             //setProgressBarIndeterminateVisibility(false);
         }
-
 
         @Override
         protected void onPreExecute() {

@@ -40,6 +40,6 @@ public class MainActivity extends ActionBarActivity {
 
     public void onAddItem(View view) {
         //setContentView(R.layout.activity_add_item);
-        startActivity(new Intent(MainActivity.this, AddItem.class));
+        startActivity(new Intent(MainActivity.this, AddItemActivity.class));
     }
 }
