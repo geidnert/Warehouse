@@ -152,6 +152,10 @@ public class AddItemActivity extends ActionBarActivity {
 
     // ---- Private ---
 
+    private void generateQRCode(){
+
+    }
+
     private void showImage(Bitmap image){
         itemImageBitmap = image;
         itemImage.setImageBitmap(itemImageBitmap);
@@ -202,4 +206,5 @@ public class AddItemActivity extends ActionBarActivity {
             setProgressBarIndeterminateVisibility(true);
         }
     }
+    // https://androidbycode.wordpress.com/2015/02/09/generating-and-displaying-qr-codes-on-android-wear-devices/
 }
