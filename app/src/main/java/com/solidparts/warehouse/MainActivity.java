@@ -43,7 +43,7 @@ public class MainActivity extends ActionBarActivity {
         startActivity(new Intent(MainActivity.this, AddItemActivity.class));
     }
 
-    public void onScan(View view){
-        startActivity(new Intent(MainActivity.this, ScanActivity.class));
+    public void onSearch(View view) {
+        startActivity(new Intent(MainActivity.this, SearchActivity.class));
     }
 }

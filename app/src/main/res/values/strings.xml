@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Warehouse</string>
 
-    <string name="push_notification">Welcome to Warehouse!</string>
+    <string name="push_notification">Welcome to your Warehouse! Please choose activity.</string>
     <string name="action_settings">Settings</string>
     <string name="action_search_item">Search Item</string>
 
@@ -30,6 +30,6 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_scan">Scan QR code</string>
-    <string name="title_activity_search">Search for an item by text or by scanning a QR code.</string>
+    <string name="title_activity_search">Search for items by text or by scanning a location QR code.</string>
 
 </resources>

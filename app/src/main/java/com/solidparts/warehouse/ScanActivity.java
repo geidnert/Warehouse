@@ -38,6 +38,7 @@ public class ScanActivity extends ActionBarActivity {
 
     private Bitmap qrCodeImageBitmap;
     private ImageView qrCodeImage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
