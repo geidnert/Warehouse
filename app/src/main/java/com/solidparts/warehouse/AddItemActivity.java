@@ -337,11 +337,9 @@ public class AddItemActivity extends Activity {
     }
 
     public void onPrint(View view){
-        PrintHelper printHelper = new PrintHelper(getApplicationContext());
-
+        PrintHelper printHelper = new PrintHelper(this);
         printHelper.setScaleMode(printHelper.SCALE_MODE_FIT);
         printHelper.setColorMode(printHelper.COLOR_MODE_MONOCHROME);
-
 
         printHelper.printBitmap("Printing QR code", qrCodeImageBitmap);
     }
