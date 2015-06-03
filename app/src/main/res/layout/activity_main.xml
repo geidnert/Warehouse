@@ -17,7 +17,8 @@
         android:onClick="onAddItem"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:textSize="10dp" />
 
     <Button
         android:layout_width="fill_parent"
@@ -27,6 +28,7 @@
         android:onClick="onSearch"
         android:layout_above="@+id/button2"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:textSize="10dp" />
 
 </RelativeLayout>

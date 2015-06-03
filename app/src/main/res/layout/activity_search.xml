@@ -17,14 +17,15 @@
         android:text="@string/button_scan"
         android:id="@+id/button"
         android:onClick="onScan"
-        android:layout_below="@+id/editText"
+        android:layout_below="@+id/searchWord"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:textSize="10dp" />
 
     <EditText
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/editText"
+        android:id="@+id/searchWord"
         android:layout_below="@+id/textView7"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
@@ -36,8 +37,9 @@
         android:text="@string/button_search"
         android:id="@+id/btn_serach"
         android:layout_alignBottom="@+id/button"
-        android:layout_alignRight="@+id/editText"
-        android:layout_alignEnd="@+id/editText"
-        android:onClick="inSearch" />
+        android:layout_alignRight="@+id/searchWord"
+        android:layout_alignEnd="@+id/searchWord"
+        android:onClick="onSearch"
+        android:textSize="10dp" />
 
 </RelativeLayout>

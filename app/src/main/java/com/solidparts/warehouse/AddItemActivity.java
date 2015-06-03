@@ -3,6 +3,7 @@ package com.solidparts.warehouse;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -54,6 +55,7 @@ public class AddItemActivity extends Activity {
     private ItemService itemService;
     private Bitmap itemImageBitmap;
     private Bitmap qrCodeImageBitmap;
+    private ItemDTO intentItemDTO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +65,21 @@ public class AddItemActivity extends Activity {
         qrCodeImage = ((ImageView)findViewById(R.id.qrCodeImage));
         itemService = new ItemService(this);
 
+        intentItemDTO = (ItemDTO)getIntent().getSerializableExtra("intentItemDTO");
+
+        if(intentItemDTO != null){
+            //itemDTO.setGuid(2);
+            ((EditText) findViewById(R.id.name)).setText(intentItemDTO.getName());
+            ((EditText) findViewById(R.id.description)).setText(intentItemDTO.getDescription());
+            ((EditText) findViewById(R.id.amount)).setText(intentItemDTO.getCount());
+            ((EditText) findViewById(R.id.location)).setText(intentItemDTO.getLocation());
+
+            Bitmap image = BitmapFactory.decodeByteArray(intentItemDTO.getImage(), 0, intentItemDTO.getImage().length);
+            showImage(image);
+
+            Bitmap qrCodeImage = BitmapFactory.decodeByteArray(intentItemDTO.getQrCode(), 0, intentItemDTO.getQrCode().length);
+            showQRCodeImage(qrCodeImage);
+        }
         //ItemSearchTask itemSearchTask = new ItemSearchTask();
 
         //itemSearchTask.execute("motor");
@@ -233,6 +250,7 @@ public class AddItemActivity extends Activity {
             String searchTerm = itemName[0];
             // make a variable that will hold our plant DAO.
             // IPlantDAO plantDAO = new PlantDAOStub();
+
             IItemDAO itemDAO = new OnlineItemDAO();
 
             // fetch the plants from the DAO.

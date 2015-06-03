@@ -1,11 +1,12 @@
 package com.solidparts.warehouse.dto;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
  * Created by geidnert on 28/05/15.
  */
-public class ItemDTO {
+public class ItemDTO implements Serializable{
     private long cacheID;
     int guid;
     int count;

@@ -1,32 +1,48 @@
 package com.solidparts.warehouse;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
+import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.solidparts.warehouse.dao.IItemDAO;
+import com.solidparts.warehouse.dao.OnlineItemDAO;
+import com.solidparts.warehouse.dto.ItemDTO;
+import com.solidparts.warehouse.service.ItemService;
 
-public class SearchActivity extends ActionBarActivity {
+import org.json.JSONException;
+
+import java.io.IOException;
+
+
+public class SearchActivity extends Activity {
     public static final int QR_REQUEST = 1;
     static final String ACTION_SCAN = "com.google.zxing.client.android.SCAN";
 
     private Bitmap qrCodeImageBitmap;
     private ImageView qrCodeImage;
+    private ItemService itemService;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
+        itemService = new ItemService(this);
         qrCodeImage = ((ImageView)findViewById(R.id.qrCodeImage));
     }
 
@@ -59,7 +75,7 @@ public class SearchActivity extends ActionBarActivity {
             startActivityForResult(intent, QR_REQUEST);
         } catch (ActivityNotFoundException anfe) {
             //on catch, show the download dialog
-            showDialog(SearchActivity.this, "No Scanner Found", "Download a scanner code activity?", "Yes", "No").show();
+            // showDialog(SearchActivity.this, "No Scanner Found", "Download a scanner code activity?", "Yes", "No").show();
         }
     }
 
@@ -98,6 +114,44 @@ public class SearchActivity extends ActionBarActivity {
                 Toast toast = Toast.makeText(this, "Content:" + contents + " Format:" + format, Toast.LENGTH_LONG);
                 toast.show();
             }
+        }
+    }
+
+    public void onSearch(View view) {
+        ItemSearchTask itemSearchTask = new ItemSearchTask();
+
+        itemSearchTask.execute(((EditText) findViewById(R.id.searchWord)).getText().toString());
+    }
+
+    class ItemSearchTask extends AsyncTask<String, Integer, ItemDTO> {
+
+        @Override
+        protected ItemDTO doInBackground(String... itemName) {
+            return itemService.getItem(itemName[0]);
+        }
+
+        /**
+         * This method will be called when doInBackground completes.
+         * The paramter result is populated from the return values of doInBackground.
+         * This method runs on the UI thread, and therefore can update UI components.
+         */
+        public final static String EXTRA_ITEMDTO = "intentItemDTO";
+        @Override
+        protected void onPostExecute(ItemDTO allItems) {
+            // adapt the search results returned from doInBackground so that they can be presented on the UI.
+            //ArrayAdapter<ItemDTO> plantAdapter = new ArrayAdapter<Plant>(PlantResultsActivity.this, android.R.layout.simple_list_item_1, allPlants);
+            // show the search resuts in the list.
+            //setListAdapter(plantAdapter);
+
+            //setProgressBarIndeterminateVisibility(false);
+            Intent intent = new Intent(SearchActivity.this, AddItemActivity.class);
+            intent.putExtra(EXTRA_ITEMDTO, allItems);
+            startActivity(new Intent(SearchActivity.this, AddItemActivity.class));
+        }
+
+        @Override
+        protected void onPreExecute() {
+            setProgressBarIndeterminateVisibility(true);
         }
     }
 }
