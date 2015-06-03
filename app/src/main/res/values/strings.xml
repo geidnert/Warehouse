@@ -11,7 +11,12 @@
     <string name="action_add_item_name">Name</string>
     <string name="action_add_item_description">Description</string>
     <string name="action_add_item_image">Image</string>
+    <string name="action_add_item_location_code">Location code</string>
     <string name="action_add_item_button_add">Add Image</string>
+    <string name="action_add_item_label_location">Location</string>
+    <string name="action_add_item_label_amount">Amount</string>
+    <string name="action_add_item_scan_location">Scan location</string>
+    <string name="action_add_item_generate_location">Generate location code</string>
 
     <string name="button_add_existing">Add Existing</string>
     <string name="button_take_photo">Take Photo</string>
@@ -19,9 +24,12 @@
     <string name="button_cancle">Cancle</string>
     <string name="button_scan">Scan</string>
     <string name="button_print">Print</string>
+    <string name="button_search">Search</string>
 
     <string name="action_scan">Scan QR code</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_scan">Scan QR code</string>
+    <string name="title_activity_search">Search for an item by text or by scanning a QR code.</string>
+
 </resources>

@@ -1,12 +1,8 @@
 package com.solidparts.warehouse;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.ActivityNotFoundException;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -15,7 +11,6 @@ import android.os.Looper;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.print.PrintHelper;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -45,11 +40,10 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.EnumMap;
-import java.util.List;
 import java.util.Map;
 
 
-public class AddItemActivity extends ActionBarActivity {
+public class AddItemActivity extends Activity {
 
     public static final int CAMERA_REQUEST = 1;
     public static final int IMAGE_GALLERY_REQUEST = 2;
@@ -64,7 +58,7 @@ public class AddItemActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_item);
+        setContentView(R.layout.activity_add);
         itemImage = ((ImageView)findViewById(R.id.itemImage));
         qrCodeImage = ((ImageView)findViewById(R.id.qrCodeImage));
         itemService = new ItemService(this);
@@ -97,12 +91,12 @@ public class AddItemActivity extends ActionBarActivity {
     }
 
     public void onSave(View view){
-        //String name = ((EditText)findViewById(R.id.name)).getText().toString();
-        //String description = ((EditText)findViewById(R.id.description)).getText().toString();
         ItemDTO itemDTO = new ItemDTO();
         itemDTO.setGuid(2);
         itemDTO.setName(((EditText) findViewById(R.id.name)).getText().toString());
         itemDTO.setDescription(((EditText) findViewById(R.id.description)).getText().toString());
+        itemDTO.setCount(Integer.parseInt(((EditText) findViewById(R.id.amount)).getText().toString()));
+        itemDTO.setLocation(((EditText) findViewById(R.id.location)).getText().toString());
 
         ByteArrayOutputStream bos1 = new ByteArrayOutputStream();
         ByteArrayOutputStream bos2 = new ByteArrayOutputStream();
@@ -119,7 +113,11 @@ public class AddItemActivity extends ActionBarActivity {
 
     }
 
-    public void generateQRCode(View view) {
+    public void onCancle(View view) {
+        startActivity(new Intent(AddItemActivity.this, MainActivity.class));
+    }
+
+    public void onGenerateQRCode(View view) {
         new AsyncGenerateQRCode().execute(-1);
     }
 
@@ -295,15 +293,13 @@ public class AddItemActivity extends ActionBarActivity {
 
             try {
 
-                String stringToEncode = ((EditText) findViewById(R.id.name)).getText().toString() +
-                        " " +
-                        ((EditText) findViewById(R.id.description)).getText().toString();
+                String stringToEncode = ((EditText) findViewById(R.id.location)).getText().toString();
 
                 final int colorQR = Color.BLACK;
                 final int colorBackQR = Color.WHITE;
                 final int marginSize = params[0];
-                final int width = 400;
-                final int height = 400;
+                final int width = 300;
+                final int height = 300;
 
                 qrCodeImageBitmap = generateQRCodeBitmap(stringToEncode, width, height,
                         marginSize, colorQR, colorBackQR);

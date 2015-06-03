@@ -1,5 +1,7 @@
 package com.solidparts.warehouse.dto;
 
+import java.util.Arrays;
+
 /**
  * Created by geidnert on 28/05/15.
  */
@@ -9,6 +11,7 @@ public class ItemDTO {
     int count;
     String name;
     String description;
+    String location;
     byte[] image;
     byte[] qrCode;
 
@@ -68,6 +71,14 @@ public class ItemDTO {
         this.cacheID = cacheID;
     }
 
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
     @Override
     public String toString() {
         return "ItemDTO{" +
@@ -76,8 +87,9 @@ public class ItemDTO {
                 ", count=" + count +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", image='" + image + '\'' +
-                ", qrCode='" + qrCode + '\'' +
+                ", location='" + location + '\'' +
+                ", image=" + Arrays.toString(image) +
+                ", qrCode=" + Arrays.toString(qrCode) +
                 '}';
     }
 }
