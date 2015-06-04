@@ -1,6 +1,7 @@
 package com.solidparts.warehouse;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,6 +15,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.print.PrintHelper;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -80,6 +82,7 @@ public class AddItemActivity extends Activity {
 
             Bitmap qrCodeImage = BitmapFactory.decodeByteArray(intentItemDTO.getQrCode(), 0, intentItemDTO.getQrCode().length);
             showQRCodeImage(qrCodeImage);
+            new AsyncGenerateQRCode().execute(-1);
         }
         //ItemSearchTask itemSearchTask = new ItemSearchTask();
 
@@ -109,12 +112,30 @@ public class AddItemActivity extends Activity {
     }
 
     public void onSave(View view){
+
+        String name = ((EditText) findViewById(R.id.name)).getText().toString();
+        String description = ((EditText) findViewById(R.id.description)).getText().toString();
+        String amount = ((EditText) findViewById(R.id.amount)).getText().toString();
+        String location = ((EditText) findViewById(R.id.location)).getText().toString();
+
+        if(name.equals("") || description.equals("") || amount.equals("") || location.equals("") ||
+                itemImageBitmap == null || qrCodeImage == null) {
+            Context context = getApplicationContext();
+            CharSequence text = "ERROR: You need to fill in the complete form!";
+            int duration = Toast.LENGTH_LONG;
+
+            Toast toast = Toast.makeText(context, text, duration);
+            toast.setGravity(Gravity.CENTER| Gravity.CENTER, 0, 0);
+            toast.show();
+            return;
+        }
+
         ItemDTO itemDTO = new ItemDTO();
         itemDTO.setGuid(2);
-        itemDTO.setName(((EditText) findViewById(R.id.name)).getText().toString());
-        itemDTO.setDescription(((EditText) findViewById(R.id.description)).getText().toString());
-        itemDTO.setCount(Integer.parseInt(((EditText) findViewById(R.id.amount)).getText().toString()));
-        itemDTO.setLocation(((EditText) findViewById(R.id.location)).getText().toString());
+        itemDTO.setName(name);
+        itemDTO.setDescription(description);
+        itemDTO.setCount(Integer.parseInt(amount));
+        itemDTO.setLocation(location);
 
         ByteArrayOutputStream bos1 = new ByteArrayOutputStream();
         ByteArrayOutputStream bos2 = new ByteArrayOutputStream();
@@ -128,11 +149,20 @@ public class AddItemActivity extends Activity {
 
         itemDTO = itemService.addItem(itemDTO);
 
+        Context context = getApplicationContext();
+        CharSequence text = "Item Saved!!";
+        int duration = Toast.LENGTH_LONG;
+
+        Toast toast = Toast.makeText(context, text, duration);
+        toast.setGravity(Gravity.CENTER| Gravity.CENTER, 0, 0);
+        toast.show();
+        super.onBackPressed();
 
     }
 
     public void onCancle(View view) {
-        startActivity(new Intent(AddItemActivity.this, MainActivity.class));
+        //startActivity(new Intent(AddItemActivity.this, MainActivity.class));
+        super.onBackPressed();
     }
 
     public void onGenerateQRCode(View view) {

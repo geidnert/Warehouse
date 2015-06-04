@@ -85,6 +85,10 @@ public class SearchActivity extends Activity {
         }
     }
 
+    public void onCancle(View view) {
+        super.onBackPressed();
+    }
+
     //alert dialog for downloadDialog
     private static AlertDialog showDialog(final ActionBarActivity act, CharSequence title, CharSequence message, CharSequence buttonYes, CharSequence buttonNo) {
         AlertDialog.Builder downloadDialog = new AlertDialog.Builder(act);

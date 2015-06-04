@@ -51,7 +51,7 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
     @Override
     public List<ItemDTO> getItems(String searchTerm, int searchType) throws IOException, JSONException {
 
-        String query = "Select * FROM " + ITEM + " WHERE " + NAME + " LIKE  \"%" + searchTerm + "%\"";
+        String query = "Select * FROM " + ITEM + " WHERE " + NAME + " LIKE  \"%" + searchTerm + "%\"" + " OR " + LOCATION + " LIKE \"%" + searchTerm + "%\"";
 
         // Search all in a location
         if(searchType == 2) {

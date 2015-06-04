@@ -44,10 +44,20 @@
 
     <ListView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="350dp"
         android:id="@+id/itemlistView"
-        android:layout_below="@+id/button"
+        android:layout_alignTop="@+id/button"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_cancle"
+        android:id="@+id/button9"
+        android:layout_below="@+id/itemlistView"
+        android:layout_alignRight="@+id/itemlistView"
+        android:layout_alignEnd="@+id/itemlistView"
+        android:onClick="onCancle" />
 
 </RelativeLayout>

@@ -48,7 +48,8 @@
         android:id="@+id/description"
         android:layout_alignBottom="@+id/textView4"
         android:layout_toEndOf="@+id/addImage"
-        android:layout_toRightOf="@+id/addImage" />
+        android:layout_alignLeft="@+id/amount"
+        android:layout_alignStart="@+id/amount" />
 
     <ImageView
         android:layout_width="200dp"
@@ -68,8 +69,8 @@
         android:onClick="onTakePhoto"
         android:textSize="10dp"
         android:layout_alignBottom="@+id/itemImage"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignRight="@+id/itemImage"
+        android:layout_alignEnd="@+id/itemImage" />
 
     <Button
         android:layout_width="wrap_content"
@@ -101,9 +102,9 @@
         android:id="@+id/button4"
         android:onClick="onAddExistingImage"
         android:textSize="10dp"
-        android:layout_alignTop="@+id/addImage"
-        android:layout_alignRight="@+id/itemImage"
-        android:layout_alignEnd="@+id/itemImage" />
+        android:layout_alignBottom="@+id/itemImage"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <ImageView
         android:layout_width="150dp"
@@ -143,8 +144,8 @@
         android:layout_below="@+id/amount"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignLeft="@+id/amount"
-        android:layout_alignStart="@+id/amount" />
+        android:layout_alignLeft="@+id/button7"
+        android:layout_alignStart="@+id/button7" />
 
     <Button
         android:layout_width="wrap_content"
@@ -152,10 +153,10 @@
         android:text="@string/action_add_item_scan_location"
         android:id="@+id/button7"
         android:textSize="10dp"
-        android:layout_alignTop="@+id/button8"
+        android:onClick="onScan"
+        android:layout_below="@+id/location"
         android:layout_toLeftOf="@+id/button8"
-        android:layout_toStartOf="@+id/button8"
-        android:onClick="onScan" />
+        android:layout_toStartOf="@+id/button8" />
 
     <Button
         android:layout_width="wrap_content"
@@ -211,7 +212,7 @@
         android:id="@+id/amount"
         android:inputType="number"
         android:layout_below="@+id/description"
-        android:layout_alignLeft="@+id/description"
-        android:layout_alignStart="@+id/description" />
+        android:layout_alignLeft="@+id/location"
+        android:layout_alignStart="@+id/location" />
 
 </RelativeLayout>
