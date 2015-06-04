@@ -10,6 +10,7 @@ import com.solidparts.warehouse.dto.ItemDTO;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by geidnert on 28/05/15.
@@ -25,16 +26,16 @@ public class ItemService implements IItemService {
     }
 
     @Override
-    public ItemDTO getItem(String itemName)  {
-        ItemDTO item = null;
+    public List<ItemDTO> getItems(String searchTerm, int searchType) throws Exception {
+        List<ItemDTO> item = null;
 
         try {
-            //items = onlineIItemDAO.getItem(searchString);
-            item = offlineItemDAO.getItem(itemName);
+            //items = onlineIItemDAO.getItems(searchString);
+            item = offlineItemDAO.getItems(searchTerm, searchType);
         } catch (IOException e) {
             // No network, use offline mode
             try {
-                item = offlineItemDAO.getItem(itemName);
+                item = offlineItemDAO.getItems(searchTerm, searchType);
             } catch (IOException e1) {
                 e1.printStackTrace();
             } catch (JSONException e1) {
@@ -71,7 +72,7 @@ public class ItemService implements IItemService {
         boolean success = false;
 
         try {
-            //items = onlineIItemDAO.getItem(searchString);
+            //items = onlineIItemDAO.getItems(searchString);
             success = offlineItemDAO.removeItem(itemName);
         } catch (IOException e) {
             // No network, use offline mode

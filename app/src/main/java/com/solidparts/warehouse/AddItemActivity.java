@@ -41,6 +41,7 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -65,13 +66,13 @@ public class AddItemActivity extends Activity {
         qrCodeImage = ((ImageView)findViewById(R.id.qrCodeImage));
         itemService = new ItemService(this);
 
-        intentItemDTO = (ItemDTO)getIntent().getSerializableExtra("intentItemDTO");
+        intentItemDTO = (ItemDTO) getIntent().getSerializableExtra("intentItemDTO");
 
         if(intentItemDTO != null){
             //itemDTO.setGuid(2);
             ((EditText) findViewById(R.id.name)).setText(intentItemDTO.getName());
             ((EditText) findViewById(R.id.description)).setText(intentItemDTO.getDescription());
-            ((EditText) findViewById(R.id.amount)).setText(intentItemDTO.getCount());
+            ((EditText) findViewById(R.id.amount)).setText("" + intentItemDTO.getCount());
             ((EditText) findViewById(R.id.location)).setText(intentItemDTO.getLocation());
 
             Bitmap image = BitmapFactory.decodeByteArray(intentItemDTO.getImage(), 0, intentItemDTO.getImage().length);
@@ -238,25 +239,26 @@ public class AddItemActivity extends Activity {
     }
 
     private void showQRCodeImage(Bitmap image){
-        qrCodeImage.setImageBitmap(itemImageBitmap);
+        qrCodeImage.setImageBitmap(image);
     }
 
 
-    class ItemSearchTask extends AsyncTask<String, Integer, ItemDTO> {
+    class ItemSearchTask extends AsyncTask<String, Integer, List<ItemDTO>> {
 
         @Override
-        protected ItemDTO doInBackground(String... itemName) {
+        protected List<ItemDTO> doInBackground(String... searchTerms) {
             // we're only getting one String, so let's access that one string.
-            String searchTerm = itemName[0];
+            String searchTerm = searchTerms[0];
+            int searchType = Integer.parseInt(searchTerms[1]);
             // make a variable that will hold our plant DAO.
             // IPlantDAO plantDAO = new PlantDAOStub();
 
             IItemDAO itemDAO = new OnlineItemDAO();
 
             // fetch the plants from the DAO.
-            ItemDTO item = null;
+            List<ItemDTO> items = null;
             try {
-                item = itemDAO.getItem(itemName[0]);
+                items = itemDAO.getItems(searchTerm, searchType);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (JSONException e) {
@@ -264,7 +266,7 @@ public class AddItemActivity extends Activity {
             }
 
             // return the matching plants.
-            return item;
+            return items;
         }
 
         /**
@@ -273,7 +275,7 @@ public class AddItemActivity extends Activity {
          * This method runs on the UI thread, and therefore can update UI components.
          */
         @Override
-        protected void onPostExecute(ItemDTO allItems) {
+        protected void onPostExecute(List<ItemDTO> allItems) {
             // adapt the search results returned from doInBackground so that they can be presented on the UI.
             //ArrayAdapter<ItemDTO> plantAdapter = new ArrayAdapter<Plant>(PlantResultsActivity.this, android.R.layout.simple_list_item_1, allPlants);
             // show the search resuts in the list.

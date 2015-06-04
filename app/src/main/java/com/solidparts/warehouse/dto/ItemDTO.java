@@ -6,7 +6,7 @@ import java.util.Arrays;
 /**
  * Created by geidnert on 28/05/15.
  */
-public class ItemDTO implements Serializable{
+public class ItemDTO implements Serializable {
     private long cacheID;
     int guid;
     int count;
@@ -56,9 +56,7 @@ public class ItemDTO implements Serializable{
         this.image = image;
     }
 
-    public byte[] getQrCode() {
-        return qrCode;
-    }
+    public byte[] getQrCode() { return qrCode; }
 
     public void setQrCode(byte[] qrCode) {
         this.qrCode = qrCode;
@@ -72,9 +70,7 @@ public class ItemDTO implements Serializable{
         this.cacheID = cacheID;
     }
 
-    public String getLocation() {
-        return location;
-    }
+    public String getLocation() { return location; }
 
     public void setLocation(String location) {
         this.location = location;

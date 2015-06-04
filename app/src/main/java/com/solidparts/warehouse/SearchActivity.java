@@ -14,8 +14,11 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.solidparts.warehouse.dao.IItemDAO;
@@ -26,11 +29,14 @@ import com.solidparts.warehouse.service.ItemService;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class SearchActivity extends Activity {
     public static final int QR_REQUEST = 1;
     static final String ACTION_SCAN = "com.google.zxing.client.android.SCAN";
+    public final static String EXTRA_ITEMDTO = "intentItemDTO";
 
     private Bitmap qrCodeImageBitmap;
     private ImageView qrCodeImage;
@@ -119,15 +125,22 @@ public class SearchActivity extends Activity {
 
     public void onSearch(View view) {
         ItemSearchTask itemSearchTask = new ItemSearchTask();
+        String[] args = new String[]{((EditText) findViewById(R.id.searchWord)).getText().toString(), "1"};
 
-        itemSearchTask.execute(((EditText) findViewById(R.id.searchWord)).getText().toString());
+        itemSearchTask.execute(args);
     }
 
-    class ItemSearchTask extends AsyncTask<String, Integer, ItemDTO> {
+    class ItemSearchTask extends AsyncTask<String, Integer, List<ItemDTO>> {
 
         @Override
-        protected ItemDTO doInBackground(String... itemName) {
-            return itemService.getItem(itemName[0]);
+        protected List<ItemDTO> doInBackground(String... searchTerms) {
+            try {
+                return itemService.getItems(searchTerms[0], Integer.parseInt(searchTerms[1]));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return null;
         }
 
         /**
@@ -135,18 +148,54 @@ public class SearchActivity extends Activity {
          * The paramter result is populated from the return values of doInBackground.
          * This method runs on the UI thread, and therefore can update UI components.
          */
-        public final static String EXTRA_ITEMDTO = "intentItemDTO";
+
         @Override
-        protected void onPostExecute(ItemDTO allItems) {
+        protected void onPostExecute(final List<ItemDTO> allItems) {
             // adapt the search results returned from doInBackground so that they can be presented on the UI.
-            //ArrayAdapter<ItemDTO> plantAdapter = new ArrayAdapter<Plant>(PlantResultsActivity.this, android.R.layout.simple_list_item_1, allPlants);
+            List<String> allItemNames = new ArrayList<>(allItems.size());
+
+            for (ItemDTO itemDAO : allItems){
+                allItemNames.add(itemDAO.getName());
+            }
+
+            ArrayAdapter<String> itemAdaptor = new ArrayAdapter<String>(SearchActivity.this, android.R.layout.simple_list_item_1, allItemNames);
             // show the search resuts in the list.
             //setListAdapter(plantAdapter);
 
             //setProgressBarIndeterminateVisibility(false);
-            Intent intent = new Intent(SearchActivity.this, AddItemActivity.class);
-            intent.putExtra(EXTRA_ITEMDTO, allItems);
-            startActivity(new Intent(SearchActivity.this, AddItemActivity.class));
+            //Intent intent = new Intent(SearchActivity.this, AddItemActivity.class);
+            //intent.putExtra(EXTRA_ITEMDTO, allItems);
+            //startActivity(intent);
+            final ListView itemlistView = (ListView) findViewById(R.id.itemlistView);
+            //ArrayAdapter<String> adapter = new ArrayAdapter<String>(SearchActivity.this, android.R.layout.simple_list_item_1, android.R.id., allItems);
+// Assign adapter to ListView
+            itemlistView.setAdapter(itemAdaptor);
+
+            // ListView Item Click Listener
+            itemlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view,
+                                        int position, long id) {
+
+                    // ListView Clicked item index
+                    int itemPosition = position;
+
+                    Intent intent = new Intent(SearchActivity.this, AddItemActivity.class);
+                    intent.putExtra(EXTRA_ITEMDTO, allItems.get(position));
+                    startActivity(intent);
+
+                    // ListView Clicked item value
+                    //String itemValue = (String) itemlistView.getItemAtPosition(position);
+
+                    // Show Alert
+                    //Toast.makeText(getApplicationContext(),
+                    //        "Position :" + itemPosition + "  ListItem : " + itemValue, Toast.LENGTH_LONG)
+                    //        .show();
+
+                }
+
+            });
         }
 
         @Override

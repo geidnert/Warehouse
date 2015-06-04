@@ -18,7 +18,7 @@ public interface IItemDAO {
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion);
 
-    public ItemDTO getItem(String searchTerm) throws IOException, JSONException;
+    public List<ItemDTO> getItems(String searchTerm, int searchType) throws IOException, JSONException;
 
     public ItemDTO additem(ItemDTO itemDTO) throws IOException, JSONException;
 

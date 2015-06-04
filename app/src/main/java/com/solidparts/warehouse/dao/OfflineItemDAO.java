@@ -11,6 +11,8 @@ import com.solidparts.warehouse.dto.ItemDTO;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by geidnert on 28/05/15.
@@ -22,6 +24,7 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
     public static final String CACHE_ID = "CACHE_ID";
     public static final String NAME = "NAME";
     public static final String DESCRIPTION = "DESCRIPTION";
+    public static final String LOCATION = "LOCATION";
     public static final String GUID = "GUID";
     public static final String IMAGE = "IMAGE";
     public static final String COUNT = "COUNT";
@@ -35,7 +38,7 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
     public void onCreate(SQLiteDatabase db) {
         String createItems = "CREATE TABLE " + ITEM + " ( " + CACHE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 GUID + " INTEGER, " + NAME + " TEXT, " + DESCRIPTION + " TEXT, " + COUNT + " INTEGER, " + IMAGE +
-                " BLOB, " + QRCODE + " TEXT " + " );";
+                " BLOB, " + QRCODE + " TEXT, " + LOCATION + " TEXT "  + " );";
 
         db.execSQL(createItems);
     }
@@ -46,18 +49,46 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
     }
 
     @Override
-    public ItemDTO getItem(String itemName) throws IOException, JSONException {
-        //List<ItemDTO> itemList = new ArrayList<ItemDTO>();
-        String query = "Select * FROM " + ITEM + " WHERE " + NAME + " =  \"" + itemName + "\"";
+    public List<ItemDTO> getItems(String searchTerm, int searchType) throws IOException, JSONException {
+
+        String query = "Select * FROM " + ITEM + " WHERE " + NAME + " LIKE  \"%" + searchTerm + "%\"";
+
+        // Search all in a location
+        if(searchType == 2) {
+            query = "Select * FROM " + ITEM + " WHERE " + LOCATION + " LIKE  \"%" + searchTerm + "%\"";
+        }
+
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
-        ItemDTO itemDto = new ItemDTO();
 
-        if (cursor.moveToFirst()) {
+        List<ItemDTO> searchResultList = new ArrayList<>();
+
+        cursor.moveToFirst();
+        while (cursor.isAfterLast() == false) {
+            ItemDTO itemDto = new ItemDTO();
+
+            itemDto.setCacheID(cursor.getInt(0));
+            itemDto.setCount(cursor.getInt(4));
+            itemDto.setDescription(cursor.getString(3));
+            itemDto.setLocation(cursor.getString(7));
+            itemDto.setName(cursor.getString(2));
+            itemDto.setGuid(cursor.getInt(1));
+            itemDto.setImage(cursor.getBlob(5));
+            itemDto.setQrCode(cursor.getBlob(6));
+
+            searchResultList.add(itemDto);
+
+            cursor.moveToNext();
+
+        }
+
+
+        /*if (cursor.moveToFirst()) {
             cursor.moveToFirst();
             itemDto.setCacheID(cursor.getInt(0));
             itemDto.setCount(cursor.getInt(4));
             itemDto.setDescription(cursor.getString(3));
+            itemDto.setLocation(cursor.getString(7));
             itemDto.setName(cursor.getString(2));
             itemDto.setGuid(cursor.getInt(1));
             itemDto.setImage(cursor.getBlob(5));
@@ -65,10 +96,10 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
             cursor.close();
         } else {
             itemDto = null;
-        }
+        }*/
 
         db.close();
-        return itemDto;
+        return searchResultList;
     }
 
     @Override
@@ -79,6 +110,7 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
         cv.put(NAME, itemDTO.getName());
         cv.put(DESCRIPTION, itemDTO.getDescription());
         cv.put(COUNT, itemDTO.getCount());
+        cv.put(LOCATION, itemDTO.getLocation());
         cv.put(IMAGE, itemDTO.getImage());
         cv.put(QRCODE, itemDTO.getQrCode());
 
