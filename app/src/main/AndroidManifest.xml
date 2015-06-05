@@ -25,10 +25,6 @@
             android:label="@string/title_activity_add_item" >
         </activity>
         <activity
-            android:name=".ScanActivity"
-            android:label="@string/title_activity_scan" >
-        </activity>
-        <activity
             android:name=".SearchActivity"
             android:label="@string/title_activity_search" >
         </activity>

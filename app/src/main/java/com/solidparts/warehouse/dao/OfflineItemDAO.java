@@ -20,6 +20,7 @@ import java.util.List;
  */
 public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
 
+    public static final int ALL = 2;
     public static final String ITEM = "ITEM";
     public static final String CACHE_ID = "CACHE_ID";
     public static final String NAME = "NAME";
@@ -54,16 +55,15 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
         String query = "Select * FROM " + ITEM + " WHERE " + NAME + " LIKE  \"%" + searchTerm + "%\"" + " OR " + LOCATION + " LIKE \"%" + searchTerm + "%\"";
 
         // Search all in a location
-        if(searchType == 2) {
+        if(searchType == ALL) {
             query = "Select * FROM " + ITEM + " WHERE " + LOCATION + " LIKE  \"%" + searchTerm + "%\"";
         }
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
-
         List<ItemDTO> searchResultList = new ArrayList<>();
-
         cursor.moveToFirst();
+
         while (cursor.isAfterLast() == false) {
             ItemDTO itemDto = new ItemDTO();
 
@@ -77,26 +77,8 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
             itemDto.setQrCode(cursor.getBlob(6));
 
             searchResultList.add(itemDto);
-
             cursor.moveToNext();
-
         }
-
-
-        /*if (cursor.moveToFirst()) {
-            cursor.moveToFirst();
-            itemDto.setCacheID(cursor.getInt(0));
-            itemDto.setCount(cursor.getInt(4));
-            itemDto.setDescription(cursor.getString(3));
-            itemDto.setLocation(cursor.getString(7));
-            itemDto.setName(cursor.getString(2));
-            itemDto.setGuid(cursor.getInt(1));
-            itemDto.setImage(cursor.getBlob(5));
-            itemDto.setQrCode(cursor.getBlob(6));
-            cursor.close();
-        } else {
-            itemDto = null;
-        }*/
 
         db.close();
         return searchResultList;
@@ -115,7 +97,6 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
         cv.put(QRCODE, itemDTO.getQrCode());
 
         long cachceId = getWritableDatabase().insert(ITEM, null, cv);
-
         itemDTO.setCacheID(cachceId);
 
         return itemDTO;
@@ -123,13 +104,9 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
 
     public boolean removeItem(String itemName) throws IOException, JSONException {
         boolean result = false;
-
         String query = "Select * FROM " + ITEM + " WHERE " + NAME + " =  \"" + itemName + "\"";
-
         SQLiteDatabase db = this.getWritableDatabase();
-
         Cursor cursor = db.rawQuery(query, null);
-
         ItemDTO itemDTO= new ItemDTO();
 
         if (cursor.moveToFirst()) {
@@ -139,6 +116,7 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
             cursor.close();
             result = true;
         }
+
         db.close();
         return result;
     }

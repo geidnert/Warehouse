@@ -21,7 +21,6 @@ public class NetworkDAO implements INetworkDAO{
         ResponseHandler<String> responseHandler = new BasicResponseHandler();
         returnString = httpClient.execute(httpGet, responseHandler);
 
-
         return returnString;
     }
 }

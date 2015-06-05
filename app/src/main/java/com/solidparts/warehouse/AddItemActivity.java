@@ -30,28 +30,22 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
-import com.solidparts.warehouse.dao.IItemDAO;
-import com.solidparts.warehouse.dao.OnlineItemDAO;
 import com.solidparts.warehouse.dto.ItemDTO;
 import com.solidparts.warehouse.service.ItemService;
-
-import org.json.JSONException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.EnumMap;
-import java.util.List;
 import java.util.Map;
 
 
 public class AddItemActivity extends Activity {
-    static final String ACTION_SCAN = "com.google.zxing.client.android.SCAN";
-
+    static public int MARGIN_AUTOMATIC = -1;
+    public static final String ACTION_SCAN = "com.google.zxing.client.android.SCAN";
     public static final int CAMERA_REQUEST = 1;
     public static final int IMAGE_GALLERY_REQUEST = 2;
     public static final int QR_REQUEST = 3;
@@ -74,7 +68,6 @@ public class AddItemActivity extends Activity {
         intentItemDTO = (ItemDTO) getIntent().getSerializableExtra("intentItemDTO");
 
         if(intentItemDTO != null){
-            //itemDTO.setGuid(2);
             ((TextView) findViewById(R.id.itemName)).setText(intentItemDTO.getName());
             ((EditText) findViewById(R.id.name)).setText(intentItemDTO.getName());
             ((EditText) findViewById(R.id.description)).setText(intentItemDTO.getDescription());
@@ -88,9 +81,6 @@ public class AddItemActivity extends Activity {
             showQRCodeImage(qrCodeImage);
             new AsyncGenerateQRCode().execute(-1);
         }
-        //ItemSearchTask itemSearchTask = new ItemSearchTask();
-
-        //itemSearchTask.execute("motor");
     }
 
     @Override
@@ -116,7 +106,6 @@ public class AddItemActivity extends Activity {
     }
 
     public void onSave(View view){
-
         String name = ((EditText) findViewById(R.id.name)).getText().toString();
         String description = ((EditText) findViewById(R.id.description)).getText().toString();
         String amount = ((EditText) findViewById(R.id.amount)).getText().toString();
@@ -165,7 +154,6 @@ public class AddItemActivity extends Activity {
     }
 
     public void onCancle(View view) {
-        //startActivity(new Intent(AddItemActivity.this, MainActivity.class));
         super.onBackPressed();
     }
 
@@ -176,8 +164,13 @@ public class AddItemActivity extends Activity {
             intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
             startActivityForResult(intent, QR_REQUEST);
         } catch (ActivityNotFoundException anfe) {
-            //on catch, show the download dialog
-            //showDialog(SearchActivity.this, "No Scanner Found", "Download a scanner code activity?", "Yes", "No").show();
+            Context context = getApplicationContext();
+            CharSequence text = "ERROR: Something went wrong!";
+            int duration = Toast.LENGTH_LONG;
+
+            Toast toast = Toast.makeText(context, text, duration);
+            toast.setGravity(Gravity.CENTER| Gravity.CENTER, 0, 0);
+            toast.show();
         }
     }
 
@@ -200,12 +193,6 @@ public class AddItemActivity extends Activity {
 
     public void onTakePhoto(View view){
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-        //File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        //String pictureName = getPictureName();
-        //File imageFile = new File(pictureDirectory, pictureName);
-        //Uri pictureUri = Uri.fromFile(imageFile);
-        //intent.putExtra(MediaStore.EXTRA_OUTPUT, pictureUri);
         startActivityForResult(intent, CAMERA_REQUEST);
     }
 
@@ -246,10 +233,6 @@ public class AddItemActivity extends Activity {
             }
         }
     }
-
-    // ---- Private ---
-    static public int MARGIN_AUTOMATIC = -1;
-    static public int MARGIN_NONE = 0;
 
     static public Bitmap generateQRCodeBitmap(@NonNull String contentsToEncode,
                                         int imageWidth, int imageHeight,
@@ -293,55 +276,6 @@ public class AddItemActivity extends Activity {
     private void showQRCodeImage(Bitmap image){
         qrCodeImage.setImageBitmap(image);
     }
-
-
-    class ItemSearchTask extends AsyncTask<String, Integer, List<ItemDTO>> {
-
-        @Override
-        protected List<ItemDTO> doInBackground(String... searchTerms) {
-            // we're only getting one String, so let's access that one string.
-            String searchTerm = searchTerms[0];
-            int searchType = Integer.parseInt(searchTerms[1]);
-            // make a variable that will hold our plant DAO.
-            // IPlantDAO plantDAO = new PlantDAOStub();
-
-            IItemDAO itemDAO = new OnlineItemDAO();
-
-            // fetch the plants from the DAO.
-            List<ItemDTO> items = null;
-            try {
-                items = itemDAO.getItems(searchTerm, searchType);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            // return the matching plants.
-            return items;
-        }
-
-        /**
-         * This method will be called when doInBackground completes.
-         * The paramter result is populated from the return values of doInBackground.
-         * This method runs on the UI thread, and therefore can update UI components.
-         */
-        @Override
-        protected void onPostExecute(List<ItemDTO> allItems) {
-            // adapt the search results returned from doInBackground so that they can be presented on the UI.
-            //ArrayAdapter<ItemDTO> plantAdapter = new ArrayAdapter<Plant>(PlantResultsActivity.this, android.R.layout.simple_list_item_1, allPlants);
-            // show the search resuts in the list.
-            //setListAdapter(plantAdapter);
-
-            //setProgressBarIndeterminateVisibility(false);
-        }
-
-        @Override
-        protected void onPreExecute() {
-            setProgressBarIndeterminateVisibility(true);
-        }
-    }
-    // https://androidbycode.wordpress.com/2015/02/09/generating-and-displaying-qr-codes-on-android-wear-devices/
 
     /**
      * AsyncTask to generate QR Code image
@@ -397,7 +331,6 @@ public class AddItemActivity extends Activity {
 
             }else {
                 //mTextDesc.setText(getString(R.string.encode_error));
-
             }
         }
 
