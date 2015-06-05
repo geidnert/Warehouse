@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -11,6 +12,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,7 +36,7 @@ import java.util.List;
 
 
 public class SearchActivity extends Activity {
-    public static final int QR_REQUEST = 1;
+    public static final int QR_REQUEST = 5;
     static final String ACTION_SCAN = "com.google.zxing.client.android.SCAN";
     public final static String EXTRA_ITEMDTO = "intentItemDTO";
 
@@ -81,7 +83,7 @@ public class SearchActivity extends Activity {
             startActivityForResult(intent, QR_REQUEST);
         } catch (ActivityNotFoundException anfe) {
             //on catch, show the download dialog
-            // showDialog(SearchActivity.this, "No Scanner Found", "Download a scanner code activity?", "Yes", "No").show();
+            //showDialog(SearchActivity.this, "No Scanner Found", "Download a scanner code activity?", "Yes", "No").show();
         }
     }
 
@@ -120,17 +122,25 @@ public class SearchActivity extends Activity {
             if (requestCode == QR_REQUEST ){
                 //get the extras that are returned from the intent
                 String contents = data.getStringExtra("SCAN_RESULT");
-                String format = data.getStringExtra("SCAN_RESULT_FORMAT");
-                Toast toast = Toast.makeText(this, "Content:" + contents + " Format:" + format, Toast.LENGTH_LONG);
-                toast.show();
+                search(new String[]{contents, "1"});
             }
+        } else {
+            Context context = getApplicationContext();
+            CharSequence text = "ERROR: Something went wrong when starting scanning!";
+            int duration = Toast.LENGTH_LONG;
+
+            Toast toast = Toast.makeText(context, text, duration);
+            toast.setGravity(Gravity.CENTER| Gravity.CENTER, 0, 0);
+            toast.show();
         }
     }
 
     public void onSearch(View view) {
-        ItemSearchTask itemSearchTask = new ItemSearchTask();
-        String[] args = new String[]{((EditText) findViewById(R.id.searchWord)).getText().toString(), "1"};
+        search(new String[]{((EditText) findViewById(R.id.searchWord)).getText().toString(), "1"});
+    }
 
+    private void search(String[] args){
+        ItemSearchTask itemSearchTask = new ItemSearchTask();
         itemSearchTask.execute(args);
     }
 

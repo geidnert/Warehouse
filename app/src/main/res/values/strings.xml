@@ -15,8 +15,9 @@
     <string name="action_add_item_button_add">Add Image</string>
     <string name="action_add_item_label_location">Location</string>
     <string name="action_add_item_label_amount">Amount</string>
-    <string name="action_add_item_scan_location">Scan location</string>
+    <string name="action_add_item_scan_location">Scan existing location code</string>
     <string name="action_add_item_generate_location">Generate location code</string>
+    <string name="item_name">Item</string>
 
     <string name="button_add_existing">Add Existing</string>
     <string name="button_take_photo">Take Photo</string>
@@ -30,6 +31,6 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_scan">Scan QR code</string>
-    <string name="title_activity_search">Search for items by text or by scanning a location QR code.</string>
+    <string name="title_activity_search">Search items by text or scan a location QR code.</string>
 
 </resources>

@@ -1,6 +1,7 @@
 package com.solidparts.warehouse;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -21,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.zxing.BarcodeFormat;
@@ -48,6 +50,7 @@ import java.util.Map;
 
 
 public class AddItemActivity extends Activity {
+    static final String ACTION_SCAN = "com.google.zxing.client.android.SCAN";
 
     public static final int CAMERA_REQUEST = 1;
     public static final int IMAGE_GALLERY_REQUEST = 2;
@@ -72,6 +75,7 @@ public class AddItemActivity extends Activity {
 
         if(intentItemDTO != null){
             //itemDTO.setGuid(2);
+            ((TextView) findViewById(R.id.itemName)).setText(intentItemDTO.getName());
             ((EditText) findViewById(R.id.name)).setText(intentItemDTO.getName());
             ((EditText) findViewById(R.id.description)).setText(intentItemDTO.getDescription());
             ((EditText) findViewById(R.id.amount)).setText("" + intentItemDTO.getCount());
@@ -165,6 +169,18 @@ public class AddItemActivity extends Activity {
         super.onBackPressed();
     }
 
+    public void onScan(View v) {
+        try {
+            //start the scanning activity from the com.google.zxing.client.android.SCAN intent
+            Intent intent = new Intent(ACTION_SCAN);
+            intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
+            startActivityForResult(intent, QR_REQUEST);
+        } catch (ActivityNotFoundException anfe) {
+            //on catch, show the download dialog
+            //showDialog(SearchActivity.this, "No Scanner Found", "Download a scanner code activity?", "Yes", "No").show();
+        }
+    }
+
     public void onGenerateQRCode(View view) {
         new AsyncGenerateQRCode().execute(-1);
     }
@@ -221,6 +237,12 @@ public class AddItemActivity extends Activity {
                     e.printStackTrace();
                     Toast.makeText(this, "Unable to open image", Toast.LENGTH_LONG).show();
                 }
+            }
+
+            if(requestCode == QR_REQUEST) {
+                String contents = data.getStringExtra("SCAN_RESULT");
+                    ((EditText) findViewById(R.id.location)).setText(contents);
+                    new AsyncGenerateQRCode().execute(-1);
             }
         }
     }
