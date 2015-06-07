@@ -85,7 +85,7 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
     }
 
     @Override
-    public ItemDTO additem(ItemDTO itemDTO) throws IOException, JSONException {
+    public ItemDTO addItem(ItemDTO itemDTO) throws IOException, JSONException {
         ContentValues cv = new ContentValues();
 
         cv.put(GUID, itemDTO.getGuid());
@@ -102,22 +102,28 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
         return itemDTO;
     }
 
-    public boolean removeItem(String itemName) throws IOException, JSONException {
-        boolean result = false;
-        String query = "Select * FROM " + ITEM + " WHERE " + NAME + " =  \"" + itemName + "\"";
+    @Override
+    public ItemDTO updateItem(ItemDTO itemDTO){
+        ContentValues cv = new ContentValues();
+
+        cv.put(GUID, itemDTO.getGuid());
+        cv.put(NAME, itemDTO.getName());
+        cv.put(DESCRIPTION, itemDTO.getDescription());
+        cv.put(COUNT, itemDTO.getCount());
+        cv.put(LOCATION, itemDTO.getLocation());
+        cv.put(IMAGE, itemDTO.getImage());
+        cv.put(QRCODE, itemDTO.getQrCode());
+
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(query, null);
-        ItemDTO itemDTO= new ItemDTO();
+        db.update(ITEM, cv, CACHE_ID + "=" + itemDTO.getCacheID(), null);
 
-        if (cursor.moveToFirst()) {
-            itemDTO.setName(cursor.getString(2));
-            db.delete(ITEM, NAME + " = ?",
-                    new String[] { String.valueOf(itemDTO.getName()) });
-            cursor.close();
-            result = true;
-        }
+        return itemDTO;
+    }
 
+    public void removeItem(long cacheId) throws IOException, JSONException {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(ITEM, CACHE_ID + "=" + cacheId, null);
         db.close();
-        return result;
     }
 }

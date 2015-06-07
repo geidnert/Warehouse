@@ -56,18 +56,22 @@ public class AddItemActivity extends Activity {
     private Bitmap itemImageBitmap;
     private Bitmap qrCodeImageBitmap;
     private ItemDTO intentItemDTO;
+    private long cacheId = 0;
+
+    private boolean update = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
-        itemImage = ((ImageView)findViewById(R.id.itemImage));
-        qrCodeImage = ((ImageView)findViewById(R.id.qrCodeImage));
+        itemImage = ((ImageView) findViewById(R.id.itemImage));
+        qrCodeImage = ((ImageView) findViewById(R.id.qrCodeImage));
         itemService = new ItemService(this);
 
         intentItemDTO = (ItemDTO) getIntent().getSerializableExtra("intentItemDTO");
 
-        if(intentItemDTO != null){
+        if (intentItemDTO != null) {
+            cacheId = intentItemDTO.getCacheID();
             ((TextView) findViewById(R.id.itemName)).setText(intentItemDTO.getName());
             ((EditText) findViewById(R.id.name)).setText(intentItemDTO.getName());
             ((EditText) findViewById(R.id.description)).setText(intentItemDTO.getDescription());
@@ -80,6 +84,7 @@ public class AddItemActivity extends Activity {
             Bitmap qrCodeImage = BitmapFactory.decodeByteArray(intentItemDTO.getQrCode(), 0, intentItemDTO.getQrCode().length);
             showQRCodeImage(qrCodeImage);
             new AsyncGenerateQRCode().execute(-1);
+            update = true;
         }
     }
 
@@ -105,25 +110,36 @@ public class AddItemActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void onSave(View view){
+    public void onSave(View view) {
+        ItemDTO itemDTO = getItemDTO();
+
+        if (itemDTO == null) {
+            return;
+        }
+
+        if(update){
+            itemDTO = itemService.updateItem(itemDTO);
+            showMessage("Item Updated!", true);
+        } else {
+            itemDTO = itemService.addItem(itemDTO);
+            showMessage("Item Saved!", true);
+        }
+    }
+
+    private ItemDTO getItemDTO() {
         String name = ((EditText) findViewById(R.id.name)).getText().toString();
         String description = ((EditText) findViewById(R.id.description)).getText().toString();
         String amount = ((EditText) findViewById(R.id.amount)).getText().toString();
         String location = ((EditText) findViewById(R.id.location)).getText().toString();
 
-        if(name.equals("") || description.equals("") || amount.equals("") || location.equals("") ||
+        if (name.equals("") || description.equals("") || amount.equals("") || location.equals("") ||
                 itemImageBitmap == null || qrCodeImage == null) {
-            Context context = getApplicationContext();
-            CharSequence text = "ERROR: You need to fill in the complete form!";
-            int duration = Toast.LENGTH_LONG;
 
-            Toast toast = Toast.makeText(context, text, duration);
-            toast.setGravity(Gravity.CENTER| Gravity.CENTER, 0, 0);
-            toast.show();
-            return;
+            showMessage("ERROR: You need to fill in the complete form!", true);
         }
 
         ItemDTO itemDTO = new ItemDTO();
+        itemDTO.setCacheID(cacheId);
         itemDTO.setGuid(2);
         itemDTO.setName(name);
         itemDTO.setDescription(description);
@@ -139,18 +155,31 @@ public class AddItemActivity extends Activity {
 
         itemDTO.setImage(itemImg);
         itemDTO.setQrCode(qrCodeImg);
+        return itemDTO;
+    }
 
-        itemDTO = itemService.addItem(itemDTO);
+    public void onRemove(View view) {
+        String name = ((EditText) findViewById(R.id.name)).getText().toString();
 
+        if (name == null || name.equals("")) return;
+
+        itemService.removeItem(cacheId);
+
+        showMessage(name + " removed!", true);
+    }
+
+    private void showMessage(String message, boolean goBack) {
         Context context = getApplicationContext();
-        CharSequence text = "Item Saved!!";
+        CharSequence text = message;
         int duration = Toast.LENGTH_LONG;
 
         Toast toast = Toast.makeText(context, text, duration);
-        toast.setGravity(Gravity.CENTER| Gravity.CENTER, 0, 0);
+        toast.setGravity(Gravity.CENTER | Gravity.CENTER, 0, 0);
         toast.show();
-        super.onBackPressed();
 
+        if (goBack) {
+            super.onBackPressed();
+        }
     }
 
     public void onCancle(View view) {
@@ -164,13 +193,7 @@ public class AddItemActivity extends Activity {
             intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
             startActivityForResult(intent, QR_REQUEST);
         } catch (ActivityNotFoundException anfe) {
-            Context context = getApplicationContext();
-            CharSequence text = "ERROR: Something went wrong!";
-            int duration = Toast.LENGTH_LONG;
-
-            Toast toast = Toast.makeText(context, text, duration);
-            toast.setGravity(Gravity.CENTER| Gravity.CENTER, 0, 0);
-            toast.show();
+            showMessage("ERROR: Something went wrong!", false);
         }
     }
 
@@ -178,7 +201,7 @@ public class AddItemActivity extends Activity {
         new AsyncGenerateQRCode().execute(-1);
     }
 
-    public void onAddExistingImage(View view){
+    public void onAddExistingImage(View view) {
         Intent intent = new Intent(Intent.ACTION_PICK);
 
         File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
@@ -191,7 +214,7 @@ public class AddItemActivity extends Activity {
         startActivityForResult(intent, IMAGE_GALLERY_REQUEST);
     }
 
-    public void onTakePhoto(View view){
+    public void onTakePhoto(View view) {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(intent, CAMERA_REQUEST);
     }
@@ -207,7 +230,7 @@ public class AddItemActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(resultCode == RESULT_OK) {
+        if (resultCode == RESULT_OK) {
             if (requestCode == CAMERA_REQUEST) {
                 Bitmap image = (Bitmap) data.getExtras().get("data");
                 showImage(image);
@@ -220,23 +243,23 @@ public class AddItemActivity extends Activity {
                 try {
                     inputStream = getContentResolver().openInputStream(imageUri);
                     showImage(itemImageBitmap);
-                } catch (FileNotFoundException e){
+                } catch (FileNotFoundException e) {
                     e.printStackTrace();
                     Toast.makeText(this, "Unable to open image", Toast.LENGTH_LONG).show();
                 }
             }
 
-            if(requestCode == QR_REQUEST) {
+            if (requestCode == QR_REQUEST) {
                 String contents = data.getStringExtra("SCAN_RESULT");
-                    ((EditText) findViewById(R.id.location)).setText(contents);
-                    new AsyncGenerateQRCode().execute(-1);
+                ((EditText) findViewById(R.id.location)).setText(contents);
+                new AsyncGenerateQRCode().execute(-1);
             }
         }
     }
 
     static public Bitmap generateQRCodeBitmap(@NonNull String contentsToEncode,
-                                        int imageWidth, int imageHeight,
-                                        int marginSize, int color, int colorBack)
+                                              int imageWidth, int imageHeight,
+                                              int marginSize, int color, int colorBack)
             throws WriterException, IllegalStateException {
 
         if (Looper.myLooper() == Looper.getMainLooper()) {
@@ -268,12 +291,12 @@ public class AddItemActivity extends Activity {
         return bitmap;
     }
 
-    private void showImage(Bitmap image){
+    private void showImage(Bitmap image) {
         itemImageBitmap = image;
         itemImage.setImageBitmap(itemImageBitmap);
     }
 
-    private void showQRCodeImage(Bitmap image){
+    private void showQRCodeImage(Bitmap image) {
         qrCodeImage.setImageBitmap(image);
     }
 
@@ -287,7 +310,7 @@ public class AddItemActivity extends Activity {
          *
          * @param params margin to use in creating QR Code
          * @return non zero for success
-         *
+         * <p/>
          * Note that is margin is not in pixels.  See the zxing api for details about the margin
          * for QR code generation
          */
@@ -309,13 +332,11 @@ public class AddItemActivity extends Activity {
 
                 qrCodeImageBitmap = generateQRCodeBitmap(stringToEncode, width, height,
                         marginSize, colorQR, colorBackQR);
-            }
-            catch (IllegalArgumentException iae) {
+            } catch (IllegalArgumentException iae) {
                 Log.e("TAG", "Invalid arguments for encoding QR");
                 iae.printStackTrace();
                 return 0;
-            }
-            catch (WriterException we) {
+            } catch (WriterException we) {
                 Log.e("TAG", "QR Writer unable to generate code");
                 we.printStackTrace();
                 return 0;
@@ -329,19 +350,21 @@ public class AddItemActivity extends Activity {
             if (result != 0) {
                 qrCodeImage.setImageBitmap(qrCodeImageBitmap);
 
-            }else {
+            } else {
                 //mTextDesc.setText(getString(R.string.encode_error));
             }
         }
 
         @Override
-        protected void onPreExecute() {}
+        protected void onPreExecute() {
+        }
 
         @Override
-        protected void onProgressUpdate(Void... values) {}
+        protected void onProgressUpdate(Void... values) {
+        }
     }
 
-    public void onPrint(View view){
+    public void onPrint(View view) {
         PrintHelper printHelper = new PrintHelper(this);
         printHelper.setScaleMode(printHelper.SCALE_MODE_FIT);
         printHelper.setColorMode(printHelper.COLOR_MODE_MONOCHROME);

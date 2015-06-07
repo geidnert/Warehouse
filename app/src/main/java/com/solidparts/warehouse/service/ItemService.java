@@ -50,11 +50,11 @@ public class ItemService implements IItemService {
     @Override
     public ItemDTO addItem(ItemDTO itemDTO) {
         try {
-            itemDTO = offlineItemDAO.additem(itemDTO);
+            itemDTO = offlineItemDAO.addItem(itemDTO);
         } catch (IOException e) {
             // No network, use offline mode
             try {
-                itemDTO = offlineItemDAO.additem(itemDTO);
+                itemDTO = offlineItemDAO.addItem(itemDTO);
             } catch (IOException e1) {
                 e1.printStackTrace();
             } catch (JSONException e1) {
@@ -68,16 +68,13 @@ public class ItemService implements IItemService {
     }
 
     @Override
-    public boolean removeItem(String itemName)  {
-        boolean success = false;
-
+    public ItemDTO updateItem(ItemDTO itemDTO) {
         try {
-            //items = onlineIItemDAO.getItems(searchString);
-            success = offlineItemDAO.removeItem(itemName);
+            itemDTO = offlineItemDAO.updateItem(itemDTO);
         } catch (IOException e) {
             // No network, use offline mode
             try {
-                success = offlineItemDAO.removeItem(itemName);
+                itemDTO = offlineItemDAO.updateItem(itemDTO);
             } catch (IOException e1) {
                 e1.printStackTrace();
             } catch (JSONException e1) {
@@ -86,6 +83,28 @@ public class ItemService implements IItemService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return success;
+
+        return itemDTO;
+    }
+
+    @Override
+    public void removeItem(long cacheId)  {
+        boolean success = false;
+
+        try {
+            //items = onlineIItemDAO.getItems(searchString);
+            offlineItemDAO.removeItem(cacheId);
+        } catch (IOException e) {
+            // No network, use offline mode
+            try {
+                offlineItemDAO.removeItem(cacheId);
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            } catch (JSONException e1) {
+                e1.printStackTrace();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }

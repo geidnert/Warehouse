@@ -68,12 +68,17 @@ public class OnlineItemDAO implements IItemDAO {
     }
 
     @Override
-    public ItemDTO additem(ItemDTO itemDTO) throws IOException, JSONException {
+    public ItemDTO addItem(ItemDTO itemDTO) throws IOException, JSONException {
         return null;
     }
 
     @Override
-    public boolean removeItem(String itemName) throws IOException, JSONException {
-        return false;
+    public ItemDTO updateItem(ItemDTO itemDTO) throws IOException, JSONException {
+        return null;
+    }
+
+    @Override
+    public void removeItem(long cacheId) throws IOException, JSONException {
+
     }
 }

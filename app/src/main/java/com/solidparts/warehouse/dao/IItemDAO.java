@@ -20,8 +20,10 @@ public interface IItemDAO {
 
     public List<ItemDTO> getItems(String searchTerm, int searchType) throws IOException, JSONException;
 
-    public ItemDTO additem(ItemDTO itemDTO) throws IOException, JSONException;
+    public ItemDTO addItem(ItemDTO itemDTO) throws IOException, JSONException;
 
-    public boolean removeItem(String itemName) throws IOException, JSONException;
+    public ItemDTO updateItem(ItemDTO itemDTO) throws IOException, JSONException;
+
+    public void removeItem(long cacheId) throws IOException, JSONException;
 
 }

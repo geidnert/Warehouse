@@ -12,5 +12,8 @@ public interface IItemService {
 
     public ItemDTO addItem(ItemDTO itemDTO) throws Exception;
 
-    public boolean removeItem(String searchString) throws Exception;
+    public ItemDTO updateItem(ItemDTO itemDTO) throws Exception;
+
+    public void removeItem(long cacheId) throws Exception;
+
 }

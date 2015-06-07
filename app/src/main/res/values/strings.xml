@@ -26,6 +26,7 @@
     <string name="button_scan">Scan</string>
     <string name="button_print">Print</string>
     <string name="button_search">Search</string>
+    <string name="button_delete">Delete</string>
 
     <string name="action_scan">Scan QR code</string>
 
