@@ -122,6 +122,7 @@ public class SearchActivity extends Activity {
             if (requestCode == QR_REQUEST ){
                 //get the extras that are returned from the intent
                 String contents = data.getStringExtra("SCAN_RESULT");
+                ((EditText) findViewById(R.id.searchWord)).setText(contents);
                 search(new String[]{contents, "1"});
             }
         } else {

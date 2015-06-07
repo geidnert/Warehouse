@@ -73,6 +73,7 @@ public class AddItemActivity extends Activity {
         if (intentItemDTO != null) {
             cacheId = intentItemDTO.getCacheID();
             ((TextView) findViewById(R.id.itemName)).setText(intentItemDTO.getName());
+            ((TextView) findViewById(R.id.saveUpdate)).setText("Update");
             ((EditText) findViewById(R.id.name)).setText(intentItemDTO.getName());
             ((EditText) findViewById(R.id.description)).setText(intentItemDTO.getDescription());
             ((EditText) findViewById(R.id.amount)).setText("" + intentItemDTO.getCount());
@@ -119,7 +120,8 @@ public class AddItemActivity extends Activity {
 
         if(update){
             itemDTO = itemService.updateItem(itemDTO);
-            showMessage("Item Updated!", true);
+            showMessage("Item Updated!", false);
+            startActivity(new Intent(AddItemActivity.this, SearchActivity.class));
         } else {
             itemDTO = itemService.addItem(itemDTO);
             showMessage("Item Saved!", true);
