@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+
+import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -25,6 +27,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderApi;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
@@ -43,12 +51,14 @@ import java.util.EnumMap;
 import java.util.Map;
 
 
-public class AddItemActivity extends Activity {
+public class AddItemActivity extends Activity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
     static public int MARGIN_AUTOMATIC = -1;
     public static final String ACTION_SCAN = "com.google.zxing.client.android.SCAN";
     public static final int CAMERA_REQUEST = 1;
     public static final int IMAGE_GALLERY_REQUEST = 2;
     public static final int QR_REQUEST = 3;
+    public final static int MILLISECONDS_PER_SECOND = 1000;
+    public final static int MINUTE = 60 * MILLISECONDS_PER_SECOND;
 
     private ImageView itemImage;
     private ImageView qrCodeImage;
@@ -59,6 +69,10 @@ public class AddItemActivity extends Activity {
     private long cacheId = 0;
 
     private boolean update = false;
+
+    private FusedLocationProviderApi locationProvicer = LocationServices.FusedLocationApi;
+    private GoogleApiClient googleApiClient;
+    private LocationRequest locationRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +101,20 @@ public class AddItemActivity extends Activity {
             new AsyncGenerateQRCode().execute(-1);
             update = true;
         }
+
+        // GPS
+        googleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+
+        locationRequest = new LocationRequest();
+
+        locationRequest.setInterval(MINUTE);
+        locationRequest.setFastestInterval(15 * MILLISECONDS_PER_SECOND);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
     }
 
     @Override
@@ -300,6 +328,59 @@ public class AddItemActivity extends Activity {
 
     private void showQRCodeImage(Bitmap image) {
         qrCodeImage.setImageBitmap(image);
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        requestLocationUpdates();
+    }
+
+    private void requestLocationUpdates() {
+        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        googleApiClient.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        googleApiClient.disconnect();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if(googleApiClient.isConnected()){
+            requestLocationUpdates();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
+    }
+
+    // https://www.youtube.com/watch?v=ZpwivlI7tzo&index=5&list=PL73qvSDlAVVhoVW6-_TMGWLQbAOAg-yod
+
+    @Override
+    public void onLocationChanged(Location location) {
+        showMessage("Location changed: " + location.getLatitude() + " " + location.getLongitude() , false);
     }
 
     /**
