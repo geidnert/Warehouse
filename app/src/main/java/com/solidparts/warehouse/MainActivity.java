@@ -1,19 +1,37 @@
 package com.solidparts.warehouse;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import com.solidparts.warehouse.dto.ItemDTO;
+import com.solidparts.warehouse.service.ItemService;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
+
+    private ItemService itemService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        itemService = new ItemService(this);
+
+        //Sync data from database
+        String[] args = new String[]{"syncToOnlineDb"};
+        ItemSyncTask itemSyncTask = new ItemSyncTask();
+        itemSyncTask.execute(args);
     }
 
     @Override
@@ -31,8 +49,11 @@ public class MainActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.action_sync) {
+            //Sync data from database
+            String[] args = new String[]{"fromOnlineDb"};
+            ItemSyncTask itemSyncTask = new ItemSyncTask();
+            itemSyncTask.execute(args);
         }
 
         return super.onOptionsItemSelected(item);
@@ -45,5 +66,41 @@ public class MainActivity extends ActionBarActivity {
 
     public void onSearch(View view) {
         startActivity(new Intent(MainActivity.this, SearchActivity.class));
+    }
+
+    // --------------------------------------------------------------------
+
+    class ItemSyncTask extends AsyncTask<String, Integer, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(String... searchTerms) {
+            try {
+                if(searchTerms[0].equals("fromOnlineDb")){
+                    itemService.syncFromOnlineDB();
+                } else {
+                    itemService.syncToOnlineDB();
+                }
+
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return false;
+        }
+
+        /**
+         * This method will be called when doInBackground completes.
+         * The paramter result is populated from the return values of doInBackground.
+         * This method runs on the UI thread, and therefore can update UI components.
+         */
+
+        @Override
+        protected void onPostExecute(Boolean bool) {
+        }
+
+        @Override
+        protected void onPreExecute() {
+        }
     }
 }

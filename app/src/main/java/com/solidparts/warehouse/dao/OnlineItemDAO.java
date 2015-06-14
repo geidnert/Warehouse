@@ -1,6 +1,10 @@
 package com.solidparts.warehouse.dao;
 
+import android.content.ContentValues;
+import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.view.Gravity;
+import android.widget.Toast;
 
 import com.solidparts.warehouse.dto.ItemDTO;
 
@@ -18,9 +22,13 @@ import java.util.List;
 public class OnlineItemDAO implements IItemDAO {
 
     private final NetworkDAO networkDAO;
+    private final OfflineItemDAO offlineItemDAO;
+    private final Context context;
 
-    public OnlineItemDAO(){
+    public OnlineItemDAO(Context context){
         networkDAO = new NetworkDAO();
+        offlineItemDAO = new OfflineItemDAO(context);
+        this.context = context;
     }
 
 
@@ -36,7 +44,7 @@ public class OnlineItemDAO implements IItemDAO {
 
     @Override
     public List<ItemDTO> getItems(String searchTerm, int searchType) throws IOException, JSONException {
-        String uri = "http://warehouse.com/perl/mobile/viewItemsjson.pl?Combined_Name=" + searchTerm;
+        String uri = "http://" + hostname +"/warehouse/get.php?searchterm=" + searchTerm;
         String request = networkDAO.request(uri);
 
         List<ItemDTO> allItems = new ArrayList<ItemDTO>();
@@ -44,7 +52,7 @@ public class OnlineItemDAO implements IItemDAO {
         JSONArray items = root.getJSONArray("items");
 
         for (int i=0; i < items.length(); i++){
-            JSONObject jsonItem = items.getJSONObject(i);
+            JSONObject jsonItem = items.getJSONObject(i).getJSONObject("item");
 
             int guid = jsonItem.getInt("guid");
             int count = jsonItem.getInt("count");
@@ -52,7 +60,7 @@ public class OnlineItemDAO implements IItemDAO {
             String description = jsonItem.getString("description");
             String location = jsonItem.getString("location");
             byte[] image = jsonItem.get("image").toString().getBytes("utf-8");
-            byte[]  qrCode = jsonItem.get("qrCode").toString().getBytes("utf-8");
+            byte[]  qrCode = jsonItem.get("qrcode").toString().getBytes("utf-8");
 
             ItemDTO itemDTO = new ItemDTO();
             itemDTO.setGuid(guid);
@@ -64,21 +72,35 @@ public class OnlineItemDAO implements IItemDAO {
 
             allItems.add(itemDTO);
         }
+
         return allItems;
     }
 
     @Override
-    public ItemDTO addItem(ItemDTO itemDTO) throws IOException, JSONException {
+    public ItemDTO addItem(ItemDTO itemDTO, int sync) throws IOException, JSONException {
+
+        String uri = "http://" + hostname +"/warehouse/add.php?name=" + itemDTO.getName() + "&guid=" + itemDTO.getGuid() + "&description=" + itemDTO.getDescription() +"&count=" + itemDTO.getCount()
+                + "&image=" + itemDTO.getImage() + "&qrcode=" + itemDTO.getQrCode() + "&location=" + itemDTO.getLocation()
+                + "&cacheid=" + itemDTO.getCacheID();
+        String request = networkDAO.request(uri);
+
+        // Also save to local database
+        offlineItemDAO.addItem(itemDTO, 1);
         return null;
     }
 
     @Override
-    public ItemDTO updateItem(ItemDTO itemDTO) throws IOException, JSONException {
+    public ItemDTO updateItem(ItemDTO itemDTO, int sync) throws IOException, JSONException {
         return null;
     }
 
     @Override
     public void removeItem(long cacheId) throws IOException, JSONException {
 
+    }
+
+    @Override
+    public List<ItemDTO> getNotSyncedItems() throws IOException, JSONException {
+        return null;
     }
 }

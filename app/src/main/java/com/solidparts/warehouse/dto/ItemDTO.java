@@ -76,6 +76,29 @@ public class ItemDTO implements Serializable {
         this.location = location;
     }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ItemDTO itemDTO = (ItemDTO) o;
+
+        if (name != null ? !name.equals(itemDTO.name) : itemDTO.name != null) return false;
+        if (description != null ? !description.equals(itemDTO.description) : itemDTO.description != null)
+            return false;
+        return !(location != null ? !location.equals(itemDTO.location) : itemDTO.location != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + (location != null ? location.hashCode() : 0);
+        return result;
+    }
+
     @Override
     public String toString() {
         return "ItemDTO{" +

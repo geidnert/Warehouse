@@ -13,6 +13,9 @@ import java.util.List;
  * Created by geidnert on 28/05/15.
  */
 public interface IItemDAO {
+    public static final int DEFAULT = 1;
+    public static final int ALL = 2;
+    public static final String hostname = "solidparts.se";
 
     public void onCreate(SQLiteDatabase db);
 
@@ -20,10 +23,12 @@ public interface IItemDAO {
 
     public List<ItemDTO> getItems(String searchTerm, int searchType) throws IOException, JSONException;
 
-    public ItemDTO addItem(ItemDTO itemDTO) throws IOException, JSONException;
+    public ItemDTO addItem(ItemDTO itemDTO, int sync) throws IOException, JSONException;
 
-    public ItemDTO updateItem(ItemDTO itemDTO) throws IOException, JSONException;
+    public ItemDTO updateItem(ItemDTO itemDTO, int sync) throws IOException, JSONException;
 
     public void removeItem(long cacheId) throws IOException, JSONException;
+
+    public List<ItemDTO> getNotSyncedItems() throws IOException, JSONException;
 
 }

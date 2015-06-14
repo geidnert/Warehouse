@@ -19,17 +19,16 @@ import java.util.List;
  * http://www.techotopia.com/index.php/An_Android_Studio_SQLite_Database_Tutorial
  */
 public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
-
-    public static final int ALL = 2;
-    public static final String ITEM = "ITEM";
-    public static final String CACHE_ID = "CACHE_ID";
-    public static final String NAME = "NAME";
-    public static final String DESCRIPTION = "DESCRIPTION";
-    public static final String LOCATION = "LOCATION";
-    public static final String GUID = "GUID";
-    public static final String IMAGE = "IMAGE";
-    public static final String COUNT = "COUNT";
-    public static final String QRCODE = "QRCODE";
+    public static final String ITEM = "item";
+    public static final String CACHE_ID = "cache_id";
+    public static final String NAME = "name";
+    public static final String DESCRIPTION = "description";
+    public static final String LOCATION = "location";
+    public static final String GUID = "guid";
+    public static final String IMAGE = "image";
+    public static final String COUNT = "count";
+    public static final String QRCODE = "qrcode";
+    public static final String SYNCED = "synced";
 
     public OfflineItemDAO(Context context) {
         super(context, "warehouse.db", null, 1);
@@ -39,7 +38,7 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
     public void onCreate(SQLiteDatabase db) {
         String createItems = "CREATE TABLE " + ITEM + " ( " + CACHE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 GUID + " INTEGER, " + NAME + " TEXT, " + DESCRIPTION + " TEXT, " + COUNT + " INTEGER, " + IMAGE +
-                " BLOB, " + QRCODE + " TEXT, " + LOCATION + " TEXT "  + " );";
+                " BLOB, " + QRCODE + " TEXT, " + LOCATION + " TEXT, " + SYNCED + " INTEGER );";
 
         db.execSQL(createItems);
     }
@@ -56,9 +55,19 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
 
         // Search all in a location
         if(searchType == ALL) {
-            query = "Select * FROM " + ITEM + " WHERE " + LOCATION + " LIKE  \"%" + searchTerm + "%\"";
+            query = "Select * FROM " + ITEM;
         }
+        List<ItemDTO> searchResultList = getItemDTOs(query);
+        return searchResultList;
+    }
 
+    public List<ItemDTO> getNotSyncedItems() throws IOException, JSONException {
+        String query = "Select * FROM " + ITEM + " WHERE " + SYNCED + " = 0";
+        List<ItemDTO> searchResultList = getItemDTOs(query);
+        return searchResultList;
+    }
+
+    private List<ItemDTO> getItemDTOs(String query) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
         List<ItemDTO> searchResultList = new ArrayList<>();
@@ -85,7 +94,7 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
     }
 
     @Override
-    public ItemDTO addItem(ItemDTO itemDTO) throws IOException, JSONException {
+    public ItemDTO addItem(ItemDTO itemDTO, int sync) throws IOException, JSONException {
         ContentValues cv = new ContentValues();
 
         cv.put(GUID, itemDTO.getGuid());
@@ -95,6 +104,7 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
         cv.put(LOCATION, itemDTO.getLocation());
         cv.put(IMAGE, itemDTO.getImage());
         cv.put(QRCODE, itemDTO.getQrCode());
+        cv.put(SYNCED, sync);
 
         long cachceId = getWritableDatabase().insert(ITEM, null, cv);
         itemDTO.setCacheID(cachceId);
@@ -103,7 +113,7 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
     }
 
     @Override
-    public ItemDTO updateItem(ItemDTO itemDTO){
+    public ItemDTO updateItem(ItemDTO itemDTO, int sync){
         ContentValues cv = new ContentValues();
 
         cv.put(GUID, itemDTO.getGuid());
@@ -113,9 +123,15 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
         cv.put(LOCATION, itemDTO.getLocation());
         cv.put(IMAGE, itemDTO.getImage());
         cv.put(QRCODE, itemDTO.getQrCode());
+        cv.put(SYNCED, sync);
 
+
+        String where = "cache_id=?";
+        String[] whereArgs = {Long.toString(itemDTO.getCacheID())};
         SQLiteDatabase db = this.getWritableDatabase();
-        db.update(ITEM, cv, CACHE_ID + "=" + itemDTO.getCacheID(), null);
+        db.update(ITEM, cv, where, whereArgs);
+
+        //db.update(ITEM, cv, CACHE_ID + "=" + itemDTO.getCacheID(), null);
 
         return itemDTO;
     }

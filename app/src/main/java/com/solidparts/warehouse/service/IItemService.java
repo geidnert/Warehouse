@@ -16,4 +16,8 @@ public interface IItemService {
 
     public void removeItem(long cacheId) throws Exception;
 
+    public void syncToOnlineDB();
+
+    public void syncFromOnlineDB();
+
 }
