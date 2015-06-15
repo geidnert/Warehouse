@@ -84,6 +84,7 @@ public class OnlineItemDAO implements IItemDAO {
                 + "&cacheid=" + itemDTO.getCacheID();
         String request = networkDAO.request(uri);
 
+        // TODO -- update with online db primary key on local item
         // Also save to local database if its not a sync operation
         if(sync == 0)
             offlineItemDAO.addItem(itemDTO, 1);
