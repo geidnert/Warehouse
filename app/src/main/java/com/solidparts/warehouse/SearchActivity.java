@@ -167,50 +167,65 @@ public class SearchActivity extends Activity {
         @Override
         protected void onPostExecute(final List<ItemDTO> allItems) {
             // adapt the search results returned from doInBackground so that they can be presented on the UI.
-            List<String> allItemNames = new ArrayList<>(allItems.size());
+            if(allItems != null && allItems.size() > 0) {
 
-            for (ItemDTO itemDAO : allItems){
-                allItemNames.add(itemDAO.getName());
-            }
+                List<String> allItemNames = new ArrayList<>(allItems.size());
 
-            ArrayAdapter<String> itemAdaptor = new ArrayAdapter<String>(SearchActivity.this, android.R.layout.simple_list_item_1, allItemNames);
-            // show the search resuts in the list.
-            //setListAdapter(plantAdapter);
-
-            //setProgressBarIndeterminateVisibility(false);
-            //Intent intent = new Intent(SearchActivity.this, AddItemActivity.class);
-            //intent.putExtra(EXTRA_ITEMDTO, allItems);
-            //startActivity(intent);
-            final ListView itemlistView = (ListView) findViewById(R.id.itemlistView);
-            //ArrayAdapter<String> adapter = new ArrayAdapter<String>(SearchActivity.this, android.R.layout.simple_list_item_1, android.R.id., allItems);
-// Assign adapter to ListView
-            itemlistView.setAdapter(itemAdaptor);
-
-            // ListView Item Click Listener
-            itemlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view,
-                                        int position, long id) {
-
-                    // ListView Clicked item index
-                    int itemPosition = position;
-
-                    Intent intent = new Intent(SearchActivity.this, AddItemActivity.class);
-                    intent.putExtra(EXTRA_ITEMDTO, allItems.get(position));
-                    startActivity(intent);
-
-                    // ListView Clicked item value
-                    //String itemValue = (String) itemlistView.getItemAtPosition(position);
-
-                    // Show Alert
-                    //Toast.makeText(getApplicationContext(),
-                    //        "Position :" + itemPosition + "  ListItem : " + itemValue, Toast.LENGTH_LONG)
-                    //        .show();
-
+                for (ItemDTO itemDAO : allItems) {
+                    allItemNames.add(itemDAO.getName());
                 }
 
-            });
+                ArrayAdapter<String> itemAdaptor = new ArrayAdapter<String>(SearchActivity.this, android.R.layout.simple_list_item_1, allItemNames);
+                // show the search resuts in the list.
+                //setListAdapter(plantAdapter);
+
+                //setProgressBarIndeterminateVisibility(false);
+                //Intent intent = new Intent(SearchActivity.this, AddItemActivity.class);
+                //intent.putExtra(EXTRA_ITEMDTO, allItems);
+                //startActivity(intent);
+                final ListView itemlistView = (ListView) findViewById(R.id.itemlistView);
+                //ArrayAdapter<String> adapter = new ArrayAdapter<String>(SearchActivity.this, android.R.layout.simple_list_item_1, android.R.id., allItems);
+// Assign adapter to ListView
+                itemlistView.setAdapter(itemAdaptor);
+
+                // ListView Item Click Listener
+                itemlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view,
+                                            int position, long id) {
+
+                        // ListView Clicked item index
+                        int itemPosition = position;
+
+                        Intent intent = new Intent(SearchActivity.this, AddItemActivity.class);
+                        intent.putExtra(EXTRA_ITEMDTO, allItems.get(position));
+                        startActivity(intent);
+
+                        // ListView Clicked item value
+                        //String itemValue = (String) itemlistView.getItemAtPosition(position);
+
+                        // Show Alert
+                        //Toast.makeText(getApplicationContext(),
+                        //        "Position :" + itemPosition + "  ListItem : " + itemValue, Toast.LENGTH_LONG)
+                        //        .show();
+
+                    }
+
+                });
+            } else {
+                showMessage("Did not find any matches!", false);
+            }
+        }
+
+        private void showMessage(String message, boolean goBack) {
+            Context context = getApplicationContext();
+            CharSequence text = message;
+            int duration = Toast.LENGTH_LONG;
+
+            Toast toast = Toast.makeText(context, text, duration);
+            toast.setGravity(Gravity.CENTER | Gravity.CENTER, 0, 0);
+            toast.show();
         }
 
         @Override
