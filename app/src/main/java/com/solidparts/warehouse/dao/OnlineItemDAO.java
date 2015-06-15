@@ -84,8 +84,10 @@ public class OnlineItemDAO implements IItemDAO {
                 + "&cacheid=" + itemDTO.getCacheID();
         String request = networkDAO.request(uri);
 
-        // Also save to local database
-        offlineItemDAO.addItem(itemDTO, 1);
+        // Also save to local database if its not a sync operation
+        if(sync == 0)
+            offlineItemDAO.addItem(itemDTO, 1);
+
         return null;
     }
 

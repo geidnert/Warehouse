@@ -4,11 +4,14 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 
+import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -74,6 +77,10 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
     private GoogleApiClient googleApiClient;
     private LocationRequest locationRequest;
 
+
+    LocationManager locationManager ;
+    String provider;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,7 +110,7 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
         }
 
         // GPS
-        googleApiClient = new GoogleApiClient.Builder(this)
+        /*googleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -113,7 +120,7 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
 
         locationRequest.setInterval(MINUTE);
         locationRequest.setFastestInterval(15 * MILLISECONDS_PER_SECOND);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);*/
 
     }
 
@@ -344,36 +351,47 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
 
     }
 
+
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-
+        if (connectionResult.hasResolution()) {
+            try {
+                // Start an Activity that tries to resolve the error
+                connectionResult.startResolutionForResult(this, 9000);
+            } catch (IntentSender.SendIntentException e) {
+                e.printStackTrace();
+            }
+        } else {
+            showMessage("Location services connection failed with code " + connectionResult.getErrorCode(), false);
+        }
     }
+
 
     @Override
     protected void onStart() {
         super.onStart();
-        googleApiClient.connect();
+//        googleApiClient.connect();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        googleApiClient.disconnect();
+       // googleApiClient.disconnect();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        if(googleApiClient.isConnected()){
-            requestLocationUpdates();
-        }
+       //if(googleApiClient.isConnected()){
+       //     requestLocationUpdates();
+       // }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
+        //LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
     }
 
     // https://www.youtube.com/watch?v=ZpwivlI7tzo&index=5&list=PL73qvSDlAVVhoVW6-_TMGWLQbAOAg-yod

@@ -57,7 +57,8 @@ public class ItemService implements IItemService {
     @Override
     public ItemDTO addItem(ItemDTO itemDTO) {
         try {
-            itemDTO = onlineItemDAO.addItem(itemDTO, 1);
+            itemDTO = onlineItemDAO.addItem(itemDTO, 0);
+            //itemDTO = offlineItemDAO.addItem(itemDTO, 0);
         } catch (NetworkOnMainThreadException e) {
             // No network, use offline mode
             try {
