@@ -1,10 +1,7 @@
 package com.solidparts.warehouse.dao;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.view.Gravity;
-import android.widget.Toast;
 
 import com.solidparts.warehouse.dto.ItemDTO;
 
@@ -54,16 +51,17 @@ public class OnlineItemDAO implements IItemDAO {
         for (int i=0; i < items.length(); i++){
             JSONObject jsonItem = items.getJSONObject(i).getJSONObject("item");
 
-            int guid = jsonItem.getInt("guid");
+            int id = jsonItem.getInt("id");
             int count = jsonItem.getInt("count");
             String name = jsonItem.getString("name");
             String description = jsonItem.getString("description");
             String location = jsonItem.getString("location");
             byte[] image = jsonItem.get("image").toString().getBytes("utf-8");
-            byte[]  qrCode = jsonItem.get("qrcode").toString().getBytes("utf-8");
+            byte[] qrCode = jsonItem.get("qrcode").toString().getBytes("utf-8");
 
             ItemDTO itemDTO = new ItemDTO();
-            itemDTO.setGuid(guid);
+            itemDTO.setOnlineid(id);
+            itemDTO.setCount(count);
             itemDTO.setName(name);
             itemDTO.setDescription(description);
             itemDTO.setLocation(location);
@@ -79,12 +77,14 @@ public class OnlineItemDAO implements IItemDAO {
     @Override
     public ItemDTO addItem(ItemDTO itemDTO, int sync) throws IOException, JSONException {
 
-        String uri = "http://" + hostname +"/warehouse/add.php?name=" + itemDTO.getName() + "&guid=" + itemDTO.getGuid() + "&description=" + itemDTO.getDescription() +"&count=" + itemDTO.getCount()
-                + "&image=" + itemDTO.getImage() + "&qrcode=" + itemDTO.getQrCode() + "&location=" + itemDTO.getLocation()
-                + "&cacheid=" + itemDTO.getCacheID();
+        String uri = "http://" + hostname +"/warehouse/add.php?name=" + itemDTO.getName() + "&description=" + itemDTO.getDescription() +"&count=" + itemDTO.getCount()
+                + "&image=" + itemDTO.getImage() + "&qrcode=" + itemDTO.getQrCode() + "&location=" + itemDTO.getLocation();
         String request = networkDAO.request(uri);
 
         // TODO -- update with online db primary key on local item
+        itemDTO.setOnlineid(Integer.parseInt(request.trim()));
+        offlineItemDAO.updateItem(itemDTO, sync);
+
         // Also save to local database if its not a sync operation
         if(sync == 0)
             offlineItemDAO.addItem(itemDTO, 1);

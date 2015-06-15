@@ -7,19 +7,10 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-
-import com.solidparts.warehouse.dto.ItemDTO;
 import com.solidparts.warehouse.service.ItemService;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
-
     private ItemService itemService;
 
     @Override
@@ -28,7 +19,7 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
         itemService = new ItemService(this);
 
-        //Sync data from database
+        //Sync data from local database to online database
         String[] args = new String[]{"syncToOnlineDb"};
         ItemSyncTask itemSyncTask = new ItemSyncTask();
         itemSyncTask.execute(args);

@@ -9,7 +9,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -177,7 +176,7 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
 
         ItemDTO itemDTO = new ItemDTO();
         itemDTO.setCacheID(cacheId);
-        itemDTO.setGuid(2);
+        itemDTO.setOnlineid(2);
         itemDTO.setName(name);
         itemDTO.setDescription(description);
         itemDTO.setCount(Integer.parseInt(amount));

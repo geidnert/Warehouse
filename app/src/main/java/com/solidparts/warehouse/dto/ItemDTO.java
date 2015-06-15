@@ -8,7 +8,7 @@ import java.util.Arrays;
  */
 public class ItemDTO implements Serializable {
     private long cacheID;
-    int guid;
+    int onlineid;
     int count;
     String name;
     String description;
@@ -16,12 +16,12 @@ public class ItemDTO implements Serializable {
     byte[] image;
     byte[] qrCode;
 
-    public int getGuid() {
-        return guid;
+    public int getOnlineid() {
+        return onlineid;
     }
 
-    public void setGuid(int guid) {
-        this.guid = guid;
+    public void setOnlineid(int onlineid) {
+        this.onlineid = onlineid;
     }
 
     public int getCount() {
@@ -103,7 +103,7 @@ public class ItemDTO implements Serializable {
     public String toString() {
         return "ItemDTO{" +
                 "cacheID=" + cacheID +
-                ", guid=" + guid +
+                ", onlineid=" + onlineid +
                 ", count=" + count +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +

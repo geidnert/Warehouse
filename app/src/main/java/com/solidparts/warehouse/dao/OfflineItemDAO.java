@@ -24,7 +24,7 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
     public static final String NAME = "name";
     public static final String DESCRIPTION = "description";
     public static final String LOCATION = "location";
-    public static final String GUID = "guid";
+    public static final String ONLINEID = "onlineid";
     public static final String IMAGE = "image";
     public static final String COUNT = "count";
     public static final String QRCODE = "qrcode";
@@ -37,7 +37,7 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String createItems = "CREATE TABLE " + ITEM + " ( " + CACHE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                GUID + " INTEGER, " + NAME + " TEXT, " + DESCRIPTION + " TEXT, " + COUNT + " INTEGER, " + IMAGE +
+                ONLINEID + " INTEGER, " + NAME + " TEXT, " + DESCRIPTION + " TEXT, " + COUNT + " INTEGER, " + IMAGE +
                 " BLOB, " + QRCODE + " TEXT, " + LOCATION + " TEXT, " + SYNCED + " INTEGER );";
 
         db.execSQL(createItems);
@@ -81,7 +81,7 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
             itemDto.setDescription(cursor.getString(3));
             itemDto.setLocation(cursor.getString(7));
             itemDto.setName(cursor.getString(2));
-            itemDto.setGuid(cursor.getInt(1));
+            itemDto.setOnlineid(cursor.getInt(1));
             itemDto.setImage(cursor.getBlob(5));
             itemDto.setQrCode(cursor.getBlob(6));
 
@@ -97,7 +97,7 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
     public ItemDTO addItem(ItemDTO itemDTO, int sync) throws IOException, JSONException {
         ContentValues cv = new ContentValues();
 
-        cv.put(GUID, itemDTO.getGuid());
+        cv.put(ONLINEID, itemDTO.getOnlineid());
         cv.put(NAME, itemDTO.getName());
         cv.put(DESCRIPTION, itemDTO.getDescription());
         cv.put(COUNT, itemDTO.getCount());
@@ -116,7 +116,7 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
     public ItemDTO updateItem(ItemDTO itemDTO, int sync){
         ContentValues cv = new ContentValues();
 
-        cv.put(GUID, itemDTO.getGuid());
+        cv.put(ONLINEID, itemDTO.getOnlineid());
         cv.put(NAME, itemDTO.getName());
         cv.put(DESCRIPTION, itemDTO.getDescription());
         cv.put(COUNT, itemDTO.getCount());
