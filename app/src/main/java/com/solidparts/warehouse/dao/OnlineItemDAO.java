@@ -76,15 +76,15 @@ public class OnlineItemDAO implements IItemDAO {
     }
 
     @Override
-    public void addItem(ItemDTO itemDTO, int sync) throws IOException, JSONException {
+        public void addItem(ItemDTO itemDTO, int sync) throws IOException, JSONException {
 
-        String uri = "http://" + hostname +"/warehouse/add.php?name=" + itemDTO.getName() + "&description=" + itemDTO.getDescription() +"&count=" + itemDTO.getCount()
-                + "&image=" + URLEncoder.encode(itemDTO.getImage().toString()) + "&qrcode=" + itemDTO.getQrCode() + "&location=" + itemDTO.getLocation();
+        String uri = "http://" + hostname +"/warehouse/add.php?name=" + URLEncoder.encode(itemDTO.getName()) + "&description=" + URLEncoder.encode(itemDTO.getDescription()) +"&count=" + itemDTO.getCount()
+                + "&image=" + URLEncoder.encode(new String(itemDTO.getImage())) + "&qrcode=" + URLEncoder.encode(new String(itemDTO.getQrCode())) + "&location=" + URLEncoder.encode(itemDTO.getLocation());
         String request = networkDAO.request(uri);
 
         // TODO -- update with online db primary key on local item
         itemDTO.setOnlineid(Integer.parseInt(request.trim()));
-        offlineItemDAO.updateItem(itemDTO, sync);
+        //offlineItemDAO.updateItem(itemDTO, sync);
 
         // Also save to local database if its not a sync operation
         if(sync == 0) {
