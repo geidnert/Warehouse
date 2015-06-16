@@ -10,6 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,10 +76,10 @@ public class OnlineItemDAO implements IItemDAO {
     }
 
     @Override
-    public ItemDTO addItem(ItemDTO itemDTO, int sync) throws IOException, JSONException {
+    public void addItem(ItemDTO itemDTO, int sync) throws IOException, JSONException {
 
         String uri = "http://" + hostname +"/warehouse/add.php?name=" + itemDTO.getName() + "&description=" + itemDTO.getDescription() +"&count=" + itemDTO.getCount()
-                + "&image=" + itemDTO.getImage() + "&qrcode=" + itemDTO.getQrCode() + "&location=" + itemDTO.getLocation();
+                + "&image=" + URLEncoder.encode(itemDTO.getImage().toString()) + "&qrcode=" + itemDTO.getQrCode() + "&location=" + itemDTO.getLocation();
         String request = networkDAO.request(uri);
 
         // TODO -- update with online db primary key on local item
@@ -86,20 +87,23 @@ public class OnlineItemDAO implements IItemDAO {
         offlineItemDAO.updateItem(itemDTO, sync);
 
         // Also save to local database if its not a sync operation
-        if(sync == 0)
+        if(sync == 0) {
             offlineItemDAO.addItem(itemDTO, 1);
+        }
 
-        return null;
     }
 
     @Override
-    public ItemDTO updateItem(ItemDTO itemDTO, int sync) throws IOException, JSONException {
-        return null;
+    public void updateItem(ItemDTO itemDTO, int sync) throws IOException, JSONException {
+        String uri = "http://" + hostname +"/warehouse/update.php?name=" + itemDTO.getName() + "&description=" + itemDTO.getDescription() +"&count=" + itemDTO.getCount()
+                + "&image=" + itemDTO.getImage() + "&qrcode=" + itemDTO.getQrCode() + "&location=" + itemDTO.getLocation()+ "&onlineid=" + itemDTO.getOnlineid();
+        String request = networkDAO.request(uri);
     }
 
     @Override
-    public void removeItem(long cacheId) throws IOException, JSONException {
-
+    public void removeItem(long onlineId) throws IOException, JSONException {
+        String uri = "http://" + hostname +"/warehouse/remove.php?onlineid=" + onlineId;
+        String request = networkDAO.request(uri);
     }
 
     @Override

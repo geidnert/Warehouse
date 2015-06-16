@@ -38,7 +38,7 @@ public class ItemService implements IItemService {
 
         try {
             items = onlineItemDAO.getItems(searchTerm, searchType);
-            //item = offlineItemDAO.getItems(searchTerm, searchType);
+            //items = offlineItemDAO.getItems(searchTerm, searchType);
         } catch (IOException e) {
             // No network, use offline mode
             try {
@@ -55,14 +55,14 @@ public class ItemService implements IItemService {
     }
 
     @Override
-    public ItemDTO addItem(ItemDTO itemDTO) {
+    public void addItem(ItemDTO itemDTO) {
         try {
-            itemDTO = onlineItemDAO.addItem(itemDTO, 0);
+            onlineItemDAO.addItem(itemDTO, 0);
             //itemDTO = offlineItemDAO.addItem(itemDTO, 0);
         } catch (NetworkOnMainThreadException e) {
             // No network, use offline mode
             try {
-                itemDTO = offlineItemDAO.addItem(itemDTO, 0);
+                offlineItemDAO.addItem(itemDTO, 0);
             } catch (IOException e1) {
                 e1.printStackTrace();
             } catch (JSONException e1) {
@@ -73,18 +73,16 @@ public class ItemService implements IItemService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        return itemDTO;
     }
 
     @Override
-    public ItemDTO updateItem(ItemDTO itemDTO) {
+    public void updateItem(ItemDTO itemDTO) throws Exception {
         try {
-            itemDTO = onlineItemDAO.updateItem(itemDTO, 1);
+            onlineItemDAO.updateItem(itemDTO, 1);
         } catch (IOException e) {
             // No network, use offline mode
             try {
-                itemDTO = offlineItemDAO.updateItem(itemDTO, 0);
+                offlineItemDAO.updateItem(itemDTO, 0);
             } catch (IOException e1) {
                 e1.printStackTrace();
             } catch (JSONException e1) {
@@ -93,8 +91,6 @@ public class ItemService implements IItemService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        return itemDTO;
     }
 
     @Override

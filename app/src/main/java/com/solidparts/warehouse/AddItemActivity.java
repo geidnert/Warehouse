@@ -153,11 +153,15 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
         }
 
         if(update){
-            itemDTO = itemService.updateItem(itemDTO);
+            try {
+                itemService.updateItem(itemDTO);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             showMessage("Item Updated!", false);
             startActivity(new Intent(AddItemActivity.this, SearchActivity.class));
         } else {
-            itemDTO = itemService.addItem(itemDTO);
+            itemService.addItem(itemDTO);
             showMessage("Item Saved!", true);
         }
     }
@@ -171,27 +175,30 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
         if (name.equals("") || description.equals("") || amount.equals("") || location.equals("") ||
                 itemImageBitmap == null || qrCodeImage == null) {
 
-            showMessage("ERROR: You need to fill in the complete form!", true);
+            showMessage("ERROR: You need to fill in the complete form!", false);
+
+            return null;
         }
 
-        ItemDTO itemDTO = new ItemDTO();
-        itemDTO.setCacheID(cacheId);
-        itemDTO.setOnlineid(2);
-        itemDTO.setName(name);
-        itemDTO.setDescription(description);
-        itemDTO.setCount(Integer.parseInt(amount));
-        itemDTO.setLocation(location);
+            ItemDTO itemDTO = new ItemDTO();
+            itemDTO.setCacheID(cacheId);
+            itemDTO.setOnlineid(2);
+            itemDTO.setName(name);
+            itemDTO.setDescription(description);
+            itemDTO.setCount(Integer.parseInt(amount));
+            itemDTO.setLocation(location);
 
-        ByteArrayOutputStream bos1 = new ByteArrayOutputStream();
-        ByteArrayOutputStream bos2 = new ByteArrayOutputStream();
-        itemImageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos1);
-        qrCodeImageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos2);
-        byte[] itemImg = bos1.toByteArray();
-        byte[] qrCodeImg = bos2.toByteArray();
+            ByteArrayOutputStream bos1 = new ByteArrayOutputStream();
+            ByteArrayOutputStream bos2 = new ByteArrayOutputStream();
 
-        itemDTO.setImage(itemImg);
-        itemDTO.setQrCode(qrCodeImg);
-        return itemDTO;
+            itemImageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos1);
+            qrCodeImageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos2);
+            byte[] itemImg = bos1.toByteArray();
+            byte[] qrCodeImg = bos2.toByteArray();
+
+            itemDTO.setImage(itemImg);
+            itemDTO.setQrCode(qrCodeImg);
+            return itemDTO;
     }
 
     public void onRemove(View view) {

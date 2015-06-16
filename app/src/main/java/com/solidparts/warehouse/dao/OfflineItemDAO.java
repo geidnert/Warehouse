@@ -94,7 +94,7 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
     }
 
     @Override
-    public ItemDTO addItem(ItemDTO itemDTO, int sync) throws IOException, JSONException {
+    public void addItem(ItemDTO itemDTO, int sync) throws IOException, JSONException {
         ContentValues cv = new ContentValues();
 
         cv.put(ONLINEID, itemDTO.getOnlineid());
@@ -108,12 +108,10 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
 
         long cachceId = getWritableDatabase().insert(ITEM, null, cv);
         itemDTO.setCacheID(cachceId);
-
-        return itemDTO;
     }
 
     @Override
-    public ItemDTO updateItem(ItemDTO itemDTO, int sync){
+    public void updateItem(ItemDTO itemDTO, int sync){
         ContentValues cv = new ContentValues();
 
         cv.put(ONLINEID, itemDTO.getOnlineid());
@@ -132,8 +130,6 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
         db.update(ITEM, cv, where, whereArgs);
 
         //db.update(ITEM, cv, CACHE_ID + "=" + itemDTO.getCacheID(), null);
-
-        return itemDTO;
     }
 
     public void removeItem(long cacheId) throws IOException, JSONException {

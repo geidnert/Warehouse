@@ -23,9 +23,9 @@ public interface IItemDAO {
 
     public List<ItemDTO> getItems(String searchTerm, int searchType) throws IOException, JSONException;
 
-    public ItemDTO addItem(ItemDTO itemDTO, int sync) throws IOException, JSONException;
+    public void addItem(ItemDTO itemDTO, int sync) throws IOException, JSONException;
 
-    public ItemDTO updateItem(ItemDTO itemDTO, int sync) throws IOException, JSONException;
+    public void updateItem(ItemDTO itemDTO, int sync) throws IOException, JSONException;
 
     public void removeItem(long cacheId) throws IOException, JSONException;
 

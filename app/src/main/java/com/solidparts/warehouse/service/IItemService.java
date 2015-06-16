@@ -10,9 +10,9 @@ import java.util.List;
 public interface IItemService {
     public List<ItemDTO> getItems(String searchString, int searchType) throws Exception;
 
-    public ItemDTO addItem(ItemDTO itemDTO) throws Exception;
+    public void addItem(ItemDTO itemDTO) throws Exception;
 
-    public ItemDTO updateItem(ItemDTO itemDTO) throws Exception;
+    public void updateItem(ItemDTO itemDTO) throws Exception;
 
     public void removeItem(long cacheId) throws Exception;
 
