@@ -104,7 +104,7 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
 
             Bitmap qrCodeImage = BitmapFactory.decodeByteArray(intentItemDTO.getQrCode(), 0, intentItemDTO.getQrCode().length);
             showQRCodeImage(qrCodeImage);
-            new AsyncGenerateQRCode().execute(-1);
+            //new AsyncGenerateQRCode().execute(-1);
             update = true;
         }
 

@@ -2,9 +2,12 @@ package com.solidparts.warehouse.dao;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Base64;
 
 import com.solidparts.warehouse.dto.ItemDTO;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -42,8 +45,12 @@ public class OnlineItemDAO implements IItemDAO {
 
     @Override
     public List<ItemDTO> getItems(String searchTerm, int searchType) throws IOException, JSONException {
-        String uri = "http://" + hostname +"/warehouse/get.php?searchterm=" + searchTerm;
-        String request = networkDAO.request(uri);
+        //String uri = "http://" + hostname +"/warehouse/get.php?searchterm=" + searchTerm;
+
+        ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+        nameValuePairs.add(new BasicNameValuePair("searchterm", searchTerm));
+
+        String request = networkDAO.request(NetworkDAO.SEARCH, nameValuePairs);
 
         List<ItemDTO> allItems = new ArrayList<ItemDTO>();
         JSONObject root = new JSONObject(request);
@@ -57,8 +64,11 @@ public class OnlineItemDAO implements IItemDAO {
             String name = jsonItem.getString("name");
             String description = jsonItem.getString("description");
             String location = jsonItem.getString("location");
-            byte[] image = jsonItem.get("image").toString().getBytes("utf-8");
-            byte[] qrCode = jsonItem.get("qrcode").toString().getBytes("utf-8");
+
+            byte[] image = Base64.decode(jsonItem.get("image").toString(), Base64.DEFAULT);
+            byte[] qrCode = Base64.decode(jsonItem.get("qrcode").toString(), Base64.DEFAULT);
+            //byte[] image = jsonItem.get("image").toString().getBytes("utf-8");
+            //byte[] qrCode = jsonItem.get("qrcode").toString().getBytes("utf-8");
 
             ItemDTO itemDTO = new ItemDTO();
             itemDTO.setOnlineid(id);
@@ -76,11 +86,19 @@ public class OnlineItemDAO implements IItemDAO {
     }
 
     @Override
-        public void addItem(ItemDTO itemDTO, int sync) throws IOException, JSONException {
+    public void addItem(ItemDTO itemDTO, int sync) throws IOException, JSONException {
+        //String uri = "http://" + hostname +"/warehouse/add.php?name=" + URLEncoder.encode(itemDTO.getName()) + "&description=" + URLEncoder.encode(itemDTO.getDescription()) +"&count=" + itemDTO.getCount()
+        //        + "&image=" + URLEncoder.encode(new String(itemDTO.getImage())) + "&qrcode=" + URLEncoder.encode(new String(itemDTO.getQrCode())) + "&location=" + URLEncoder.encode(itemDTO.getLocation());
 
-        String uri = "http://" + hostname +"/warehouse/add.php?name=" + URLEncoder.encode(itemDTO.getName()) + "&description=" + URLEncoder.encode(itemDTO.getDescription()) +"&count=" + itemDTO.getCount()
-                + "&image=" + URLEncoder.encode(new String(itemDTO.getImage())) + "&qrcode=" + URLEncoder.encode(new String(itemDTO.getQrCode())) + "&location=" + URLEncoder.encode(itemDTO.getLocation());
-        String request = networkDAO.request(uri);
+        ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+        nameValuePairs.add(new BasicNameValuePair("name", itemDTO.getName()));
+        nameValuePairs.add(new BasicNameValuePair("description", itemDTO.getDescription()));
+        nameValuePairs.add(new BasicNameValuePair("count", itemDTO.getCount() + ""));
+        nameValuePairs.add(new BasicNameValuePair("location", itemDTO.getLocation()));
+        nameValuePairs.add(new BasicNameValuePair("image", Base64.encodeToString(itemDTO.getImage(), Base64.DEFAULT)));
+        nameValuePairs.add(new BasicNameValuePair("qrcode", Base64.encodeToString(itemDTO.getQrCode(), Base64.DEFAULT)));
+
+        String request = networkDAO.request(NetworkDAO.ADD, nameValuePairs);
 
         // TODO -- update with online db primary key on local item
         itemDTO.setOnlineid(Integer.parseInt(request.trim()));
@@ -95,15 +113,28 @@ public class OnlineItemDAO implements IItemDAO {
 
     @Override
     public void updateItem(ItemDTO itemDTO, int sync) throws IOException, JSONException {
-        String uri = "http://" + hostname +"/warehouse/update.php?name=" + itemDTO.getName() + "&description=" + itemDTO.getDescription() +"&count=" + itemDTO.getCount()
-                + "&image=" + itemDTO.getImage() + "&qrcode=" + itemDTO.getQrCode() + "&location=" + itemDTO.getLocation()+ "&onlineid=" + itemDTO.getOnlineid();
-        String request = networkDAO.request(uri);
+        //String uri = "http://" + hostname +"/warehouse/update.php?name=" + itemDTO.getName() + "&description=" + itemDTO.getDescription() +"&count=" + itemDTO.getCount()
+        //        + "&image=" + itemDTO.getImage() + "&qrcode=" + itemDTO.getQrCode() + "&location=" + itemDTO.getLocation()+ "&onlineid=" + itemDTO.getOnlineid();
+
+        ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+        nameValuePairs.add(new BasicNameValuePair("onlineid", itemDTO.getOnlineid()+""));
+        nameValuePairs.add(new BasicNameValuePair("name", itemDTO.getName()));
+        nameValuePairs.add(new BasicNameValuePair("description", itemDTO.getDescription()));
+        nameValuePairs.add(new BasicNameValuePair("count", itemDTO.getCount() + ""));
+        nameValuePairs.add(new BasicNameValuePair("location", itemDTO.getName()));
+        nameValuePairs.add(new BasicNameValuePair("image", Base64.encodeToString(itemDTO.getImage(), Base64.DEFAULT)));
+        nameValuePairs.add(new BasicNameValuePair("qrcode", Base64.encodeToString(itemDTO.getQrCode(), Base64.DEFAULT)));
+
+        String request = networkDAO.request(NetworkDAO.UPDATE, nameValuePairs);
     }
 
     @Override
     public void removeItem(long onlineId) throws IOException, JSONException {
-        String uri = "http://" + hostname +"/warehouse/remove.php?onlineid=" + onlineId;
-        String request = networkDAO.request(uri);
+        //String uri = "http://" + hostname +"/warehouse/remove.php?onlineid=" + onlineId;
+
+        ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+        nameValuePairs.add(new BasicNameValuePair("onlineid", onlineId + ""));
+        String request = networkDAO.request(NetworkDAO.REMOVE, nameValuePairs);
     }
 
     @Override
