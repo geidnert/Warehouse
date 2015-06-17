@@ -45,8 +45,6 @@ public class OnlineItemDAO implements IItemDAO {
 
     @Override
     public List<ItemDTO> getItems(String searchTerm, int searchType) throws IOException, JSONException {
-        //String uri = "http://" + hostname +"/warehouse/get.php?searchterm=" + searchTerm;
-
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
         nameValuePairs.add(new BasicNameValuePair("searchterm", searchTerm));
 
@@ -67,8 +65,6 @@ public class OnlineItemDAO implements IItemDAO {
 
             byte[] image = Base64.decode(jsonItem.get("image").toString(), Base64.DEFAULT);
             byte[] qrCode = Base64.decode(jsonItem.get("qrcode").toString(), Base64.DEFAULT);
-            //byte[] image = jsonItem.get("image").toString().getBytes("utf-8");
-            //byte[] qrCode = jsonItem.get("qrcode").toString().getBytes("utf-8");
 
             ItemDTO itemDTO = new ItemDTO();
             itemDTO.setOnlineid(id);
@@ -87,9 +83,6 @@ public class OnlineItemDAO implements IItemDAO {
 
     @Override
     public void addItem(ItemDTO itemDTO, int sync) throws IOException, JSONException {
-        //String uri = "http://" + hostname +"/warehouse/add.php?name=" + URLEncoder.encode(itemDTO.getName()) + "&description=" + URLEncoder.encode(itemDTO.getDescription()) +"&count=" + itemDTO.getCount()
-        //        + "&image=" + URLEncoder.encode(new String(itemDTO.getImage())) + "&qrcode=" + URLEncoder.encode(new String(itemDTO.getQrCode())) + "&location=" + URLEncoder.encode(itemDTO.getLocation());
-
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
         nameValuePairs.add(new BasicNameValuePair("name", itemDTO.getName()));
         nameValuePairs.add(new BasicNameValuePair("description", itemDTO.getDescription()));
@@ -102,7 +95,7 @@ public class OnlineItemDAO implements IItemDAO {
 
         // TODO -- update with online db primary key on local item
         itemDTO.setOnlineid(Integer.parseInt(request.trim()));
-        //offlineItemDAO.updateItem(itemDTO, sync);
+        offlineItemDAO.updateItem(itemDTO, sync);
 
         // Also save to local database if its not a sync operation
         if(sync == 0) {
@@ -113,9 +106,6 @@ public class OnlineItemDAO implements IItemDAO {
 
     @Override
     public void updateItem(ItemDTO itemDTO, int sync) throws IOException, JSONException {
-        //String uri = "http://" + hostname +"/warehouse/update.php?name=" + itemDTO.getName() + "&description=" + itemDTO.getDescription() +"&count=" + itemDTO.getCount()
-        //        + "&image=" + itemDTO.getImage() + "&qrcode=" + itemDTO.getQrCode() + "&location=" + itemDTO.getLocation()+ "&onlineid=" + itemDTO.getOnlineid();
-
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
         nameValuePairs.add(new BasicNameValuePair("onlineid", itemDTO.getOnlineid()+""));
         nameValuePairs.add(new BasicNameValuePair("name", itemDTO.getName()));
@@ -125,16 +115,14 @@ public class OnlineItemDAO implements IItemDAO {
         nameValuePairs.add(new BasicNameValuePair("image", Base64.encodeToString(itemDTO.getImage(), Base64.DEFAULT)));
         nameValuePairs.add(new BasicNameValuePair("qrcode", Base64.encodeToString(itemDTO.getQrCode(), Base64.DEFAULT)));
 
-        String request = networkDAO.request(NetworkDAO.UPDATE, nameValuePairs);
+        networkDAO.request(NetworkDAO.UPDATE, nameValuePairs);
     }
 
     @Override
     public void removeItem(long onlineId) throws IOException, JSONException {
-        //String uri = "http://" + hostname +"/warehouse/remove.php?onlineid=" + onlineId;
-
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
         nameValuePairs.add(new BasicNameValuePair("onlineid", onlineId + ""));
-        String request = networkDAO.request(NetworkDAO.REMOVE, nameValuePairs);
+        networkDAO.request(NetworkDAO.REMOVE, nameValuePairs);
     }
 
     @Override

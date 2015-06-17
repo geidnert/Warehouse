@@ -61,13 +61,13 @@ public class ItemService implements IItemService {
             //itemDTO = offlineItemDAO.addItem(itemDTO, 0);
         } catch (NetworkOnMainThreadException e) {
             // No network, use offline mode
-            try {
+            /*try {
                 offlineItemDAO.addItem(itemDTO, 0);
             } catch (IOException e1) {
                 e1.printStackTrace();
             } catch (JSONException e1) {
                 e1.printStackTrace();
-            }
+            }*/
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (IOException e) {

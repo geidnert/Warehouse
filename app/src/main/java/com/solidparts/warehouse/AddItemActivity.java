@@ -48,8 +48,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -152,19 +154,106 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
             return;
         }
 
+
+
         if(update){
-            try {
+            ItemUpdateTask itemUpdateTask = new ItemUpdateTask();
+            ItemDTO[] items = new ItemDTO[1];
+            items[0] = itemDTO;
+            itemUpdateTask.execute(items);
+            /*try {
                 itemService.updateItem(itemDTO);
             } catch (Exception e) {
                 e.printStackTrace();
             }
             showMessage("Item Updated!", false);
             startActivity(new Intent(AddItemActivity.this, SearchActivity.class));
+            */
         } else {
+            ItemAddTask itemAddTask = new ItemAddTask();
+            ItemDTO[] items = new ItemDTO[1];
+            items[0] = itemDTO;
+            itemAddTask.execute(items);
+            /*
             itemService.addItem(itemDTO);
             showMessage("Item Saved!", true);
+            */
         }
     }
+
+
+
+
+    class ItemUpdateTask extends AsyncTask<ItemDTO, Integer, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(ItemDTO... itemDTO) {
+            try {
+                itemService.updateItem(itemDTO[0]);
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return true;
+        }
+
+        /**
+         * This method will be called when doInBackground completes.
+         * The paramter result is populated from the return values of doInBackground.
+         * This method runs on the UI thread, and therefore can update UI components.
+         */
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            if(success){
+                showMessage("Item Updated!", false);
+                startActivity(new Intent(AddItemActivity.this, SearchActivity.class));
+            } else {
+                showMessage("Item not updated!", false);
+            }
+        }
+
+        @Override
+        protected void onPreExecute() {
+        }
+    }
+
+
+    class ItemAddTask extends AsyncTask<ItemDTO, Integer, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(ItemDTO... itemDTO) {
+            try {
+                itemService.addItem(itemDTO[0]);
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return true;
+        }
+
+        /**
+         * This method will be called when doInBackground completes.
+         * The paramter result is populated from the return values of doInBackground.
+         * This method runs on the UI thread, and therefore can update UI components.
+         */
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            if(success)
+                showMessage("Item Saved!", true);
+            else
+                showMessage("Item not saved!", true);
+        }
+
+        @Override
+        protected void onPreExecute() {
+        }
+    }
+
+
 
     private ItemDTO getItemDTO() {
         String name = ((EditText) findViewById(R.id.name)).getText().toString();
@@ -180,25 +269,25 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
             return null;
         }
 
-            ItemDTO itemDTO = new ItemDTO();
-            itemDTO.setCacheID(cacheId);
-            itemDTO.setOnlineid(2);
-            itemDTO.setName(name);
-            itemDTO.setDescription(description);
-            itemDTO.setCount(Integer.parseInt(amount));
-            itemDTO.setLocation(location);
+        ItemDTO itemDTO = new ItemDTO();
+        itemDTO.setCacheID(cacheId);
+        itemDTO.setOnlineid(2);
+        itemDTO.setName(name);
+        itemDTO.setDescription(description);
+        itemDTO.setCount(Integer.parseInt(amount));
+        itemDTO.setLocation(location);
 
-            ByteArrayOutputStream bos1 = new ByteArrayOutputStream();
-            ByteArrayOutputStream bos2 = new ByteArrayOutputStream();
+        ByteArrayOutputStream bos1 = new ByteArrayOutputStream();
+        ByteArrayOutputStream bos2 = new ByteArrayOutputStream();
 
-            itemImageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos1);
-            qrCodeImageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos2);
-            byte[] itemImg = bos1.toByteArray();
-            byte[] qrCodeImg = bos2.toByteArray();
+        itemImageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos1);
+        qrCodeImageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos2);
+        byte[] itemImg = bos1.toByteArray();
+        byte[] qrCodeImg = bos2.toByteArray();
 
-            itemDTO.setImage(itemImg);
-            itemDTO.setQrCode(qrCodeImg);
-            return itemDTO;
+        itemDTO.setImage(itemImg);
+        itemDTO.setQrCode(qrCodeImg);
+        return itemDTO;
     }
 
     public void onRemove(View view) {
