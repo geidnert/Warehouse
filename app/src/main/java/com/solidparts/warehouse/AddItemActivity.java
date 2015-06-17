@@ -106,7 +106,7 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
 
             Bitmap qrCodeImage = BitmapFactory.decodeByteArray(intentItemDTO.getQrCode(), 0, intentItemDTO.getQrCode().length);
             showQRCodeImage(qrCodeImage);
-            //new AsyncGenerateQRCode().execute(-1);
+            new AsyncGenerateQRCode().execute(-1);
             update = true;
         }
 
@@ -261,17 +261,17 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
         String amount = ((EditText) findViewById(R.id.amount)).getText().toString();
         String location = ((EditText) findViewById(R.id.location)).getText().toString();
 
-        if (name.equals("") || description.equals("") || amount.equals("") || location.equals("") ||
+        /*if (name.equals("") || description.equals("") || amount.equals("") || location.equals("") ||
                 itemImageBitmap == null || qrCodeImage == null) {
 
             showMessage("ERROR: You need to fill in the complete form!", false);
 
             return null;
-        }
+        }*/
 
         ItemDTO itemDTO = new ItemDTO();
         itemDTO.setCacheID(cacheId);
-        itemDTO.setOnlineid(2);
+        itemDTO.setOnlineid(intentItemDTO.getOnlineid());
         itemDTO.setName(name);
         itemDTO.setDescription(description);
         itemDTO.setCount(Integer.parseInt(amount));

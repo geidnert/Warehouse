@@ -107,15 +107,20 @@ public class OnlineItemDAO implements IItemDAO {
     @Override
     public void updateItem(ItemDTO itemDTO, int sync) throws IOException, JSONException {
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-        nameValuePairs.add(new BasicNameValuePair("onlineid", itemDTO.getOnlineid()+""));
+        nameValuePairs.add(new BasicNameValuePair("onlineid", itemDTO.getOnlineid() + ""));
         nameValuePairs.add(new BasicNameValuePair("name", itemDTO.getName()));
         nameValuePairs.add(new BasicNameValuePair("description", itemDTO.getDescription()));
         nameValuePairs.add(new BasicNameValuePair("count", itemDTO.getCount() + ""));
-        nameValuePairs.add(new BasicNameValuePair("location", itemDTO.getName()));
+        nameValuePairs.add(new BasicNameValuePair("location", itemDTO.getLocation()));
         nameValuePairs.add(new BasicNameValuePair("image", Base64.encodeToString(itemDTO.getImage(), Base64.DEFAULT)));
         nameValuePairs.add(new BasicNameValuePair("qrcode", Base64.encodeToString(itemDTO.getQrCode(), Base64.DEFAULT)));
 
         networkDAO.request(NetworkDAO.UPDATE, nameValuePairs);
+
+        // Also save to local database if its not a sync operation
+        //if (sync == 0) {
+            offlineItemDAO.updateItem(itemDTO, 1);
+        //}
     }
 
     @Override
@@ -123,6 +128,10 @@ public class OnlineItemDAO implements IItemDAO {
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
         nameValuePairs.add(new BasicNameValuePair("onlineid", onlineId + ""));
         networkDAO.request(NetworkDAO.REMOVE, nameValuePairs);
+
+        // Also save to local database if its not a sync operation
+        offlineItemDAO.removeItem(onlineId);
+
     }
 
     @Override

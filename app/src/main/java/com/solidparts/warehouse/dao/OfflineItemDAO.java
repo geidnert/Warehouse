@@ -123,19 +123,19 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
         cv.put(QRCODE, itemDTO.getQrCode());
         cv.put(SYNCED, sync);
 
-
+System.out.println("values: " + itemDTO.toString());
         String where = "cache_id=?";
+
         String[] whereArgs = {Long.toString(itemDTO.getCacheID())};
         SQLiteDatabase db = this.getWritableDatabase();
         db.update(ITEM, cv, where, whereArgs);
 
-        //db.update(ITEM, cv, CACHE_ID + "=" + itemDTO.getCacheID(), null);
     }
 
-    public void removeItem(long cacheId) throws IOException, JSONException {
+    public void removeItem(long onlineId) throws IOException, JSONException {
 
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(ITEM, CACHE_ID + "=" + cacheId, null);
+        db.delete(ITEM, ONLINEID + "=" + onlineId, null);
         db.close();
     }
 }
