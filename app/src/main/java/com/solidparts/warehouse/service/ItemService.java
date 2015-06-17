@@ -94,15 +94,15 @@ public class ItemService implements IItemService {
     }
 
     @Override
-    public void removeItem(long cacheId)  {
+    public void removeItem(long onlineId)  {
         boolean success = false;
 
         try {
-            onlineItemDAO.removeItem(cacheId);
+            onlineItemDAO.removeItem(onlineId);
         } catch (IOException e) {
             // No network, use offline mode
             try {
-                offlineItemDAO.removeItem(cacheId);
+                offlineItemDAO.removeItem(onlineId);
             } catch (IOException e1) {
                 e1.printStackTrace();
             } catch (JSONException e1) {

@@ -112,6 +112,7 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
 
     @Override
     public void updateItem(ItemDTO itemDTO, int sync){
+        System.out.println("values: " + itemDTO.toString());
         ContentValues cv = new ContentValues();
 
         cv.put(ONLINEID, itemDTO.getOnlineid());
@@ -123,10 +124,9 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
         cv.put(QRCODE, itemDTO.getQrCode());
         cv.put(SYNCED, sync);
 
-System.out.println("values: " + itemDTO.toString());
-        String where = "cache_id=?";
+        String where = "onlineid=?";
 
-        String[] whereArgs = {Long.toString(itemDTO.getCacheID())};
+        String[] whereArgs = {Long.toString(itemDTO.getOnlineid())};
         SQLiteDatabase db = this.getWritableDatabase();
         db.update(ITEM, cv, where, whereArgs);
 

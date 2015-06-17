@@ -2,6 +2,7 @@ package com.solidparts.warehouse;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -291,13 +292,49 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
     }
 
     public void onRemove(View view) {
-        String name = ((EditText) findViewById(R.id.name)).getText().toString();
 
-        if (name == null || name.equals("")) return;
+        ItemDTO itemDTO = getItemDTO();
 
-        itemService.removeItem(cacheId);
+        if (itemDTO == null) {
+            return;
+        }
+        ItemRemoveTask itemRemoveTask = new ItemRemoveTask();
+        ItemDTO[] items = new ItemDTO[1];
+        items[0] = itemDTO;
+        itemRemoveTask.execute(items);
+    }
 
-        showMessage(name + " removed!", true);
+    class ItemRemoveTask extends AsyncTask<ItemDTO, Integer, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(ItemDTO... itemDTO) {
+            try {
+                itemService.removeItem(itemDTO[0].getOnlineid());
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return true;
+        }
+
+        /**
+         * This method will be called when doInBackground completes.
+         * The paramter result is populated from the return values of doInBackground.
+         * This method runs on the UI thread, and therefore can update UI components.
+         */
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            if(success)
+                showMessage("Item removed!", true);
+            else
+                showMessage("Item not removed!", true);
+        }
+
+        @Override
+        protected void onPreExecute() {
+        }
     }
 
     private void showMessage(String message, boolean goBack) {
