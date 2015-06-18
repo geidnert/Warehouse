@@ -48,6 +48,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -64,6 +65,7 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
     public static final int QR_REQUEST = 3;
     public final static int MILLISECONDS_PER_SECOND = 1000;
     public final static int MINUTE = 60 * MILLISECONDS_PER_SECOND;
+    public final static String EXTRA_FROM_ACTIVITY = "fromActivity";
 
     private ImageView itemImage;
     private ImageView qrCodeImage;
@@ -74,6 +76,8 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
     private long cacheId = 0;
 
     private boolean update = false;
+
+    private String lastSearchWorkd;
 
     private FusedLocationProviderApi locationProvicer = LocationServices.FusedLocationApi;
     private GoogleApiClient googleApiClient;
@@ -92,6 +96,7 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
         itemService = new ItemService(this);
 
         intentItemDTO = (ItemDTO) getIntent().getSerializableExtra("intentItemDTO");
+        lastSearchWorkd = getIntent().getStringExtra("searchWord");
 
         if (intentItemDTO != null) {
             cacheId = intentItemDTO.getCacheID();
@@ -272,7 +277,7 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
 
         ItemDTO itemDTO = new ItemDTO();
         itemDTO.setCacheID(cacheId);
-        itemDTO.setOnlineid(intentItemDTO.getOnlineid());
+        itemDTO.setOnlineid(intentItemDTO != null ? intentItemDTO.getOnlineid() : -1);
         itemDTO.setName(name);
         itemDTO.setDescription(description);
         itemDTO.setCount(Integer.parseInt(amount));
@@ -326,10 +331,16 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
 
         @Override
         protected void onPostExecute(Boolean success) {
-            if(success)
+            if(success) {
                 showMessage("Item removed!", true);
-            else
+                Intent intent = new Intent(AddItemActivity.this, SearchActivity.class);
+                String[] params = {"removedItem", lastSearchWorkd};
+                intent.putExtra(EXTRA_FROM_ACTIVITY, params);
+                startActivity(intent);
+                startActivity(new Intent(AddItemActivity.this, SearchActivity.class));
+            } else {
                 showMessage("Item not removed!", true);
+            }
         }
 
         @Override
@@ -352,7 +363,7 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
     }
 
     public void onCancle(View view) {
-        super.onBackPressed();
+        startActivity(new Intent(AddItemActivity.this, MainActivity.class));
     }
 
     public void onScan(View v) {

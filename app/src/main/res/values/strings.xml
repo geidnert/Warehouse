@@ -2,7 +2,7 @@
     <string name="app_name">Warehouse</string>
 
     <string name="push_notification">Welcome to your Warehouse! Please choose activity.</string>
-    <string name="action_sync">Sync</string>
+    <string name="action_sync">Sync from online database</string>
     <string name="action_search_item">Search Item</string>
 
     <string name="title_activity_add_item">Add Item</string>

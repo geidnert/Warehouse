@@ -21,6 +21,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.solidparts.warehouse.dao.IItemDAO;
@@ -39,10 +40,12 @@ public class SearchActivity extends Activity {
     public static final int QR_REQUEST = 5;
     static final String ACTION_SCAN = "com.google.zxing.client.android.SCAN";
     public final static String EXTRA_ITEMDTO = "intentItemDTO";
+    public final static String EXTRA_SEARCHWORD = "searchWord";
 
     private Bitmap qrCodeImageBitmap;
     private ImageView qrCodeImage;
     private ItemService itemService;
+    private String[] fromActivity;
 
 
     @Override
@@ -52,6 +55,14 @@ public class SearchActivity extends Activity {
 
         itemService = new ItemService(this);
         qrCodeImage = ((ImageView)findViewById(R.id.qrCodeImage));
+
+        fromActivity = (String[]) getIntent().getSerializableExtra("fromActivity");
+
+        // TODO -- Fix this to auto search again after a delete
+        if(fromActivity != null && fromActivity[0].equals("removedItem")){
+            ((EditText) findViewById(R.id.searchWord)).setText(fromActivity[1]);
+            search(new String[]{fromActivity[1], "1"});
+        }
     }
 
     @Override
@@ -88,7 +99,7 @@ public class SearchActivity extends Activity {
     }
 
     public void onCancle(View view) {
-        super.onBackPressed();
+        startActivity(new Intent(SearchActivity.this, MainActivity.class));
     }
 
     //alert dialog for downloadDialog
@@ -200,6 +211,7 @@ public class SearchActivity extends Activity {
 
                         Intent intent = new Intent(SearchActivity.this, AddItemActivity.class);
                         intent.putExtra(EXTRA_ITEMDTO, allItems.get(position));
+                        intent.putExtra(EXTRA_SEARCHWORD, ((EditText) findViewById(R.id.searchWord)).getText().toString());
                         startActivity(intent);
 
                         // ListView Clicked item value

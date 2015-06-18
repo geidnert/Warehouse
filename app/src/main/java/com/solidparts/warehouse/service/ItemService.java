@@ -115,15 +115,17 @@ public class ItemService implements IItemService {
 
 
     @Override
-    public void syncToOnlineDB() {
+    public int syncToOnlineDB() {
         // get all items that are not synced from local db
         List<ItemDTO> notSyncedItems = null;
         try {
             notSyncedItems = offlineItemDAO.getNotSyncedItems();
         } catch (IOException e1) {
             e1.printStackTrace();
+            return -1;
         } catch (JSONException e1) {
             e1.printStackTrace();
+            return -1;
         }
 
         // Sync to online db if available
@@ -136,18 +138,22 @@ public class ItemService implements IItemService {
                 } catch (IOException e) {
                     // No network, can not sync
                     e.printStackTrace();
+                    return -1;
                 } catch (JSONException e) {
                     // No network, can not sync
                     e.printStackTrace();
+                    return -1;
                 }
             }
         }
+
+        return 2;
     }
 
     @Override
-    public void syncFromOnlineDB() {
+    public int syncFromOnlineDB() {
         if(!isNetworkAvaliable(context)){
-            return;
+            return -1;
         }
 
         // get all items that are not synced from local db
@@ -158,11 +164,12 @@ public class ItemService implements IItemService {
             localItems = offlineItemDAO.getItems("all", OfflineItemDAO.ALL);
         } catch (IOException e1) {
             e1.printStackTrace();
+            return -1;
         } catch (JSONException e1) {
             e1.printStackTrace();
+            return -1;
         }
 
-        int addedItems = 0;
         // Sync to offline db
         if(onlineItems != null && onlineItems.size() > 0) {
             for(ItemDTO onlineItemDto : onlineItems) {
@@ -182,12 +189,16 @@ public class ItemService implements IItemService {
                 } catch (IOException e) {
                     // No network, can not sync
                     e.printStackTrace();
+                    return -1;
                 } catch (JSONException e) {
                     // No network, can not sync
                     e.printStackTrace();
+                    return -1;
                 }
             }
         }
+
+        return 1;
     }
 
     public static boolean isNetworkAvaliable(Context ctx) {

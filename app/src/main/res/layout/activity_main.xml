@@ -8,7 +8,8 @@
 
     <TextView android:text="@string/push_notification" android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/textView" />
+        android:id="@+id/textView"
+        android:textColor="#ffffff" />
 
     <Button
         android:layout_width="fill_parent"

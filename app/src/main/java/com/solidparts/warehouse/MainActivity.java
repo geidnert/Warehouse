@@ -1,12 +1,16 @@
 package com.solidparts.warehouse;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
+
 import com.solidparts.warehouse.service.ItemService;
 
 
@@ -17,6 +21,7 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         itemService = new ItemService(this);
 
         //Sync data from local database to online database
@@ -52,6 +57,7 @@ public class MainActivity extends ActionBarActivity {
 
     public void onAddItem(View view) {
         //setContentView(R.layout.activity_add);
+
         startActivity(new Intent(MainActivity.this, AddItemActivity.class));
     }
 
@@ -61,23 +67,22 @@ public class MainActivity extends ActionBarActivity {
 
     // --------------------------------------------------------------------
 
-    class ItemSyncTask extends AsyncTask<String, Integer, Boolean> {
+    class ItemSyncTask extends AsyncTask<String, Integer, Integer> {
 
         @Override
-        protected Boolean doInBackground(String... searchTerms) {
+        protected Integer doInBackground(String... searchTerms) {
             try {
                 if(searchTerms[0].equals("fromOnlineDb")){
-                    itemService.syncFromOnlineDB();
+                    return itemService.syncFromOnlineDB();
                 } else {
-                    itemService.syncToOnlineDB();
+                    return itemService.syncToOnlineDB();
                 }
 
-                return true;
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-            return false;
+            return -1;
         }
 
         /**
@@ -87,7 +92,21 @@ public class MainActivity extends ActionBarActivity {
          */
 
         @Override
-        protected void onPostExecute(Boolean bool) {
+        protected void onPostExecute(Integer from) {
+            if(from == 1)
+                showMessage("Items are now synced with the online database.");
+            else if(from == -1)
+                showMessage("Items did not sync correctly.");
+        }
+
+        private void showMessage(String message) {
+            Context context = getApplicationContext();
+            CharSequence text = message;
+            int duration = Toast.LENGTH_LONG;
+
+            Toast toast = Toast.makeText(context, text, duration);
+            toast.setGravity(Gravity.CENTER | Gravity.CENTER, 0, 0);
+            toast.show();
         }
 
         @Override
