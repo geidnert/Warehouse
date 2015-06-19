@@ -51,7 +51,7 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
     @Override
     public List<ItemDTO> getItems(String searchTerm, int searchType) throws IOException, JSONException {
 
-        String query = "Select * FROM " + ITEM + " WHERE " + NAME + " LIKE  \"%" + searchTerm + "%\"" + " OR " + LOCATION + " LIKE \"%" + searchTerm + "%\"";
+        String query = "Select * FROM " + ITEM + " WHERE " + NAME + " LIKE  \"%" + searchTerm + "%\"" + " OR " + LOCATION + " LIKE \"%" + searchTerm + "%\" AND " + SYNCED + " < 2";
 
         // Search all in a location
         if(searchType == ALL) {
@@ -61,8 +61,14 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
         return searchResultList;
     }
 
-    public List<ItemDTO> getNotSyncedItems() throws IOException, JSONException {
+    public List<ItemDTO> getNotSyncedAddedItems() throws Exception {
         String query = "Select * FROM " + ITEM + " WHERE " + SYNCED + " = 0";
+        List<ItemDTO> searchResultList = getItemDTOs(query);
+        return searchResultList;
+    }
+
+    public List<ItemDTO> getNotSyncedRemovedItems() throws Exception {
+        String query = "Select * FROM " + ITEM + " WHERE " + SYNCED + " = 2";
         List<ItemDTO> searchResultList = getItemDTOs(query);
         return searchResultList;
     }
@@ -132,10 +138,19 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
 
     }
 
-    public void removeItem(long onlineId) throws IOException, JSONException {
+    @Override
+    public void removeItemByOnlineId(int onlineId) throws Exception {
 
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(ITEM, ONLINEID + "=" + onlineId, null);
+        db.close();
+    }
+
+    @Override
+    public void removeItemByCacheId(long cacheId) throws Exception {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(ITEM, CACHE_ID + "=" + cacheId, null);
         db.close();
     }
 }

@@ -21,14 +21,18 @@ public interface IItemDAO {
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion);
 
-    public List<ItemDTO> getItems(String searchTerm, int searchType) throws IOException, JSONException;
+    public List<ItemDTO> getItems(String searchTerm, int searchType) throws Exception;
 
-    public void addItem(ItemDTO itemDTO, int sync) throws IOException, JSONException;
+    public void addItem(ItemDTO itemDTO, int sync) throws Exception;
 
-    public void updateItem(ItemDTO itemDTO, int sync) throws IOException, JSONException;
+    public void updateItem(ItemDTO itemDTO, int sync) throws Exception;
 
-    public void removeItem(long cacheId) throws IOException, JSONException;
+    public void removeItemByOnlineId(int onlineId) throws Exception;
 
-    public List<ItemDTO> getNotSyncedItems() throws IOException, JSONException;
+    public void removeItemByCacheId(long cacheId) throws Exception;
+
+    public List<ItemDTO> getNotSyncedAddedItems() throws Exception;
+
+    public List<ItemDTO> getNotSyncedRemovedItems() throws Exception;
 
 }

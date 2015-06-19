@@ -3,7 +3,6 @@ package com.solidparts.warehouse.service;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.NetworkOnMainThreadException;
 import android.view.Gravity;
 import android.widget.Toast;
 
@@ -12,9 +11,6 @@ import com.solidparts.warehouse.dao.OfflineItemDAO;
 import com.solidparts.warehouse.dao.OnlineItemDAO;
 import com.solidparts.warehouse.dto.ItemDTO;
 
-import org.json.JSONException;
-
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -39,17 +35,13 @@ public class ItemService implements IItemService {
         try {
             items = onlineItemDAO.getItems(searchTerm, searchType);
             //items = offlineItemDAO.getItems(searchTerm, searchType);
-        } catch (IOException e) {
+        } catch (Exception e) {
             // No network, use offline mode
             try {
                 items = offlineItemDAO.getItems(searchTerm, searchType);
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            } catch (JSONException e1) {
+            } catch (Exception e1) {
                 e1.printStackTrace();
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
         return items;
     }
@@ -58,20 +50,14 @@ public class ItemService implements IItemService {
     public void addItem(ItemDTO itemDTO) {
         try {
             onlineItemDAO.addItem(itemDTO, 0);
-            //itemDTO = offlineItemDAO.addItem(itemDTO, 0);
-        } catch (NetworkOnMainThreadException e) {
+            //offlineItemDAO.addItem(itemDTO, 0);
+        } catch (Exception e) {
             // No network, use offline mode
-            /*try {
+            try {
                 offlineItemDAO.addItem(itemDTO, 0);
-            } catch (IOException e1) {
+            } catch (Exception e1) {
                 e1.printStackTrace();
-            } catch (JSONException e1) {
-                e1.printStackTrace();
-            }*/
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+            }
         }
     }
 
@@ -79,37 +65,43 @@ public class ItemService implements IItemService {
     public void updateItem(ItemDTO itemDTO) throws Exception {
         try {
             onlineItemDAO.updateItem(itemDTO, 1);
-        } catch (IOException e) {
+        } catch (Exception e) {
             // No network, use offline mode
             try {
                 offlineItemDAO.updateItem(itemDTO, 0);
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            } catch (JSONException e1) {
+            } catch (Exception e1) {
                 e1.printStackTrace();
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
     }
 
     @Override
-    public void removeItem(long onlineId)  {
+    public void removeItem(ItemDTO itemDTO)  {
         boolean success = false;
+        boolean foundNotSyncedIem = false;
 
         try {
-            onlineItemDAO.removeItem(onlineId);
-        } catch (IOException e) {
+            onlineItemDAO.removeItemByOnlineId(itemDTO.getOnlineid());
+        } catch (Exception e) {
             // No network, use offline mode
             try {
-                offlineItemDAO.removeItem(onlineId);
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            } catch (JSONException e1) {
+                //offlineItemDAO.removeItemByOnlineId(onlineId);
+                List<ItemDTO> notSyncedAddedItems = offlineItemDAO.getNotSyncedAddedItems();
+
+                for(ItemDTO notSynceditem : notSyncedAddedItems){
+                    if(notSynceditem.getCacheID() == itemDTO.getCacheID()){
+                        offlineItemDAO.removeItemByCacheId(itemDTO.getCacheID());
+                        foundNotSyncedIem = true;
+                    }
+                }
+
+                // mark for deletion
+                if(!foundNotSyncedIem) {
+                    offlineItemDAO.updateItem(itemDTO, 2);
+                }
+            } catch (Exception e1) {
                 e1.printStackTrace();
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
     }
 
@@ -117,29 +109,39 @@ public class ItemService implements IItemService {
     @Override
     public int syncToOnlineDB() {
         // get all items that are not synced from local db
-        List<ItemDTO> notSyncedItems = null;
+        List<ItemDTO> notSyncedAddedItems = null;
+        List<ItemDTO> notSyncedRemovedItems = null;
         try {
-            notSyncedItems = offlineItemDAO.getNotSyncedItems();
-        } catch (IOException e1) {
-            e1.printStackTrace();
-            return -1;
-        } catch (JSONException e1) {
+            notSyncedAddedItems = offlineItemDAO.getNotSyncedAddedItems();
+            notSyncedRemovedItems = offlineItemDAO.getNotSyncedRemovedItems();
+        } catch (Exception e1) {
             e1.printStackTrace();
             return -1;
         }
 
-        // Sync to online db if available
-        if(notSyncedItems != null && notSyncedItems.size() > 0) {
+        // Sync added items to online db if available
+        if(notSyncedAddedItems != null && notSyncedAddedItems.size() > 0) {
 
-            for(ItemDTO itemDTO : notSyncedItems) {
+            for(ItemDTO itemDTO : notSyncedAddedItems) {
                 try {
                     onlineItemDAO.addItem(itemDTO, 1); // add not synced item to online db
                     offlineItemDAO.updateItem(itemDTO, 1); // mark item as synced in local db
-                } catch (IOException e) {
+                } catch (Exception e) {
                     // No network, can not sync
                     e.printStackTrace();
                     return -1;
-                } catch (JSONException e) {
+                }
+            }
+        }
+
+        // Sync removed items to online db if available
+        if(notSyncedRemovedItems != null && notSyncedRemovedItems.size() > 0) {
+
+            for(ItemDTO itemDTO : notSyncedRemovedItems) {
+                try {
+                    onlineItemDAO.removeItemByOnlineId(itemDTO.getOnlineid()); // add not synced item to online db
+                    offlineItemDAO.removeItemByOnlineId(itemDTO.getOnlineid()); // mark item as synced in local db
+                } catch (Exception e) {
                     // No network, can not sync
                     e.printStackTrace();
                     return -1;
@@ -162,10 +164,7 @@ public class ItemService implements IItemService {
         try {
             onlineItems = onlineItemDAO.getItems("all", OfflineItemDAO.DEFAULT);
             localItems = offlineItemDAO.getItems("all", OfflineItemDAO.ALL);
-        } catch (IOException e1) {
-            e1.printStackTrace();
-            return -1;
-        } catch (JSONException e1) {
+        } catch (Exception e1) {
             e1.printStackTrace();
             return -1;
         }
@@ -186,11 +185,7 @@ public class ItemService implements IItemService {
                     if(!foundItem){
                         offlineItemDAO.addItem(onlineItemDto, 1); // mark item as synced in local db
                     }
-                } catch (IOException e) {
-                    // No network, can not sync
-                    e.printStackTrace();
-                    return -1;
-                } catch (JSONException e) {
+                } catch (Exception e) {
                     // No network, can not sync
                     e.printStackTrace();
                     return -1;

@@ -56,7 +56,7 @@ public class SearchActivity extends Activity {
         itemService = new ItemService(this);
         qrCodeImage = ((ImageView)findViewById(R.id.qrCodeImage));
 
-        fromActivity = (String[]) getIntent().getSerializableExtra("fromActivity");
+        fromActivity = getIntent().getStringArrayExtra("fromActivity");
 
         // TODO -- Fix this to auto search again after a delete
         if(fromActivity != null && fromActivity[0].equals("removedItem")){

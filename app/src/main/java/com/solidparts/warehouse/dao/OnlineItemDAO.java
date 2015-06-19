@@ -13,7 +13,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -123,19 +122,31 @@ public class OnlineItemDAO implements IItemDAO {
         //}
     }
 
+
+
     @Override
-    public void removeItem(long onlineId) throws IOException, JSONException {
+    public void removeItemByOnlineId(int onlineId) throws Exception {
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
         nameValuePairs.add(new BasicNameValuePair("onlineid", onlineId + ""));
         networkDAO.request(NetworkDAO.REMOVE, nameValuePairs);
 
         // Also save to local database if its not a sync operation
-        offlineItemDAO.removeItem(onlineId);
+        offlineItemDAO.removeItemByOnlineId(onlineId);
+    }
+
+    @Override
+    public void removeItemByCacheId(long cacheId) throws Exception {
 
     }
 
     @Override
-    public List<ItemDTO> getNotSyncedItems() throws IOException, JSONException {
+    public List<ItemDTO> getNotSyncedAddedItems() throws Exception {
         return null;
     }
+
+    @Override
+    public List<ItemDTO> getNotSyncedRemovedItems() throws Exception {
+        return null;
+    }
+
 }

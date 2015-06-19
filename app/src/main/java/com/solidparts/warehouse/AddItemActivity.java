@@ -2,7 +2,6 @@ package com.solidparts.warehouse;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
-import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -44,16 +43,13 @@ import com.google.zxing.common.BitMatrix;
 import com.solidparts.warehouse.dto.ItemDTO;
 import com.solidparts.warehouse.service.ItemService;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumMap;
-import java.util.List;
 import java.util.Map;
 
 
@@ -74,9 +70,7 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
     private Bitmap qrCodeImageBitmap;
     private ItemDTO intentItemDTO;
     private long cacheId = 0;
-
     private boolean update = false;
-
     private String lastSearchWorkd;
 
     private FusedLocationProviderApi locationProvicer = LocationServices.FusedLocationApi;
@@ -100,6 +94,8 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
 
         if (intentItemDTO != null) {
             cacheId = intentItemDTO.getCacheID();
+            ((TextView) findViewById(R.id.remove)).setVisibility(View.VISIBLE);
+
             ((TextView) findViewById(R.id.itemName)).setText(intentItemDTO.getName());
             ((TextView) findViewById(R.id.saveUpdate)).setText("Update");
             ((EditText) findViewById(R.id.name)).setText(intentItemDTO.getName());
@@ -113,6 +109,7 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
             Bitmap qrCodeImage = BitmapFactory.decodeByteArray(intentItemDTO.getQrCode(), 0, intentItemDTO.getQrCode().length);
             showQRCodeImage(qrCodeImage);
             new AsyncGenerateQRCode().execute(-1);
+
             update = true;
         }
 
@@ -145,11 +142,6 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
         // as you specify a parent activity in AndroidManifest.xml.
         //int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        //if (id == R.id.action_settings) {
-        //    return true;
-        //}
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -160,35 +152,18 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
             return;
         }
 
-
-
         if(update){
             ItemUpdateTask itemUpdateTask = new ItemUpdateTask();
             ItemDTO[] items = new ItemDTO[1];
             items[0] = itemDTO;
             itemUpdateTask.execute(items);
-            /*try {
-                itemService.updateItem(itemDTO);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            showMessage("Item Updated!", false);
-            startActivity(new Intent(AddItemActivity.this, SearchActivity.class));
-            */
         } else {
             ItemAddTask itemAddTask = new ItemAddTask();
             ItemDTO[] items = new ItemDTO[1];
             items[0] = itemDTO;
             itemAddTask.execute(items);
-            /*
-            itemService.addItem(itemDTO);
-            showMessage("Item Saved!", true);
-            */
         }
     }
-
-
-
 
     class ItemUpdateTask extends AsyncTask<ItemDTO, Integer, Boolean> {
 
@@ -214,10 +189,14 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
         protected void onPostExecute(Boolean success) {
             if(success){
                 showMessage("Item Updated!", false);
-                startActivity(new Intent(AddItemActivity.this, SearchActivity.class));
             } else {
                 showMessage("Item not updated!", false);
             }
+
+            Intent intent = new Intent(AddItemActivity.this, SearchActivity.class);
+            String[] params = {"removedItem", lastSearchWorkd};
+            intent.putExtra(EXTRA_FROM_ACTIVITY, params);
+            startActivity(intent);
         }
 
         @Override
@@ -249,9 +228,11 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
         @Override
         protected void onPostExecute(Boolean success) {
             if(success)
-                showMessage("Item Saved!", true);
+                showMessage("Item Saved!", false);
             else
-                showMessage("Item not saved!", true);
+                showMessage("Item not saved!", false);
+
+            startActivity(new Intent(AddItemActivity.this, MainActivity.class));
         }
 
         @Override
@@ -259,21 +240,19 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
         }
     }
 
-
-
     private ItemDTO getItemDTO() {
         String name = ((EditText) findViewById(R.id.name)).getText().toString();
         String description = ((EditText) findViewById(R.id.description)).getText().toString();
         String amount = ((EditText) findViewById(R.id.amount)).getText().toString();
         String location = ((EditText) findViewById(R.id.location)).getText().toString();
 
-        /*if (name.equals("") || description.equals("") || amount.equals("") || location.equals("") ||
+        if (name.equals("") || description.equals("") || amount.equals("") || location.equals("") ||
                 itemImageBitmap == null || qrCodeImage == null) {
 
-            showMessage("ERROR: You need to fill in the complete form!", false);
+            showMessage("ERROR: You need to fill in the complete form and generate a qr code and add a image!", false);
 
             return null;
-        }*/
+        }
 
         ItemDTO itemDTO = new ItemDTO();
         itemDTO.setCacheID(cacheId);
@@ -314,7 +293,7 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
         @Override
         protected Boolean doInBackground(ItemDTO... itemDTO) {
             try {
-                itemService.removeItem(itemDTO[0].getOnlineid());
+                itemService.removeItem(itemDTO[0]);
                 return true;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -332,15 +311,15 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
         @Override
         protected void onPostExecute(Boolean success) {
             if(success) {
-                showMessage("Item removed!", true);
-                Intent intent = new Intent(AddItemActivity.this, SearchActivity.class);
-                String[] params = {"removedItem", lastSearchWorkd};
-                intent.putExtra(EXTRA_FROM_ACTIVITY, params);
-                startActivity(intent);
-                startActivity(new Intent(AddItemActivity.this, SearchActivity.class));
+                showMessage("Item removed!", false);
             } else {
-                showMessage("Item not removed!", true);
+                showMessage("Item not removed!", false);
             }
+
+            Intent intent = new Intent(AddItemActivity.this, SearchActivity.class);
+            String[] params = {"removedItem", lastSearchWorkd};
+            intent.putExtra(EXTRA_FROM_ACTIVITY, params);
+            startActivity(intent);
         }
 
         @Override
@@ -363,7 +342,14 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
     }
 
     public void onCancle(View view) {
-        startActivity(new Intent(AddItemActivity.this, MainActivity.class));
+        if(lastSearchWorkd != null) {
+            Intent intent = new Intent(AddItemActivity.this, SearchActivity.class);
+            String[] params = {"removedItem", lastSearchWorkd};
+            intent.putExtra(EXTRA_FROM_ACTIVITY, params);
+            startActivity(intent);
+        } else {
+            startActivity(new Intent(AddItemActivity.this, MainActivity.class));
+        }
     }
 
     public void onScan(View v) {
@@ -383,14 +369,10 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
 
     public void onAddExistingImage(View view) {
         Intent intent = new Intent(Intent.ACTION_PICK);
-
         File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         String pictureDirectoryPath = pictureDirectory.getPath();
-
         Uri data = Uri.parse(pictureDirectoryPath);
-
         intent.setDataAndType(data, "image/*");
-
         startActivityForResult(intent, IMAGE_GALLERY_REQUEST);
     }
 
@@ -417,13 +399,11 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
             }
 
             if (requestCode == IMAGE_GALLERY_REQUEST) {
-                Uri imageUri = data.getData();
-                InputStream inputStream;
-
                 try {
-                    inputStream = getContentResolver().openInputStream(imageUri);
-                    showImage(itemImageBitmap);
-                } catch (FileNotFoundException e) {
+                    Uri imageUri = data.getData();
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+                    showImage(bitmap);
+                } catch (Exception e) {
                     e.printStackTrace();
                     Toast.makeText(this, "Unable to open image", Toast.LENGTH_LONG).show();
                 }
@@ -494,7 +474,6 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
 
     }
 
-
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         if (connectionResult.hasResolution()) {
@@ -508,7 +487,6 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
             showMessage("Location services connection failed with code " + connectionResult.getErrorCode(), false);
         }
     }
-
 
     @Override
     protected void onStart() {
