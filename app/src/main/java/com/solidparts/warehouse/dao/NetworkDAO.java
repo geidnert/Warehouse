@@ -8,6 +8,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
 import java.net.URL;
@@ -22,12 +23,15 @@ public class NetworkDAO implements INetworkDAO{
     public static final String REMOVE = "remove.php";
     public static final String SEARCH = "get.php";
 
+    public static final String DATABASE_DEV = "warehouse_dev";
+    public static final String DATABASE_LIVE = "warehouse";
+
     private static final String URL = "http://solidparts.se/warehouse/";
 
     @Override
     public String request(String action, ArrayList<NameValuePair> nameValuePairs) throws IOException {
         String returnString = "";
-
+        nameValuePairs.add(new BasicNameValuePair("database", DATABASE_DEV));
         HttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(URL + action);
         httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
