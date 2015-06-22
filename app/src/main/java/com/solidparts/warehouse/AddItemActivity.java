@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -218,12 +219,47 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
     }
 
     public void onShowImage(View view) {
+        hideButtons();
         ((ImageView) findViewById(R.id.fullImage)).setImageBitmap(itemImageBitmap);
         (findViewById(R.id.fullImage)).setVisibility(View.VISIBLE);
     }
 
     public void onHideImage(View view) {
+        showButtons();
         (findViewById(R.id.fullImage)).setVisibility(View.INVISIBLE);
+    }
+
+    private void hideButtons() {
+        ((Button) findViewById(R.id.addImage)).setVisibility(View.INVISIBLE);
+        ((Button) findViewById(R.id.saveUpdate)).setVisibility(View.INVISIBLE);
+        ((Button) findViewById(R.id.button6)).setVisibility(View.INVISIBLE);
+        ((Button) findViewById(R.id.button4)).setVisibility(View.INVISIBLE);
+        ((Button) findViewById(R.id.btn_print)).setVisibility(View.INVISIBLE);
+        ((Button) findViewById(R.id.button7)).setVisibility(View.INVISIBLE);
+        ((Button) findViewById(R.id.button8)).setVisibility(View.INVISIBLE);
+        ((Button) findViewById(R.id.remove)).setVisibility(View.INVISIBLE);
+
+
+        //((Button) findViewById(R.id.back_button)).setVisibility(View.INVISIBLE);
+
+
+
+
+
+
+
+    }
+
+    private void showButtons() {
+        //((Button) findViewById(R.id.back_button)).setVisibility(View.VISIBLE);
+        ((Button) findViewById(R.id.addImage)).setVisibility(View.VISIBLE);
+        ((Button) findViewById(R.id.saveUpdate)).setVisibility(View.VISIBLE);
+        ((Button) findViewById(R.id.button6)).setVisibility(View.VISIBLE);
+        ((Button) findViewById(R.id.button4)).setVisibility(View.VISIBLE);
+        ((Button) findViewById(R.id.btn_print)).setVisibility(View.VISIBLE);
+        ((Button) findViewById(R.id.button7)).setVisibility(View.VISIBLE);
+        ((Button) findViewById(R.id.button8)).setVisibility(View.VISIBLE);
+        ((Button) findViewById(R.id.remove)).setVisibility(View.VISIBLE);
     }
 
     @Override
