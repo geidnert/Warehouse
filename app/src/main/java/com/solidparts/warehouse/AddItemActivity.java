@@ -73,6 +73,7 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
     private FusedLocationProviderApi locationProvicer = LocationServices.FusedLocationApi;
     private GoogleApiClient googleApiClient;
     private LocationRequest locationRequest;
+    private MessageManager messageManager;
 
 
     LocationManager locationManager;
@@ -82,6 +83,9 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
+
+        messageManager = new MessageManager();
+
         itemImage = ((ImageView) findViewById(R.id.itemImage));
         qrCodeImage = ((ImageView) findViewById(R.id.qrCodeImage));
         itemService = new ItemService(this);
@@ -185,9 +189,9 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
         @Override
         protected void onPostExecute(Boolean success) {
             if (success) {
-                showMessage("Item Updated!", false);
+                messageManager.show(getApplicationContext(), "Item Updated!", false);
             } else {
-                showMessage("Item not updated!", false);
+                messageManager.show(getApplicationContext(), "Item not updated!", false);
             }
 
             Intent intent = new Intent(AddItemActivity.this, SearchActivity.class);
@@ -225,9 +229,9 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
         @Override
         protected void onPostExecute(Boolean success) {
             if (success)
-                showMessage("Item Saved!", false);
+                messageManager.show(getApplicationContext(), "Item Saved!", false);
             else
-                showMessage("Item not saved!", false);
+                messageManager.show(getApplicationContext(), "Item not saved!", false);
 
             startActivity(new Intent(AddItemActivity.this, MainActivity.class));
         }
@@ -246,7 +250,7 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
         if (name.equals("") || description.equals("") || amount.equals("") || location.equals("") ||
                 itemImageBitmap == null || qrCodeImage == null) {
 
-            showMessage("ERROR: You need to fill in the complete form and generate a qr code and add a image!", false);
+            messageManager.show(getApplicationContext(), "ERROR: You need to fill in the complete form and generate a qr code and add a image!", false);
 
             return null;
         }
@@ -308,9 +312,9 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
         @Override
         protected void onPostExecute(Boolean success) {
             if (success) {
-                showMessage("Item removed!", false);
+                messageManager.show(getApplicationContext(), "Item removed!", false);
             } else {
-                showMessage("Item not removed!", false);
+                messageManager.show(getApplicationContext(), "Item not removed!", false);
             }
 
             Intent intent = new Intent(AddItemActivity.this, SearchActivity.class);
@@ -321,20 +325,6 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
 
         @Override
         protected void onPreExecute() {
-        }
-    }
-
-    private void showMessage(String message, boolean goBack) {
-        Context context = getApplicationContext();
-        CharSequence text = message;
-        int duration = Toast.LENGTH_LONG;
-
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.setGravity(Gravity.CENTER | Gravity.CENTER, 0, 0);
-        toast.show();
-
-        if (goBack) {
-            super.onBackPressed();
         }
     }
 
@@ -356,7 +346,7 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
             intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
             startActivityForResult(intent, QR_REQUEST);
         } catch (ActivityNotFoundException anfe) {
-            showMessage("ERROR: Something went wrong!", false);
+            messageManager.show(getApplicationContext(), "ERROR: Something went wrong!", false);
         }
     }
 
@@ -481,7 +471,7 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
                 e.printStackTrace();
             }
         } else {
-            showMessage("Location services connection failed with code " + connectionResult.getErrorCode(), false);
+            messageManager.show(getApplicationContext(), "Location services connection failed with code " + connectionResult.getErrorCode(), false);
         }
     }
 
@@ -512,11 +502,9 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
         //LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
     }
 
-    // https://www.youtube.com/watch?v=ZpwivlI7tzo&index=5&list=PL73qvSDlAVVhoVW6-_TMGWLQbAOAg-yod
-
     @Override
     public void onLocationChanged(Location location) {
-        showMessage("Location changed: " + location.getLatitude() + " " + location.getLongitude(), false);
+        messageManager.show(getApplicationContext(), "Location changed: " + location.getLatitude() + " " + location.getLongitude(), false);
     }
 
     /**

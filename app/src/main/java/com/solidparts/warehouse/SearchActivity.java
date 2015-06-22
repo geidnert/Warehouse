@@ -40,11 +40,14 @@ public class SearchActivity extends Activity {
     private ItemService itemService;
     private String[] fromActivity;
 
+    private MessageManager messageManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+        messageManager = new MessageManager();
 
         itemService = new ItemService(this);
         qrCodeImage = ((ImageView) findViewById(R.id.qrCodeImage));
@@ -131,13 +134,7 @@ public class SearchActivity extends Activity {
                 search(new String[]{contents, "1"});
             }
         } else {
-            Context context = getApplicationContext();
-            CharSequence text = "ERROR: Something went wrong when starting scanning!";
-            int duration = Toast.LENGTH_LONG;
-
-            Toast toast = Toast.makeText(context, text, duration);
-            toast.setGravity(Gravity.CENTER | Gravity.CENTER, 0, 0);
-            toast.show();
+            messageManager.show(getApplicationContext(), "ERROR: Something went wrong when starting scanning!", false);
         }
     }
 
@@ -220,18 +217,8 @@ public class SearchActivity extends Activity {
 
                 });
             } else {
-                showMessage("Did not find any matches!", false);
+                messageManager.show(getApplicationContext(), "Did not find any matches!", false);
             }
-        }
-
-        private void showMessage(String message, boolean goBack) {
-            Context context = getApplicationContext();
-            CharSequence text = message;
-            int duration = Toast.LENGTH_LONG;
-
-            Toast toast = Toast.makeText(context, text, duration);
-            toast.setGravity(Gravity.CENTER | Gravity.CENTER, 0, 0);
-            toast.show();
         }
 
         @Override

@@ -16,11 +16,14 @@ import com.solidparts.warehouse.service.ItemService;
 
 public class MainActivity extends ActionBarActivity {
     private ItemService itemService;
+    MessageManager messageManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        messageManager = new MessageManager();
 
         itemService = new ItemService(this);
 
@@ -94,20 +97,11 @@ public class MainActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(Integer from) {
             if (from == 1)
-                showMessage("Items are now synced with the online database.");
+                messageManager.show(getApplicationContext(), "Items are now synced with the online database.", false);
             else if (from == -1)
-                showMessage("Items did not sync correctly.");
+                messageManager.show(getApplicationContext(),"Items did not sync correctly.", false);
         }
 
-        private void showMessage(String message) {
-            Context context = getApplicationContext();
-            CharSequence text = message;
-            int duration = Toast.LENGTH_LONG;
-
-            Toast toast = Toast.makeText(context, text, duration);
-            toast.setGravity(Gravity.CENTER | Gravity.CENTER, 0, 0);
-            toast.show();
-        }
 
         @Override
         protected void onPreExecute() {
