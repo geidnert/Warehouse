@@ -2,7 +2,6 @@ package com.solidparts.warehouse;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.graphics.Bitmap;
@@ -19,7 +18,6 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.print.PrintHelper;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -166,116 +164,6 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
         }
     }
 
-    class ItemUpdateTask extends AsyncTask<ItemDTO, Integer, Boolean> {
-
-        @Override
-        protected Boolean doInBackground(ItemDTO... itemDTO) {
-            try {
-                itemService.updateItem(itemDTO[0]);
-                return true;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return true;
-        }
-
-        /**
-         * This method will be called when doInBackground completes.
-         * The paramter result is populated from the return values of doInBackground.
-         * This method runs on the UI thread, and therefore can update UI components.
-         */
-
-        @Override
-        protected void onPostExecute(Boolean success) {
-            if (success) {
-                messageManager.show(getApplicationContext(), "Item Updated!", false);
-            } else {
-                messageManager.show(getApplicationContext(), "Item not updated!", false);
-            }
-
-            Intent intent = new Intent(AddItemActivity.this, SearchActivity.class);
-            String[] params = {"removedItem", lastSearchWorkd};
-            intent.putExtra(EXTRA_FROM_ACTIVITY, params);
-            startActivity(intent);
-        }
-
-        @Override
-        protected void onPreExecute() {
-        }
-    }
-
-
-    class ItemAddTask extends AsyncTask<ItemDTO, Integer, Boolean> {
-
-        @Override
-        protected Boolean doInBackground(ItemDTO... itemDTO) {
-            try {
-                itemService.addItem(itemDTO[0]);
-                return true;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return true;
-        }
-
-        /**
-         * This method will be called when doInBackground completes.
-         * The paramter result is populated from the return values of doInBackground.
-         * This method runs on the UI thread, and therefore can update UI components.
-         */
-
-        @Override
-        protected void onPostExecute(Boolean success) {
-            if (success)
-                messageManager.show(getApplicationContext(), "Item Saved!", false);
-            else
-                messageManager.show(getApplicationContext(), "Item not saved!", false);
-
-            startActivity(new Intent(AddItemActivity.this, MainActivity.class));
-        }
-
-        @Override
-        protected void onPreExecute() {
-        }
-    }
-
-    private ItemDTO getItemDTO() {
-        String name = ((EditText) findViewById(R.id.name)).getText().toString();
-        String description = ((EditText) findViewById(R.id.description)).getText().toString();
-        String amount = ((EditText) findViewById(R.id.amount)).getText().toString();
-        String location = ((EditText) findViewById(R.id.location)).getText().toString();
-
-        if (name.equals("") || description.equals("") || amount.equals("") || location.equals("") ||
-                itemImageBitmap == null || qrCodeImage == null) {
-
-            messageManager.show(getApplicationContext(), "ERROR: You need to fill in the complete form and generate a qr code and add a image!", false);
-
-            return null;
-        }
-
-        ItemDTO itemDTO = new ItemDTO();
-        itemDTO.setCacheID(cacheId);
-        itemDTO.setOnlineid(intentItemDTO != null ? intentItemDTO.getOnlineid() : -1);
-        itemDTO.setName(name);
-        itemDTO.setDescription(description);
-        itemDTO.setCount(Integer.parseInt(amount));
-        itemDTO.setLocation(location);
-
-        ByteArrayOutputStream bos1 = new ByteArrayOutputStream();
-        ByteArrayOutputStream bos2 = new ByteArrayOutputStream();
-
-        itemImageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos1);
-        qrCodeImageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos2);
-        byte[] itemImg = bos1.toByteArray();
-        byte[] qrCodeImg = bos2.toByteArray();
-
-        itemDTO.setImage(itemImg);
-        itemDTO.setQrCode(qrCodeImg);
-        return itemDTO;
-    }
-
     public void onRemove(View view) {
 
         ItemDTO itemDTO = getItemDTO();
@@ -287,45 +175,6 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
         ItemDTO[] items = new ItemDTO[1];
         items[0] = itemDTO;
         itemRemoveTask.execute(items);
-    }
-
-    class ItemRemoveTask extends AsyncTask<ItemDTO, Integer, Boolean> {
-
-        @Override
-        protected Boolean doInBackground(ItemDTO... itemDTO) {
-            try {
-                itemService.removeItem(itemDTO[0]);
-                return true;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return true;
-        }
-
-        /**
-         * This method will be called when doInBackground completes.
-         * The paramter result is populated from the return values of doInBackground.
-         * This method runs on the UI thread, and therefore can update UI components.
-         */
-
-        @Override
-        protected void onPostExecute(Boolean success) {
-            if (success) {
-                messageManager.show(getApplicationContext(), "Item removed!", false);
-            } else {
-                messageManager.show(getApplicationContext(), "Item not removed!", false);
-            }
-
-            Intent intent = new Intent(AddItemActivity.this, SearchActivity.class);
-            String[] params = {"removedItem", lastSearchWorkd};
-            intent.putExtra(EXTRA_FROM_ACTIVITY, params);
-            startActivity(intent);
-        }
-
-        @Override
-        protected void onPreExecute() {
-        }
     }
 
     public void onCancle(View view) {
@@ -368,13 +217,6 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
         startActivityForResult(intent, CAMERA_REQUEST);
     }
 
-    private String getPictureName() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyMMdd_HHmmss");
-        String timestamp = sdf.format(new Date());
-
-        return "itemImage" + timestamp + ".jpg";
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -404,7 +246,7 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
         }
     }
 
-    static public Bitmap generateQRCodeBitmap(@NonNull String contentsToEncode,
+    public static Bitmap generateQRCodeBitmap(@NonNull String contentsToEncode,
                                               int imageWidth, int imageHeight,
                                               int marginSize, int color, int colorBack)
             throws WriterException, IllegalStateException {
@@ -438,22 +280,9 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
         return bitmap;
     }
 
-    private void showImage(Bitmap image) {
-        itemImageBitmap = image;
-        itemImage.setImageBitmap(itemImageBitmap);
-    }
-
-    private void showQRCodeImage(Bitmap image) {
-        qrCodeImage.setImageBitmap(image);
-    }
-
     @Override
     public void onConnected(Bundle bundle) {
         requestLocationUpdates();
-    }
-
-    private void requestLocationUpdates() {
-        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
     }
 
     @Override
@@ -507,9 +336,76 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
         messageManager.show(getApplicationContext(), "Location changed: " + location.getLatitude() + " " + location.getLongitude(), false);
     }
 
-    /**
-     * AsyncTask to generate QR Code image
-     */
+    public void onPrint(View view) {
+        PrintHelper printHelper = new PrintHelper(this);
+        printHelper.setScaleMode(printHelper.SCALE_MODE_FIT);
+        printHelper.setColorMode(printHelper.COLOR_MODE_MONOCHROME);
+
+        printHelper.printBitmap("Printing QR code", qrCodeImageBitmap);
+    }
+
+    //---------------------------------------------------------------------------------------------
+    //---------------------------- PRIVATE --------------------------------------------------------
+
+    private String getPictureName() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyMMdd_HHmmss");
+        String timestamp = sdf.format(new Date());
+
+        return "itemImage" + timestamp + ".jpg";
+    }
+
+    private void showImage(Bitmap image) {
+        itemImageBitmap = image;
+        itemImage.setImageBitmap(itemImageBitmap);
+    }
+
+    private void showQRCodeImage(Bitmap image) {
+        qrCodeImage.setImageBitmap(image);
+    }
+
+    private void requestLocationUpdates() {
+        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
+    }
+
+    private ItemDTO getItemDTO() {
+        String name = ((EditText) findViewById(R.id.name)).getText().toString();
+        String description = ((EditText) findViewById(R.id.description)).getText().toString();
+        String amount = ((EditText) findViewById(R.id.amount)).getText().toString();
+        String location = ((EditText) findViewById(R.id.location)).getText().toString();
+
+        if (name.equals("") || description.equals("") || amount.equals("") || location.equals("") ||
+                itemImageBitmap == null || qrCodeImage == null) {
+
+            messageManager.show(getApplicationContext(), "ERROR: You need to fill in the complete form and generate a qr code and add a image!", false);
+
+            return null;
+        }
+
+        ItemDTO itemDTO = new ItemDTO();
+        itemDTO.setCacheID(cacheId);
+        itemDTO.setOnlineid(intentItemDTO != null ? intentItemDTO.getOnlineid() : -1);
+        itemDTO.setName(name);
+        itemDTO.setDescription(description);
+        itemDTO.setCount(Integer.parseInt(amount));
+        itemDTO.setLocation(location);
+
+        ByteArrayOutputStream bos1 = new ByteArrayOutputStream();
+        ByteArrayOutputStream bos2 = new ByteArrayOutputStream();
+
+        itemImageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos1);
+        qrCodeImageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos2);
+        byte[] itemImg = bos1.toByteArray();
+        byte[] qrCodeImg = bos2.toByteArray();
+
+        itemDTO.setImage(itemImg);
+        itemDTO.setQrCode(qrCodeImg);
+        return itemDTO;
+    }
+
+
+    //---------------------------------------------------------------------------------------------
+    // -------------------------- ASYNC -----------------------------------------------------------
+
     private class AsyncGenerateQRCode extends AsyncTask<Integer, Void, Integer> {
 
         /**
@@ -571,12 +467,99 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
         }
     }
 
-    public void onPrint(View view) {
-        PrintHelper printHelper = new PrintHelper(this);
-        printHelper.setScaleMode(printHelper.SCALE_MODE_FIT);
-        printHelper.setColorMode(printHelper.COLOR_MODE_MONOCHROME);
+    private class ItemRemoveTask extends AsyncTask<ItemDTO, Integer, Boolean> {
 
-        printHelper.printBitmap("Printing QR code", qrCodeImageBitmap);
+        @Override
+        protected Boolean doInBackground(ItemDTO... itemDTO) {
+            try {
+                itemService.removeItem(itemDTO[0]);
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            if (success) {
+                messageManager.show(getApplicationContext(), "Item removed!", false);
+            } else {
+                messageManager.show(getApplicationContext(), "Item not removed!", false);
+            }
+
+            Intent intent = new Intent(AddItemActivity.this, SearchActivity.class);
+            String[] params = {"removedItem", lastSearchWorkd};
+            intent.putExtra(EXTRA_FROM_ACTIVITY, params);
+            startActivity(intent);
+        }
+
+        @Override
+        protected void onPreExecute() {
+        }
+    }
+
+    private class ItemAddTask extends AsyncTask<ItemDTO, Integer, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(ItemDTO... itemDTO) {
+            try {
+                itemService.addItem(itemDTO[0]);
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            if (success)
+                messageManager.show(getApplicationContext(), "Item Saved!", false);
+            else
+                messageManager.show(getApplicationContext(), "Item not saved!", false);
+
+            startActivity(new Intent(AddItemActivity.this, MainActivity.class));
+        }
+
+        @Override
+        protected void onPreExecute() {
+        }
+    }
+
+    private class ItemUpdateTask extends AsyncTask<ItemDTO, Integer, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(ItemDTO... itemDTO) {
+            try {
+                itemService.updateItem(itemDTO[0]);
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            if (success) {
+                messageManager.show(getApplicationContext(), "Item Updated!", false);
+            } else {
+                messageManager.show(getApplicationContext(), "Item not updated!", false);
+            }
+
+            Intent intent = new Intent(AddItemActivity.this, SearchActivity.class);
+            String[] params = {"removedItem", lastSearchWorkd};
+            intent.putExtra(EXTRA_FROM_ACTIVITY, params);
+            startActivity(intent);
+        }
+
+        @Override
+        protected void onPreExecute() {
+        }
     }
 
 
