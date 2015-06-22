@@ -217,6 +217,15 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
         startActivityForResult(intent, CAMERA_REQUEST);
     }
 
+    public void onShowImage(View view) {
+        ((ImageView) findViewById(R.id.fullImage)).setImageBitmap(itemImageBitmap);
+        (findViewById(R.id.fullImage)).setVisibility(View.VISIBLE);
+    }
+
+    public void onHideImage(View view) {
+        (findViewById(R.id.fullImage)).setVisibility(View.INVISIBLE);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

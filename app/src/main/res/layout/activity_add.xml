@@ -62,6 +62,7 @@
         android:background="#dddddd"
         android:layout_below="@+id/button7"
         android:layout_alignParentLeft="true"
+        android:onClick="onShowImage"
         android:layout_alignParentStart="true" />
 
     <Button
@@ -231,5 +232,17 @@
         android:nestedScrollingEnabled="false"
         android:visibility="invisible"
         android:onClick="onRemove" />
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/fullImage"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:visibility="invisible"
+        android:onClick="onHideImage"
+        android:layout_alignParentStart="true"
+        android:layout_above=""
+        android:background="@android:color/white" />
 
 </RelativeLayout>
