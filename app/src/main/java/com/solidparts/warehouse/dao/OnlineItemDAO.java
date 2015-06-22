@@ -16,16 +16,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by geidnert on 28/05/15.
- */
 public class OnlineItemDAO implements IItemDAO {
 
     private final NetworkDAO networkDAO;
     private final OfflineItemDAO offlineItemDAO;
     private final Context context;
 
-    public OnlineItemDAO(Context context){
+    public OnlineItemDAO(Context context) {
         networkDAO = new NetworkDAO();
         offlineItemDAO = new OfflineItemDAO(context);
         this.context = context;
@@ -53,7 +50,7 @@ public class OnlineItemDAO implements IItemDAO {
         JSONObject root = new JSONObject(request);
         JSONArray items = root.getJSONArray("items");
 
-        for (int i=0; i < items.length(); i++){
+        for (int i = 0; i < items.length(); i++) {
             JSONObject jsonItem = items.getJSONObject(i).getJSONObject("item");
 
             int id = jsonItem.getInt("id");
@@ -92,12 +89,11 @@ public class OnlineItemDAO implements IItemDAO {
 
         String request = networkDAO.request(NetworkDAO.ADD, nameValuePairs);
 
-        // TODO -- update with online db primary key on local item
         itemDTO.setOnlineid(Integer.parseInt(request.trim()));
         offlineItemDAO.updateItem(itemDTO, sync);
 
         // Also save to local database if its not a sync operation
-        if(sync == 0) {
+        if (sync == 0) {
             offlineItemDAO.addItem(itemDTO, 1);
         }
 
@@ -118,10 +114,9 @@ public class OnlineItemDAO implements IItemDAO {
 
         // Also save to local database if its not a sync operation
         //if (sync == 0) {
-            offlineItemDAO.updateItem(itemDTO, 1);
+        offlineItemDAO.updateItem(itemDTO, 1);
         //}
     }
-
 
 
     @Override

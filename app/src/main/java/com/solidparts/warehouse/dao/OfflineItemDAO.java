@@ -14,10 +14,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by geidnert on 28/05/15.
- * http://www.techotopia.com/index.php/An_Android_Studio_SQLite_Database_Tutorial
- */
 public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
     public static final String ITEM = "item";
     public static final String CACHE_ID = "cache_id";
@@ -54,7 +50,7 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
         String query = "Select * FROM " + ITEM + " WHERE " + NAME + " LIKE  \"%" + searchTerm + "%\"" + " OR " + LOCATION + " LIKE \"%" + searchTerm + "%\" AND " + SYNCED + " < 2";
 
         // Search all in a location
-        if(searchType == ALL) {
+        if (searchType == ALL) {
             query = "Select * FROM " + ITEM;
         }
         List<ItemDTO> searchResultList = getItemDTOs(query);
@@ -117,7 +113,7 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
     }
 
     @Override
-    public void updateItem(ItemDTO itemDTO, int sync){
+    public void updateItem(ItemDTO itemDTO, int sync) {
         System.out.println("values: " + itemDTO.toString());
         ContentValues cv = new ContentValues();
 

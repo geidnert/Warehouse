@@ -3,8 +3,8 @@ package com.solidparts.warehouse;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -72,7 +72,7 @@ public class MainActivity extends ActionBarActivity {
         @Override
         protected Integer doInBackground(String... searchTerms) {
             try {
-                if(searchTerms[0].equals("fromOnlineDb")){
+                if (searchTerms[0].equals("fromOnlineDb")) {
                     return itemService.syncFromOnlineDB();
                 } else {
                     return itemService.syncToOnlineDB();
@@ -93,9 +93,9 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(Integer from) {
-            if(from == 1)
+            if (from == 1)
                 showMessage("Items are now synced with the online database.");
-            else if(from == -1)
+            else if (from == -1)
                 showMessage("Items did not sync correctly.");
         }
 

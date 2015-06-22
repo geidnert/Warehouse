@@ -8,17 +8,16 @@ import android.content.IntentSender;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Looper;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.print.PrintHelper;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -43,10 +42,8 @@ import com.google.zxing.common.BitMatrix;
 import com.solidparts.warehouse.dto.ItemDTO;
 import com.solidparts.warehouse.service.ItemService;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.EnumMap;
@@ -78,7 +75,7 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
     private LocationRequest locationRequest;
 
 
-    LocationManager locationManager ;
+    LocationManager locationManager;
     String provider;
 
     @Override
@@ -152,7 +149,7 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
             return;
         }
 
-        if(update){
+        if (update) {
             ItemUpdateTask itemUpdateTask = new ItemUpdateTask();
             ItemDTO[] items = new ItemDTO[1];
             items[0] = itemDTO;
@@ -187,7 +184,7 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
 
         @Override
         protected void onPostExecute(Boolean success) {
-            if(success){
+            if (success) {
                 showMessage("Item Updated!", false);
             } else {
                 showMessage("Item not updated!", false);
@@ -227,7 +224,7 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
 
         @Override
         protected void onPostExecute(Boolean success) {
-            if(success)
+            if (success)
                 showMessage("Item Saved!", false);
             else
                 showMessage("Item not saved!", false);
@@ -310,7 +307,7 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
 
         @Override
         protected void onPostExecute(Boolean success) {
-            if(success) {
+            if (success) {
                 showMessage("Item removed!", false);
             } else {
                 showMessage("Item not removed!", false);
@@ -342,7 +339,7 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
     }
 
     public void onCancle(View view) {
-        if(lastSearchWorkd != null) {
+        if (lastSearchWorkd != null) {
             Intent intent = new Intent(AddItemActivity.this, SearchActivity.class);
             String[] params = {"removedItem", lastSearchWorkd};
             intent.putExtra(EXTRA_FROM_ACTIVITY, params);
@@ -497,16 +494,16 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
     @Override
     protected void onStop() {
         super.onStop();
-       // googleApiClient.disconnect();
+        // googleApiClient.disconnect();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-       //if(googleApiClient.isConnected()){
-       //     requestLocationUpdates();
-       // }
+        //if(googleApiClient.isConnected()){
+        //     requestLocationUpdates();
+        // }
     }
 
     @Override
@@ -519,7 +516,7 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
 
     @Override
     public void onLocationChanged(Location location) {
-        showMessage("Location changed: " + location.getLatitude() + " " + location.getLongitude() , false);
+        showMessage("Location changed: " + location.getLatitude() + " " + location.getLongitude(), false);
     }
 
     /**

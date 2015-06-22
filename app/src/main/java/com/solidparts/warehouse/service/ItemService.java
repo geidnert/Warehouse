@@ -13,16 +13,13 @@ import com.solidparts.warehouse.dto.ItemDTO;
 
 import java.util.List;
 
-/**
- * Created by geidnert on 28/05/15.
- */
 public class ItemService implements IItemService {
 
     IItemDAO onlineItemDAO;
     IItemDAO offlineItemDAO;
     Context context;
 
-    public ItemService(Context context){
+    public ItemService(Context context) {
         onlineItemDAO = new OnlineItemDAO(context);
         offlineItemDAO = new OfflineItemDAO(context);
         this.context = context;
@@ -76,7 +73,7 @@ public class ItemService implements IItemService {
     }
 
     @Override
-    public void removeItem(ItemDTO itemDTO)  {
+    public void removeItem(ItemDTO itemDTO) {
         boolean success = false;
         boolean foundNotSyncedIem = false;
 
@@ -88,15 +85,15 @@ public class ItemService implements IItemService {
                 //offlineItemDAO.removeItemByOnlineId(onlineId);
                 List<ItemDTO> notSyncedAddedItems = offlineItemDAO.getNotSyncedAddedItems();
 
-                for(ItemDTO notSynceditem : notSyncedAddedItems){
-                    if(notSynceditem.getCacheID() == itemDTO.getCacheID()){
+                for (ItemDTO notSynceditem : notSyncedAddedItems) {
+                    if (notSynceditem.getCacheID() == itemDTO.getCacheID()) {
                         offlineItemDAO.removeItemByCacheId(itemDTO.getCacheID());
                         foundNotSyncedIem = true;
                     }
                 }
 
                 // mark for deletion
-                if(!foundNotSyncedIem) {
+                if (!foundNotSyncedIem) {
                     offlineItemDAO.updateItem(itemDTO, 2);
                 }
             } catch (Exception e1) {
@@ -120,9 +117,9 @@ public class ItemService implements IItemService {
         }
 
         // Sync added items to online db if available
-        if(notSyncedAddedItems != null && notSyncedAddedItems.size() > 0) {
+        if (notSyncedAddedItems != null && notSyncedAddedItems.size() > 0) {
 
-            for(ItemDTO itemDTO : notSyncedAddedItems) {
+            for (ItemDTO itemDTO : notSyncedAddedItems) {
                 try {
                     onlineItemDAO.addItem(itemDTO, 1); // add not synced item to online db
                     offlineItemDAO.updateItem(itemDTO, 1); // mark item as synced in local db
@@ -135,9 +132,9 @@ public class ItemService implements IItemService {
         }
 
         // Sync removed items to online db if available
-        if(notSyncedRemovedItems != null && notSyncedRemovedItems.size() > 0) {
+        if (notSyncedRemovedItems != null && notSyncedRemovedItems.size() > 0) {
 
-            for(ItemDTO itemDTO : notSyncedRemovedItems) {
+            for (ItemDTO itemDTO : notSyncedRemovedItems) {
                 try {
                     onlineItemDAO.removeItemByOnlineId(itemDTO.getOnlineid()); // add not synced item to online db
                     offlineItemDAO.removeItemByOnlineId(itemDTO.getOnlineid()); // mark item as synced in local db
@@ -154,7 +151,7 @@ public class ItemService implements IItemService {
 
     @Override
     public int syncFromOnlineDB() {
-        if(!isNetworkAvaliable(context)){
+        if (!isNetworkAvaliable(context)) {
             return -1;
         }
 
@@ -170,19 +167,19 @@ public class ItemService implements IItemService {
         }
 
         // Sync to offline db
-        if(onlineItems != null && onlineItems.size() > 0) {
-            for(ItemDTO onlineItemDto : onlineItems) {
-                    boolean foundItem = false;
+        if (onlineItems != null && onlineItems.size() > 0) {
+            for (ItemDTO onlineItemDto : onlineItems) {
+                boolean foundItem = false;
                 try {
                     // check if online db item allready is defined in local db
-                    for(ItemDTO localItemDTO : localItems) {
-                        if (localItemDTO.equals(onlineItemDto)){
+                    for (ItemDTO localItemDTO : localItems) {
+                        if (localItemDTO.equals(onlineItemDto)) {
                             foundItem = true;
                         }
                     }
 
                     // Did not find the item in the local storage, add it
-                    if(!foundItem){
+                    if (!foundItem) {
                         offlineItemDAO.addItem(onlineItemDto, 1); // mark item as synced in local db
                     }
                 } catch (Exception e) {
