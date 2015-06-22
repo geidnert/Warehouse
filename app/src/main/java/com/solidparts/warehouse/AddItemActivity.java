@@ -238,20 +238,9 @@ public class AddItemActivity extends Activity implements GoogleApiClient.Connect
         ((Button) findViewById(R.id.button7)).setVisibility(View.INVISIBLE);
         ((Button) findViewById(R.id.button8)).setVisibility(View.INVISIBLE);
         ((Button) findViewById(R.id.remove)).setVisibility(View.INVISIBLE);
-
-
-        //((Button) findViewById(R.id.back_button)).setVisibility(View.INVISIBLE);
-
-
-
-
-
-
-
     }
 
     private void showButtons() {
-        //((Button) findViewById(R.id.back_button)).setVisibility(View.VISIBLE);
         ((Button) findViewById(R.id.addImage)).setVisibility(View.VISIBLE);
         ((Button) findViewById(R.id.saveUpdate)).setVisibility(View.VISIBLE);
         ((Button) findViewById(R.id.button6)).setVisibility(View.VISIBLE);
