@@ -263,7 +263,7 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
         findViewById(R.id.saveUpdate).setVisibility(View.INVISIBLE);
         findViewById(R.id.button6).setVisibility(View.INVISIBLE);
         findViewById(R.id.button4).setVisibility(View.INVISIBLE);
-        findViewById(R.id.btn_print).setVisibility(View.INVISIBLE);
+        //findViewById(R.id.btn_print).setVisibility(View.INVISIBLE);
         findViewById(R.id.button7).setVisibility(View.INVISIBLE);
         findViewById(R.id.button8).setVisibility(View.INVISIBLE);
         findViewById(R.id.remove).setVisibility(View.INVISIBLE);
@@ -276,7 +276,7 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
         findViewById(R.id.saveUpdate).setVisibility(View.VISIBLE);
         findViewById(R.id.button6).setVisibility(View.VISIBLE);
         findViewById(R.id.button4).setVisibility(View.VISIBLE);
-        findViewById(R.id.btn_print).setVisibility(View.VISIBLE);
+        //findViewById(R.id.btn_print).setVisibility(View.VISIBLE);
         findViewById(R.id.button7).setVisibility(View.VISIBLE);
         findViewById(R.id.button8).setVisibility(View.VISIBLE);
         findViewById(R.id.remove).setVisibility(View.VISIBLE);
@@ -465,15 +465,13 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
         itemLocation = location;
     }
 
-
-
-
     public void onPrint(View view) {
-        PrintHelper printHelper = new PrintHelper(this);
-        printHelper.setScaleMode(printHelper.SCALE_MODE_FIT);
-        printHelper.setColorMode(printHelper.COLOR_MODE_MONOCHROME);
-
-        printHelper.printBitmap("Printing QR code", qrCodeImageBitmap);
+        if(qrCodeImageBitmap != null) {
+            PrintHelper printHelper = new PrintHelper(this);
+            printHelper.setScaleMode(printHelper.SCALE_MODE_FIT);
+            printHelper.setColorMode(printHelper.COLOR_MODE_MONOCHROME);
+            printHelper.printBitmap("Printing QR code", qrCodeImageBitmap);
+        }
     }
 
     //---------------------------------------------------------------------------------------------

@@ -98,8 +98,8 @@ public class MainActivity extends ActionBarActivity {
         protected void onPostExecute(Integer from) {
             if (from == 1)
                 messageManager.show(getApplicationContext(), "Items are now synced with the online database.", false);
-            else if (from == -1)
-                messageManager.show(getApplicationContext(),"Items did not sync correctly.", false);
+            //else if (from == -1)
+                //messageManager.show(getApplicationContext(),"Items did not sync correctly.", false);
         }
 
 
