@@ -38,6 +38,11 @@ import com.google.android.gms.location.FusedLocationProviderApi;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
@@ -54,7 +59,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 
-public class AddItemActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+public class AddItemActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, GoogleMap.OnMapClickListener {
     static public int MARGIN_AUTOMATIC = -1;
     public static final String ACTION_SCAN = "com.google.zxing.client.android.SCAN";
     public static final int CAMERA_REQUEST = 1;
@@ -78,6 +83,7 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
     private GoogleApiClient googleApiClient;
     private LocationRequest locationRequest;
     private MessageManager messageManager;
+    private GoogleMap map;
 
 
     LocationManager locationManager;
@@ -96,6 +102,9 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
 
         intentItemDTO = (ItemDTO) getIntent().getSerializableExtra("intentItemDTO");
         lastSearchWorkd = getIntent().getStringExtra("searchWord");
+
+        map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+        map.setOnMapClickListener(this);
 
         if (intentItemDTO != null) {
             cacheId = intentItemDTO.getCacheID();
@@ -445,8 +454,15 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
 
     @Override
     public void onLocationChanged(Location location) {
-        messageManager.show(getApplicationContext(), "Location changed: " + location.getLatitude() + " " + location.getLongitude(), false);
+        //messageManager.show(getApplicationContext(), "Location changed: " + location.getLatitude() + " " + location.getLongitude(), false);
+        drawItemMarker(location);
     }
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+        showButtons();
+    }
+
 
     public void onPrint(View view) {
         PrintHelper printHelper = new PrintHelper(this);
@@ -458,6 +474,26 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
 
     //---------------------------------------------------------------------------------------------
     //---------------------------- PRIVATE --------------------------------------------------------
+
+    private void drawItemMarker(Location location){
+        hideButtons();
+
+
+        map.clear();
+
+        //  convert the location object to a LatLng object that can be used by the map API
+        LatLng currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
+
+        // zoom to the current location
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 16));
+
+        // add a marker to the map indicating our current position
+        map.addMarker(new MarkerOptions()
+                .position(currentPosition)
+                .snippet("Lat:" + location.getLatitude() + "Lng:"+ location.getLongitude()));
+
+        map.setOnMapClickListener(this);
+    }
 
     private String getPictureName() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyMMdd_HHmmss");
