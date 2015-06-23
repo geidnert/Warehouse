@@ -25,23 +25,33 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
     public static final String COUNT = "count";
     public static final String QRCODE = "qrcode";
     public static final String SYNCED = "synced";
+    public static final String LONGITUDE = "longitude";
+    public static final String LATITUDE = "latitude";
 
     public OfflineItemDAO(Context context) {
-        super(context, "warehouse.db", null, 1);
+        super(context, "warehouse.db", null, 3);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         String createItems = "CREATE TABLE " + ITEM + " ( " + CACHE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 ONLINEID + " INTEGER, " + NAME + " TEXT, " + DESCRIPTION + " TEXT, " + COUNT + " INTEGER, " + IMAGE +
-                " BLOB, " + QRCODE + " TEXT, " + LOCATION + " TEXT, " + SYNCED + " INTEGER );";
+                " BLOB, " + QRCODE + " TEXT, " + LOCATION + " TEXT, " + SYNCED + " INTEGER, " + LONGITUDE + " DOUBLE, " +
+                LATITUDE + " DOUBLE );";
 
         db.execSQL(createItems);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS " + ITEM);
 
+        String createItems = "CREATE TABLE " + ITEM + " ( " + CACHE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                ONLINEID + " INTEGER, " + NAME + " TEXT, " + DESCRIPTION + " TEXT, " + COUNT + " INTEGER, " + IMAGE +
+                " BLOB, " + QRCODE + " TEXT, " + LOCATION + " TEXT, " + SYNCED + " INTEGER, " + LONGITUDE + " DOUBLE, " +
+                LATITUDE + " DOUBLE );";
+
+        db.execSQL(createItems);
     }
 
     @Override
@@ -79,13 +89,17 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
             ItemDTO itemDto = new ItemDTO();
 
             itemDto.setCacheID(cursor.getInt(0));
-            itemDto.setCount(cursor.getInt(4));
-            itemDto.setDescription(cursor.getString(3));
-            itemDto.setLocation(cursor.getString(7));
-            itemDto.setName(cursor.getString(2));
             itemDto.setOnlineid(cursor.getInt(1));
+            itemDto.setName(cursor.getString(2));
+            itemDto.setDescription(cursor.getString(3));
+            itemDto.setCount(cursor.getInt(4));
             itemDto.setImage(cursor.getBlob(5));
             itemDto.setQrCode(cursor.getBlob(6));
+            itemDto.setLocation(cursor.getString(7));
+            itemDto.setLongitude(cursor.getDouble(9));
+            itemDto.setLatitude(cursor.getDouble(10));
+
+
 
             searchResultList.add(itemDto);
             cursor.moveToNext();
@@ -107,6 +121,8 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
         cv.put(IMAGE, itemDTO.getImage());
         cv.put(QRCODE, itemDTO.getQrCode());
         cv.put(SYNCED, sync);
+        cv.put(LONGITUDE, itemDTO.getLongitude());
+        cv.put(LATITUDE, itemDTO.getLatitude());
 
         long cachceId = getWritableDatabase().insert(ITEM, null, cv);
         itemDTO.setCacheID(cachceId);
@@ -125,6 +141,8 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
         cv.put(IMAGE, itemDTO.getImage());
         cv.put(QRCODE, itemDTO.getQrCode());
         cv.put(SYNCED, sync);
+        cv.put(LONGITUDE, itemDTO.getLongitude());
+        cv.put(LATITUDE, itemDTO.getLatitude());
 
         String where = "onlineid=?";
 

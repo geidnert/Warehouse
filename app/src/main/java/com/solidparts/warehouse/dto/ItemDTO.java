@@ -5,6 +5,8 @@ import java.util.Arrays;
 
 public class ItemDTO implements Serializable {
     private long cacheID;
+    double longitude;
+    double latitude;
     int onlineid;
     int count;
     String name;
@@ -12,6 +14,22 @@ public class ItemDTO implements Serializable {
     String location;
     byte[] image;
     byte[] qrCode;
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
 
     public int getOnlineid() {
         return onlineid;
@@ -104,6 +122,8 @@ public class ItemDTO implements Serializable {
     public String toString() {
         return "ItemDTO{" +
                 "cacheID=" + cacheID +
+                ", longitude=" + longitude +
+                ", latitude=" + latitude +
                 ", onlineid=" + onlineid +
                 ", count=" + count +
                 ", name='" + name + '\'' +

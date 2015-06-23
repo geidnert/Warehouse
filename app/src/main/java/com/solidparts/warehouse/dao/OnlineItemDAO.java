@@ -58,6 +58,8 @@ public class OnlineItemDAO implements IItemDAO {
             String name = jsonItem.getString("name");
             String description = jsonItem.getString("description");
             String location = jsonItem.getString("location");
+            double longitude = jsonItem.getDouble("longitude");
+            double latitude = jsonItem.getDouble("latitude");
 
             byte[] image = Base64.decode(jsonItem.get("image").toString(), Base64.DEFAULT);
             byte[] qrCode = Base64.decode(jsonItem.get("qrcode").toString(), Base64.DEFAULT);
@@ -70,6 +72,8 @@ public class OnlineItemDAO implements IItemDAO {
             itemDTO.setLocation(location);
             itemDTO.setImage(image);
             itemDTO.setQrCode(qrCode);
+            itemDTO.setLongitude(longitude);
+            itemDTO.setLatitude(latitude);
 
             allItems.add(itemDTO);
         }
@@ -86,6 +90,8 @@ public class OnlineItemDAO implements IItemDAO {
         nameValuePairs.add(new BasicNameValuePair("location", itemDTO.getLocation()));
         nameValuePairs.add(new BasicNameValuePair("image", Base64.encodeToString(itemDTO.getImage(), Base64.DEFAULT)));
         nameValuePairs.add(new BasicNameValuePair("qrcode", Base64.encodeToString(itemDTO.getQrCode(), Base64.DEFAULT)));
+        nameValuePairs.add(new BasicNameValuePair("longitude", itemDTO.getLongitude() + ""));
+        nameValuePairs.add(new BasicNameValuePair("latitude", itemDTO.getLatitude() + ""));
 
         String request = networkDAO.request(NetworkDAO.ADD, nameValuePairs);
 
@@ -109,6 +115,8 @@ public class OnlineItemDAO implements IItemDAO {
         nameValuePairs.add(new BasicNameValuePair("location", itemDTO.getLocation()));
         nameValuePairs.add(new BasicNameValuePair("image", Base64.encodeToString(itemDTO.getImage(), Base64.DEFAULT)));
         nameValuePairs.add(new BasicNameValuePair("qrcode", Base64.encodeToString(itemDTO.getQrCode(), Base64.DEFAULT)));
+        nameValuePairs.add(new BasicNameValuePair("longitude", itemDTO.getLongitude() + ""));
+        nameValuePairs.add(new BasicNameValuePair("latitude", itemDTO.getLatitude() + ""));
 
         networkDAO.request(NetworkDAO.UPDATE, nameValuePairs);
 
@@ -143,5 +151,4 @@ public class OnlineItemDAO implements IItemDAO {
     public List<ItemDTO> getNotSyncedRemovedItems() throws Exception {
         return null;
     }
-
 }

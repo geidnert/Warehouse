@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Warehouse v1.0</string>
+    <string name="app_name">Warehouse v1.1</string>
 
     <string name="push_notification">Welcome to your Warehouse! Please choose activity.</string>
     <string name="action_sync">Sync from online database</string>

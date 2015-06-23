@@ -1,6 +1,5 @@
 package com.solidparts.warehouse;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
@@ -25,7 +24,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -38,11 +36,6 @@ import com.google.android.gms.location.FusedLocationProviderApi;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
@@ -53,8 +46,6 @@ import com.solidparts.warehouse.service.ItemService;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -88,7 +79,6 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
     private MessageManager messageManager;
 
 
-
     LocationManager locationManager;
     String provider;
 
@@ -117,12 +107,18 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
             ((EditText) findViewById(R.id.amount)).setText("" + intentItemDTO.getCount());
             ((EditText) findViewById(R.id.location)).setText(intentItemDTO.getLocation());
 
+            itemLocation = new Location("");
+            itemLocation .setLongitude(intentItemDTO.getLongitude());
+            itemLocation .setLatitude(intentItemDTO.getLatitude());
+
             Bitmap image = BitmapFactory.decodeByteArray(intentItemDTO.getImage(), 0, intentItemDTO.getImage().length);
             showImage(image);
 
             Bitmap qrCodeImage = BitmapFactory.decodeByteArray(intentItemDTO.getQrCode(), 0, intentItemDTO.getQrCode().length);
             showQRCodeImage(qrCodeImage);
             new AsyncGenerateQRCode().execute(-1);
+
+
 
             update = true;
         }
@@ -136,8 +132,8 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
 
         locationRequest = new LocationRequest();
 
-        locationRequest.setInterval(MINUTE);
-        locationRequest.setFastestInterval(15 * MILLISECONDS_PER_SECOND);
+        locationRequest.setInterval(60 * MINUTE);
+        locationRequest.setFastestInterval(3600 * MILLISECONDS_PER_SECOND);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
     }
@@ -243,14 +239,14 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
         (findViewById(R.id.fullImage)).setVisibility(View.INVISIBLE);
     }
 
-    public void onUpdateGps(View view){
-        if(googleApiClient.isConnected()){
+    public void onUpdateGps(View view) {
+        if (googleApiClient.isConnected()) {
             requestLocationUpdates();
         }
     }
 
     public void onShowGps(View view) {
-        if(itemLocation != null) {
+        if (itemLocation != null) {
             Intent intent = new Intent(AddItemActivity.this, GPSActivity.class);
             intent.putExtra(EXTRA_LONGITUDE, itemLocation.getLongitude());
             intent.putExtra(EXTRA_LATITUDE, itemLocation.getLatitude());
@@ -262,7 +258,7 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
         findViewById(R.id.addImage).setVisibility(View.INVISIBLE);
         findViewById(R.id.saveUpdate).setVisibility(View.INVISIBLE);
         findViewById(R.id.button6).setVisibility(View.INVISIBLE);
-        findViewById(R.id.button4).setVisibility(View.INVISIBLE);
+        findViewById(R.id.btn_add_existing).setVisibility(View.INVISIBLE);
         //findViewById(R.id.btn_print).setVisibility(View.INVISIBLE);
         findViewById(R.id.button7).setVisibility(View.INVISIBLE);
         findViewById(R.id.button8).setVisibility(View.INVISIBLE);
@@ -275,11 +271,13 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
         findViewById(R.id.addImage).setVisibility(View.VISIBLE);
         findViewById(R.id.saveUpdate).setVisibility(View.VISIBLE);
         findViewById(R.id.button6).setVisibility(View.VISIBLE);
-        findViewById(R.id.button4).setVisibility(View.VISIBLE);
+        //findViewById(R.id.btn_add_existing).setVisibility(View.VISIBLE);
         //findViewById(R.id.btn_print).setVisibility(View.VISIBLE);
         findViewById(R.id.button7).setVisibility(View.VISIBLE);
         findViewById(R.id.button8).setVisibility(View.VISIBLE);
-        findViewById(R.id.remove).setVisibility(View.VISIBLE);
+
+        if(intentItemDTO != null)
+            findViewById(R.id.remove).setVisibility(View.VISIBLE);
         findViewById(R.id.btn_show_gps).setVisibility(View.VISIBLE);
         findViewById(R.id.btn_up_gps).setVisibility(View.VISIBLE);
     }
@@ -404,7 +402,8 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
 
     /* A fragment to display an error dialog */
     public static class ErrorDialogFragment extends DialogFragment {
-        public ErrorDialogFragment() { }
+        public ErrorDialogFragment() {
+        }
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -416,7 +415,7 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
 
         @Override
         public void onDismiss(DialogInterface dialog) {
-            ((AddItemActivity)getActivity()).onDialogDismissed();
+            ((AddItemActivity) getActivity()).onDialogDismissed();
         }
     }
 
@@ -466,7 +465,7 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
     }
 
     public void onPrint(View view) {
-        if(qrCodeImageBitmap != null) {
+        if (qrCodeImageBitmap != null) {
             PrintHelper printHelper = new PrintHelper(this);
             printHelper.setScaleMode(printHelper.SCALE_MODE_FIT);
             printHelper.setColorMode(printHelper.COLOR_MODE_MONOCHROME);
@@ -497,7 +496,7 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
         String location = ((EditText) findViewById(R.id.location)).getText().toString();
 
         if (name.equals("") || description.equals("") || amount.equals("") || location.equals("") ||
-                itemImageBitmap == null || qrCodeImage == null) {
+                itemImageBitmap == null || qrCodeImage == null || itemLocation == null) {
 
             messageManager.show(getApplicationContext(), "ERROR: You need to fill in the complete form and generate a qr code and add a image!", false);
 
@@ -511,6 +510,8 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
         itemDTO.setDescription(description);
         itemDTO.setCount(Integer.parseInt(amount));
         itemDTO.setLocation(location);
+        itemDTO.setLongitude(itemLocation.getLongitude());
+        itemDTO.setLatitude(itemLocation.getLatitude());
 
         ByteArrayOutputStream bos1 = new ByteArrayOutputStream();
         ByteArrayOutputStream bos2 = new ByteArrayOutputStream();

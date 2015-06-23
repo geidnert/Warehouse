@@ -103,7 +103,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/button_add_existing"
-        android:id="@+id/button4"
+        android:id="@+id/btn_add_existing"
         android:onClick="onAddExistingImage"
         android:textSize="10dp"
         android:layout_alignBottom="@+id/itemImage"
@@ -209,7 +209,7 @@
         android:onClick="onHideImage"
         android:layout_alignParentStart="true"
         android:background="@android:color/white"
-        android:layout_above="@+id/button7" />
+        android:layout_alignParentBottom="true" />
 
     <Button
         android:layout_width="wrap_content"
