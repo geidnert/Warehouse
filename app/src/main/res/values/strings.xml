@@ -33,5 +33,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_scan">Scan QR code</string>
     <string name="title_activity_search">Search items by text or scan a location QR code.</string>
+    <string name="title_activity_gps">GPSActivity</string>
+    <string name="action_settings">Settings</string>
 
 </resources>

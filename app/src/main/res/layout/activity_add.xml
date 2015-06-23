@@ -113,7 +113,7 @@
 
     <ImageView
         android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_height="50dp"
         android:id="@+id/qrCodeImage"
         android:background="#ffdddddd"
         android:onClick="onGenerateQRCode"
@@ -131,7 +131,9 @@
         android:textSize="10dp"
         android:layout_alignBottom="@+id/qrCodeImage"
         android:layout_alignLeft="@+id/qrCodeImage"
-        android:layout_alignStart="@+id/qrCodeImage" />
+        android:layout_alignStart="@+id/qrCodeImage"
+        android:layout_alignRight="@+id/qrCodeImage"
+        android:layout_alignEnd="@+id/qrCodeImage" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -242,12 +244,30 @@
         android:visibility="invisible"
         android:onClick="onHideImage"
         android:layout_alignParentStart="true"
-        android:background="@android:color/white" />
+        android:background="@android:color/white"
+        android:layout_above="@+id/textView5" />
 
-    <fragment
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:name="com.google.android.gms.maps.MapFragment"
-        android:id="@+id/map" />
+        android:text="Update GPS"
+        android:id="@+id/btn_up_gps"
+        android:layout_above="@+id/addImage"
+        android:layout_alignRight="@+id/qrCodeImage"
+        android:layout_alignEnd="@+id/qrCodeImage"
+        android:layout_toRightOf="@+id/itemImage"
+        android:layout_toEndOf="@+id/itemImage"
+        android:onClick="onUpdateGps" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show GPS"
+        android:id="@+id/btn_show_gps"
+        android:layout_alignBottom="@+id/addImage"
+        android:layout_toRightOf="@+id/addImage"
+        android:layout_alignRight="@+id/btn_up_gps"
+        android:layout_alignEnd="@+id/btn_up_gps"
+        android:onClick="onShowGps" />
 
 </RelativeLayout>

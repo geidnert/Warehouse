@@ -59,7 +59,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 
-public class AddItemActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, GoogleMap.OnMapClickListener {
+public class AddItemActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
     static public int MARGIN_AUTOMATIC = -1;
     public static final String ACTION_SCAN = "com.google.zxing.client.android.SCAN";
     public static final int CAMERA_REQUEST = 1;
@@ -68,6 +68,8 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
     public final static int MILLISECONDS_PER_SECOND = 1000;
     public final static int MINUTE = 60 * MILLISECONDS_PER_SECOND;
     public final static String EXTRA_FROM_ACTIVITY = "fromActivity";
+    public final static String EXTRA_LONGITUDE = "longitude";
+    public final static String EXTRA_LATITUDE = "latitude";
 
     private ImageView itemImage;
     private ImageView qrCodeImage;
@@ -78,12 +80,13 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
     private long cacheId = 0;
     private boolean update = false;
     private String lastSearchWorkd;
+    private Location itemLocation;
 
     private FusedLocationProviderApi locationProvicer = LocationServices.FusedLocationApi;
     private GoogleApiClient googleApiClient;
     private LocationRequest locationRequest;
     private MessageManager messageManager;
-    private GoogleMap map;
+
 
 
     LocationManager locationManager;
@@ -102,9 +105,6 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
 
         intentItemDTO = (ItemDTO) getIntent().getSerializableExtra("intentItemDTO");
         lastSearchWorkd = getIntent().getStringExtra("searchWord");
-
-        map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
-        map.setOnMapClickListener(this);
 
         if (intentItemDTO != null) {
             cacheId = intentItemDTO.getCacheID();
@@ -243,26 +243,45 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
         (findViewById(R.id.fullImage)).setVisibility(View.INVISIBLE);
     }
 
+    public void onUpdateGps(View view){
+        if(googleApiClient.isConnected()){
+            requestLocationUpdates();
+        }
+    }
+
+    public void onShowGps(View view) {
+        if(itemLocation != null) {
+            Intent intent = new Intent(AddItemActivity.this, GPSActivity.class);
+            intent.putExtra(EXTRA_LONGITUDE, itemLocation.getLongitude());
+            intent.putExtra(EXTRA_LATITUDE, itemLocation.getLatitude());
+            startActivity(intent);
+        }
+    }
+
     private void hideButtons() {
-        ((Button) findViewById(R.id.addImage)).setVisibility(View.INVISIBLE);
-        ((Button) findViewById(R.id.saveUpdate)).setVisibility(View.INVISIBLE);
-        ((Button) findViewById(R.id.button6)).setVisibility(View.INVISIBLE);
-        ((Button) findViewById(R.id.button4)).setVisibility(View.INVISIBLE);
-        ((Button) findViewById(R.id.btn_print)).setVisibility(View.INVISIBLE);
-        ((Button) findViewById(R.id.button7)).setVisibility(View.INVISIBLE);
-        ((Button) findViewById(R.id.button8)).setVisibility(View.INVISIBLE);
-        ((Button) findViewById(R.id.remove)).setVisibility(View.INVISIBLE);
+        findViewById(R.id.addImage).setVisibility(View.INVISIBLE);
+        findViewById(R.id.saveUpdate).setVisibility(View.INVISIBLE);
+        findViewById(R.id.button6).setVisibility(View.INVISIBLE);
+        findViewById(R.id.button4).setVisibility(View.INVISIBLE);
+        findViewById(R.id.btn_print).setVisibility(View.INVISIBLE);
+        findViewById(R.id.button7).setVisibility(View.INVISIBLE);
+        findViewById(R.id.button8).setVisibility(View.INVISIBLE);
+        findViewById(R.id.remove).setVisibility(View.INVISIBLE);
+        findViewById(R.id.btn_show_gps).setVisibility(View.INVISIBLE);
+        findViewById(R.id.btn_up_gps).setVisibility(View.INVISIBLE);
     }
 
     private void showButtons() {
-        ((Button) findViewById(R.id.addImage)).setVisibility(View.VISIBLE);
-        ((Button) findViewById(R.id.saveUpdate)).setVisibility(View.VISIBLE);
-        ((Button) findViewById(R.id.button6)).setVisibility(View.VISIBLE);
-        ((Button) findViewById(R.id.button4)).setVisibility(View.VISIBLE);
-        ((Button) findViewById(R.id.btn_print)).setVisibility(View.VISIBLE);
-        ((Button) findViewById(R.id.button7)).setVisibility(View.VISIBLE);
-        ((Button) findViewById(R.id.button8)).setVisibility(View.VISIBLE);
-        ((Button) findViewById(R.id.remove)).setVisibility(View.VISIBLE);
+        findViewById(R.id.addImage).setVisibility(View.VISIBLE);
+        findViewById(R.id.saveUpdate).setVisibility(View.VISIBLE);
+        findViewById(R.id.button6).setVisibility(View.VISIBLE);
+        findViewById(R.id.button4).setVisibility(View.VISIBLE);
+        findViewById(R.id.btn_print).setVisibility(View.VISIBLE);
+        findViewById(R.id.button7).setVisibility(View.VISIBLE);
+        findViewById(R.id.button8).setVisibility(View.VISIBLE);
+        findViewById(R.id.remove).setVisibility(View.VISIBLE);
+        findViewById(R.id.btn_show_gps).setVisibility(View.VISIBLE);
+        findViewById(R.id.btn_up_gps).setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -330,7 +349,7 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
 
     @Override
     public void onConnected(Bundle bundle) {
-        requestLocationUpdates();
+        //requestLocationUpdates();
     }
 
     @Override
@@ -338,20 +357,12 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
 
     }
 
-
-
-
-
-
-
     // Request code to use when launching the resolution activity
     private static final int REQUEST_RESOLVE_ERROR = 1001;
     // Unique tag for the error dialog fragment
     private static final String DIALOG_ERROR = "dialog_error";
     // Bool to track whether the app is already resolving an error
     private boolean mResolvingError = false;
-
-
 
     @Override
     public void onConnectionFailed(ConnectionResult result) {
@@ -440,10 +451,6 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
     @Override
     protected void onResume() {
         super.onResume();
-
-        if(googleApiClient.isConnected()){
-            requestLocationUpdates();
-        }
     }
 
     @Override
@@ -454,14 +461,11 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
 
     @Override
     public void onLocationChanged(Location location) {
-        //messageManager.show(getApplicationContext(), "Location changed: " + location.getLatitude() + " " + location.getLongitude(), false);
-        drawItemMarker(location);
+        messageManager.show(getApplicationContext(), "Location changed: " + location.getLatitude() + " " + location.getLongitude(), false);
+        itemLocation = location;
     }
 
-    @Override
-    public void onMapClick(LatLng latLng) {
-        showButtons();
-    }
+
 
 
     public void onPrint(View view) {
@@ -474,33 +478,6 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
 
     //---------------------------------------------------------------------------------------------
     //---------------------------- PRIVATE --------------------------------------------------------
-
-    private void drawItemMarker(Location location){
-        hideButtons();
-
-
-        map.clear();
-
-        //  convert the location object to a LatLng object that can be used by the map API
-        LatLng currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
-
-        // zoom to the current location
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 16));
-
-        // add a marker to the map indicating our current position
-        map.addMarker(new MarkerOptions()
-                .position(currentPosition)
-                .snippet("Lat:" + location.getLatitude() + "Lng:"+ location.getLongitude()));
-
-        map.setOnMapClickListener(this);
-    }
-
-    private String getPictureName() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyMMdd_HHmmss");
-        String timestamp = sdf.format(new Date());
-
-        return "itemImage" + timestamp + ".jpg";
-    }
 
     private void showImage(Bitmap image) {
         itemImageBitmap = image;
@@ -709,6 +686,4 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
         protected void onPreExecute() {
         }
     }
-
-
 }
