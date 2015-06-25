@@ -71,7 +71,7 @@
         android:text="@string/button_take_photo"
         android:id="@+id/addImage"
         android:onClick="onTakePhoto"
-        android:textSize="10dp"
+        android:textSize="14dp"
         android:layout_alignBottom="@+id/itemImage"
         android:layout_alignRight="@+id/itemImage"
         android:layout_alignEnd="@+id/itemImage" />
@@ -82,18 +82,17 @@
         android:text="@string/button_save"
         android:id="@+id/saveUpdate"
         android:onClick="onSave"
-        android:textSize="10dp"
-        android:layout_alignBaseline="@+id/button6"
-        android:layout_alignBottom="@+id/button6"
-        android:layout_alignRight="@+id/qrCodeImage"
-        android:layout_alignEnd="@+id/qrCodeImage" />
+        android:textSize="14dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/button_cancle"
         android:id="@+id/button6"
-        android:textSize="10dp"
+        android:textSize="14dp"
         android:onClick="onCancle"
         android:layout_alignParentBottom="true"
         android:layout_toLeftOf="@+id/saveUpdate"
@@ -118,8 +117,8 @@
         android:background="#ffdddddd"
         android:onClick="onPrint"
         android:layout_alignTop="@+id/itemImage"
-        android:layout_toRightOf="@+id/itemImage"
-        android:layout_marginLeft="5dp" />
+        android:layout_toEndOf="@+id/itemImage"
+        android:layout_toRightOf="@+id/itemImage" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -144,7 +143,7 @@
         android:layout_height="wrap_content"
         android:text="@string/action_add_item_scan_location"
         android:id="@+id/button7"
-        android:textSize="10dp"
+        android:textSize="14dp"
         android:onClick="onScan"
         android:layout_below="@+id/textView5"
         android:layout_alignParentLeft="true"
@@ -157,13 +156,13 @@
         android:layout_height="wrap_content"
         android:text="@string/action_add_item_generate_location"
         android:id="@+id/button8"
-        android:textSize="10dp"
+        android:textSize="14dp"
         android:onClick="onGenerateQRCode"
         android:layout_below="@+id/location"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
         android:layout_alignLeft="@+id/qrCodeImage"
-        android:layout_alignStart="@+id/qrCodeImage" />
+        android:layout_alignStart="@+id/qrCodeImage"
+        android:layout_alignRight="@+id/location"
+        android:layout_alignEnd="@+id/location" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -209,7 +208,9 @@
         android:onClick="onHideImage"
         android:layout_alignParentStart="true"
         android:background="@android:color/white"
-        android:layout_alignParentBottom="true" />
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <Button
         android:layout_width="wrap_content"
@@ -222,7 +223,8 @@
         android:layout_toRightOf="@+id/itemImage"
         android:layout_toEndOf="@+id/itemImage"
         android:onClick="onUpdateGps"
-        android:layout_below="@+id/qrCodeImage" />
+        android:layout_below="@+id/qrCodeImage"
+        android:textSize="14dp" />
 
     <Button
         android:layout_width="wrap_content"
@@ -233,6 +235,7 @@
         android:layout_toRightOf="@+id/addImage"
         android:layout_alignRight="@+id/btn_up_gps"
         android:layout_alignEnd="@+id/btn_up_gps"
-        android:onClick="onShowGps" />
+        android:onClick="onShowGps"
+        android:textSize="14dp" />
 
 </RelativeLayout>

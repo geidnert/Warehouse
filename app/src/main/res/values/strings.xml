@@ -15,8 +15,8 @@
     <string name="action_add_item_button_add">Add Image</string>
     <string name="action_add_item_label_location">Location</string>
     <string name="action_add_item_label_amount">Amount</string>
-    <string name="action_add_item_scan_location">Scan existing location code</string>
-    <string name="action_add_item_generate_location">Generate location code</string>
+    <string name="action_add_item_scan_location">Scan QR</string>
+    <string name="action_add_item_generate_location">Generate QR</string>
     <string name="item_name">Item</string>
 
     <string name="button_add_existing">Add Existing</string>
