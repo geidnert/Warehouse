@@ -17,6 +17,7 @@ import android.provider.MediaStore;
 
 
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,7 +31,7 @@ import java.io.File;
 import java.io.IOException;
 
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends ActionBarActivity {
     public static final int APP_VERSION = 2;
     public static final int IMAGE_GALLERY_REQUEST = 1;
 
@@ -43,7 +44,6 @@ public class MainActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         messageManager = new MessageManager();
 
         itemService = new ItemService(this);
@@ -144,6 +144,7 @@ public class MainActivity extends FragmentActivity {
 
         @Override
         protected void onPostExecute(Integer from) {
+            findViewById(R.id.progress).setVisibility(View.GONE);
             if (from == 1)
                 messageManager.show(getApplicationContext(), "Items are now synced with the online database.", false);
             //else if (from == -1)
@@ -153,6 +154,7 @@ public class MainActivity extends FragmentActivity {
 
         @Override
         protected void onPreExecute() {
+            findViewById(R.id.progress).setVisibility(View.VISIBLE);
         }
     }
 
@@ -178,6 +180,7 @@ public class MainActivity extends FragmentActivity {
 
         @Override
         protected void onPostExecute(DataDTO dataDTO) {
+            findViewById(R.id.progress).setVisibility(View.GONE);
             if (dataDTO != null && APP_VERSION < dataDTO.getLatestAppVersion()){
                 UpdateDialogFragment updateDialogFragment = new UpdateDialogFragment();
                 updateDialogFragment.show(getFragmentManager(),"updateDialog");
@@ -187,6 +190,7 @@ public class MainActivity extends FragmentActivity {
 
         @Override
         protected void onPreExecute() {
+            findViewById(R.id.progress).setVisibility(View.VISIBLE);
         }
     }
 

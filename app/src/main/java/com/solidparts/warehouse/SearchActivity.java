@@ -168,6 +168,7 @@ public class SearchActivity extends Activity {
 
         @Override
         protected void onPostExecute(final List<ItemDTO> allItems) {
+            findViewById(R.id.progress).setVisibility(View.GONE);
             // adapt the search results returned from doInBackground so that they can be presented on the UI.
             if (allItems != null && allItems.size() > 0) {
 
@@ -223,6 +224,7 @@ public class SearchActivity extends Activity {
 
         @Override
         protected void onPreExecute() {
+            findViewById(R.id.progress).setVisibility(View.VISIBLE);
             setProgressBarIndeterminateVisibility(true);
         }
     }

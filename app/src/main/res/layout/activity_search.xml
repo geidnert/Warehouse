@@ -4,7 +4,8 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="com.solidparts.warehouse.SearchActivity">
+    tools:context="com.solidparts.warehouse.SearchActivity"
+    android:id="@+id/searchActivity">
 
     <TextView android:text="@string/title_activity_search" android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -62,5 +63,13 @@
         android:layout_alignParentBottom="true"
         android:layout_alignRight="@+id/itemlistView"
         android:layout_alignEnd="@+id/itemlistView" />
+
+    <ProgressBar
+        android:id="@+id/progress"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:layout_centerInParent="true"/>
 
 </RelativeLayout>

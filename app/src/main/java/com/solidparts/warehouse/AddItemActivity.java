@@ -498,7 +498,7 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
         if (name.equals("") || description.equals("") || amount.equals("") || location.equals("") ||
                 itemImageBitmap == null || qrCodeImage == null || itemLocation == null) {
 
-            messageManager.show(getApplicationContext(), "ERROR: You need to fill in the complete form and generate a qr code and add a image!", false);
+            messageManager.show(getApplicationContext(), "ERROR: You need to fill in the complete form, generate a qr code, add a image and update GPS position!", false);
 
             return null;
         }
@@ -573,7 +573,7 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
 
         @Override
         protected void onPostExecute(Integer result) {
-            //mProgress.setVisibility(View.GONE);
+            findViewById(R.id.progress).setVisibility(View.GONE);
             if (result != 0) {
                 qrCodeImage.setImageBitmap(qrCodeImageBitmap);
 
@@ -584,6 +584,7 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
 
         @Override
         protected void onPreExecute() {
+            findViewById(R.id.progress).setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -607,6 +608,7 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
 
         @Override
         protected void onPostExecute(Boolean success) {
+            findViewById(R.id.progress).setVisibility(View.GONE);
             if (success) {
                 messageManager.show(getApplicationContext(), "Item removed!", false);
             } else {
@@ -621,6 +623,7 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
 
         @Override
         protected void onPreExecute() {
+            findViewById(R.id.progress).setVisibility(View.VISIBLE);
         }
     }
 
@@ -640,6 +643,7 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
 
         @Override
         protected void onPostExecute(Boolean success) {
+            findViewById(R.id.progress).setVisibility(View.GONE);
             if (success)
                 messageManager.show(getApplicationContext(), "Item Saved!", false);
             else
@@ -650,6 +654,7 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
 
         @Override
         protected void onPreExecute() {
+            findViewById(R.id.progress).setVisibility(View.VISIBLE);
         }
     }
 
@@ -669,6 +674,7 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
 
         @Override
         protected void onPostExecute(Boolean success) {
+            findViewById(R.id.progress).setVisibility(View.GONE);
             if (success) {
                 messageManager.show(getApplicationContext(), "Item Updated!", false);
             } else {
@@ -683,6 +689,7 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
 
         @Override
         protected void onPreExecute() {
+            findViewById(R.id.progress).setVisibility(View.VISIBLE);
         }
     }
 }
