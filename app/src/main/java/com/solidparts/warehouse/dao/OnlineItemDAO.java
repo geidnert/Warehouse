@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Base64;
 
+import com.solidparts.warehouse.dto.DataDTO;
 import com.solidparts.warehouse.dto.ItemDTO;
 
 import org.apache.http.NameValuePair;
@@ -37,6 +38,19 @@ public class OnlineItemDAO implements IItemDAO {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
+    }
+
+    @Override
+    public DataDTO getAppData() throws IOException, JSONException {
+        ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+        String request = networkDAO.request(NetworkDAO.APP_DATA, nameValuePairs);
+        JSONObject root = new JSONObject(request);
+
+        int appVersion = root.getJSONObject("appdata").getInt("version");
+        DataDTO appDataDTO = new DataDTO();
+        appDataDTO.setLatestAppVersion(appVersion);
+
+        return appDataDTO;
     }
 
     @Override

@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.solidparts.warehouse.dto.DataDTO;
 import com.solidparts.warehouse.dto.ItemDTO;
 
 import org.json.JSONException;
@@ -52,6 +53,11 @@ public class OfflineItemDAO extends SQLiteOpenHelper implements IItemDAO {
                 LATITUDE + " DOUBLE );";
 
         db.execSQL(createItems);
+    }
+
+    @Override
+    public DataDTO getAppData() throws Exception {
+        return null;
     }
 
     @Override

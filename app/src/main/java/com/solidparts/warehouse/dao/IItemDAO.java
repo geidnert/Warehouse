@@ -2,6 +2,7 @@ package com.solidparts.warehouse.dao;
 
 import android.database.sqlite.SQLiteDatabase;
 
+import com.solidparts.warehouse.dto.DataDTO;
 import com.solidparts.warehouse.dto.ItemDTO;
 
 import java.util.List;
@@ -14,6 +15,8 @@ public interface IItemDAO {
     public void onCreate(SQLiteDatabase db);
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion);
+
+    public DataDTO getAppData() throws Exception;
 
     public List<ItemDTO> getItems(String searchTerm, int searchType) throws Exception;
 

@@ -1,33 +1,39 @@
 package com.solidparts.warehouse;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v7.app.ActionBarActivity;
-import android.view.Gravity;
+
+
+import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.solidparts.warehouse.dto.DataDTO;
 import com.solidparts.warehouse.service.ItemService;
 
 import java.io.File;
 import java.io.IOException;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends FragmentActivity {
+    public static final int APP_VERSION = 1;
     public static final int IMAGE_GALLERY_REQUEST = 1;
+
     private ItemService itemService;
     MessageManager messageManager;
     RelativeLayout layout;
@@ -55,6 +61,10 @@ public class MainActivity extends ActionBarActivity {
         String[] args = new String[]{"syncToOnlineDb"};
         ItemSyncTask itemSyncTask = new ItemSyncTask();
         itemSyncTask.execute(args);
+
+        String[] appArgs = new String[]{};
+        AppSyncTask appSyncTask = new AppSyncTask();
+        appSyncTask.execute(appArgs);
     }
 
     @Override
@@ -145,6 +155,69 @@ public class MainActivity extends ActionBarActivity {
         protected void onPreExecute() {
         }
     }
+
+    class AppSyncTask extends AsyncTask<String, DataDTO, DataDTO> {
+
+        @Override
+        protected DataDTO doInBackground(String... searchTerms) {
+            try {
+                return itemService.getAppData();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+
+        /**
+         * This method will be called when doInBackground completes.
+         * The paramter result is populated from the return values of doInBackground.
+         * This method runs on the UI thread, and therefore can update UI components.
+         */
+
+        @Override
+        protected void onPostExecute(DataDTO appDataDTO) {
+            if (appDataDTO != null && APP_VERSION < appDataDTO.getLatestAppVersion()){
+                UpdateDialogFragment updateDialogFragment = new UpdateDialogFragment();
+                updateDialogFragment.show(getFragmentManager(),"updateDialog");
+            }
+        }
+
+
+        @Override
+        protected void onPreExecute() {
+        }
+    }
+
+    public static class UpdateDialogFragment extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the Builder class for convenient dialog construction
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage("New version of Warehouse is available, please download it now!")
+                    .setPositiveButton("Update", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            String url = "http://solidparts.se/warehouse/install/warehouse_1_1.apk";
+                            Intent i = new Intent(Intent.ACTION_VIEW);
+                            i.setData(Uri.parse(url));
+                            startActivity(i);
+
+                            dialog.dismiss();
+                        }
+
+                    })
+                    .setNegativeButton("Cancle", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // User cancelled the dialog
+                            dialog.dismiss();
+                        }
+                    });
+            // Create the AlertDialog object and return it
+            return builder.create();
+        }
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

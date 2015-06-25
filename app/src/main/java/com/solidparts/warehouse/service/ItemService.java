@@ -9,6 +9,7 @@ import android.widget.Toast;
 import com.solidparts.warehouse.dao.IItemDAO;
 import com.solidparts.warehouse.dao.OfflineItemDAO;
 import com.solidparts.warehouse.dao.OnlineItemDAO;
+import com.solidparts.warehouse.dto.DataDTO;
 import com.solidparts.warehouse.dto.ItemDTO;
 
 import java.util.List;
@@ -23,6 +24,18 @@ public class ItemService implements IItemService {
         onlineItemDAO = new OnlineItemDAO(context);
         offlineItemDAO = new OfflineItemDAO(context);
         this.context = context;
+    }
+
+    @Override
+    public DataDTO getAppData() throws Exception {
+        DataDTO appData = null;
+
+        try {
+            appData = onlineItemDAO.getAppData();
+        } catch (Exception e) {
+
+        }
+        return appData;
     }
 
     @Override
