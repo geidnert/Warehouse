@@ -25,7 +25,7 @@ public class NetworkDAO implements INetworkDAO{
     @Override
     public String request(String action, ArrayList<NameValuePair> nameValuePairs) throws IOException {
         String returnString;
-        nameValuePairs.add(new BasicNameValuePair("database", DATABASE_DEV));
+        nameValuePairs.add(new BasicNameValuePair("database", DATABASE_LIVE));
         HttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(URL + action);
         httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));

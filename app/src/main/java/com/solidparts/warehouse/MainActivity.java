@@ -2,21 +2,36 @@ package com.solidparts.warehouse;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.solidparts.warehouse.service.ItemService;
 
+import java.io.File;
+import java.io.IOException;
+
 
 public class MainActivity extends ActionBarActivity {
+    public static final int IMAGE_GALLERY_REQUEST = 1;
     private ItemService itemService;
     MessageManager messageManager;
+    RelativeLayout layout;
+    private int backgroundClicked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +42,16 @@ public class MainActivity extends ActionBarActivity {
 
         itemService = new ItemService(this);
 
+        backgroundClicked = 0;
+
         //Sync data from local database to online database
+        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        Uri backgroundUri = Uri.parse(sharedPref.getString("mainBackground", ""));
+
+        if(sharedPref.getString("mainBackground", "") != "" && backgroundUri != null){
+            setBackgroundImage(backgroundUri);
+        }
+
         String[] args = new String[]{"syncToOnlineDb"};
         ItemSyncTask itemSyncTask = new ItemSyncTask();
         itemSyncTask.execute(args);
@@ -68,6 +92,20 @@ public class MainActivity extends ActionBarActivity {
         startActivity(new Intent(MainActivity.this, SearchActivity.class));
     }
 
+    public void onChangeBackground(View view){
+        backgroundClicked++;
+
+        if(backgroundClicked == 4) {
+            Intent intent = new Intent(Intent.ACTION_PICK);
+            File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+            String pictureDirectoryPath = pictureDirectory.getPath();
+            Uri data = Uri.parse(pictureDirectoryPath);
+            intent.setDataAndType(data, "image/*");
+            startActivityForResult(intent, IMAGE_GALLERY_REQUEST);
+            backgroundClicked = 0;
+        }
+    }
+
     // --------------------------------------------------------------------
 
     class ItemSyncTask extends AsyncTask<String, Integer, Integer> {
@@ -106,5 +144,41 @@ public class MainActivity extends ActionBarActivity {
         @Override
         protected void onPreExecute() {
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK) {
+            if (requestCode == IMAGE_GALLERY_REQUEST) {
+                try {
+                    Uri imageUri = data.getData();
+                    setBackgroundImage(imageUri);
+
+                    // save uri to disk
+                    SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putString("mainBackground", imageUri.toString());
+                    editor.commit();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, "Unable to open image", Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+    }
+
+    private void setBackgroundImage(Uri imageUri){
+        Bitmap bitmap = null;
+        try {
+            bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        BitmapDrawable bitmapDrawable = new BitmapDrawable(bitmap);
+        layout = (RelativeLayout) findViewById(R.id.mainBackground);
+        layout.setBackground(bitmapDrawable);
     }
 }
