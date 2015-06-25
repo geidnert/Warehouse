@@ -31,7 +31,7 @@ import java.io.IOException;
 
 
 public class MainActivity extends FragmentActivity {
-    public static final int APP_VERSION = 1;
+    public static final int APP_VERSION = 3;
     public static final int IMAGE_GALLERY_REQUEST = 1;
 
     private ItemService itemService;
