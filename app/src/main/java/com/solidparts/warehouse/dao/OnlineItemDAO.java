@@ -47,10 +47,10 @@ public class OnlineItemDAO implements IItemDAO {
         JSONObject root = new JSONObject(request);
 
         int appVersion = root.getJSONObject("appdata").getInt("version");
-        DataDTO appDataDTO = new DataDTO();
-        appDataDTO.setLatestAppVersion(appVersion);
+        DataDTO dataDTO = new DataDTO();
+        dataDTO.setLatestAppVersion(appVersion);
 
-        return appDataDTO;
+        return dataDTO;
     }
 
     @Override

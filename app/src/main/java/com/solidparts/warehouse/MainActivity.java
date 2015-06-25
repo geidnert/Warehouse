@@ -177,8 +177,8 @@ public class MainActivity extends FragmentActivity {
          */
 
         @Override
-        protected void onPostExecute(DataDTO appDataDTO) {
-            if (appDataDTO != null && APP_VERSION < appDataDTO.getLatestAppVersion()){
+        protected void onPostExecute(DataDTO dataDTO) {
+            if (dataDTO != null && APP_VERSION < dataDTO.getLatestAppVersion()){
                 UpdateDialogFragment updateDialogFragment = new UpdateDialogFragment();
                 updateDialogFragment.show(getFragmentManager(),"updateDialog");
             }

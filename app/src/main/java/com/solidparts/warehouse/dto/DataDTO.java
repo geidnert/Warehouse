@@ -18,7 +18,7 @@ public class DataDTO implements Serializable {
 
     @Override
     public String toString() {
-        return "AppDataDto{" +
+        return "DataDto{" +
                 "appVersion=" + appVersion +
                 '}';
     }
