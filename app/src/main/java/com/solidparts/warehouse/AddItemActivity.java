@@ -602,8 +602,6 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
         protected void onPostExecute(Integer result) {
             findViewById(R.id.progress).setVisibility(View.GONE);
             enableButtons();
-            Button btn = (Button) findViewById(R.id.saveUpdate);
-            btn.setEnabled(false);
             if (result != 0) {
                 qrCodeImage.setImageBitmap(qrCodeImageBitmap);
 

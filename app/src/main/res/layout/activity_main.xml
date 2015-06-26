@@ -10,8 +10,8 @@
     <TextView android:text="@string/push_notification" android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/textView"
-        android:textColor="#ffffff"
-        android:textSize="16dp" />
+        android:textSize="16dp"
+        android:textColor="#000" />
 
     <Button
         android:layout_width="fill_parent"
