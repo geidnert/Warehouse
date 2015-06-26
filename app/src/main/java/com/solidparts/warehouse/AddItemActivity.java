@@ -24,6 +24,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -280,6 +281,32 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
             findViewById(R.id.remove).setVisibility(View.VISIBLE);
         findViewById(R.id.btn_show_gps).setVisibility(View.VISIBLE);
         findViewById(R.id.btn_up_gps).setVisibility(View.VISIBLE);
+    }
+
+    private void disableButtons() {
+        findViewById(R.id.addImage).setEnabled(false);
+        findViewById(R.id.saveUpdate).setEnabled(false);
+        findViewById(R.id.button6).setEnabled(false);
+        findViewById(R.id.btn_add_existing).setEnabled(false);
+        //findViewById(R.id.btn_print).setEnabled(false)
+        findViewById(R.id.button7).setEnabled(false);
+        findViewById(R.id.button8).setEnabled(false);
+        findViewById(R.id.remove).setEnabled(false);
+        findViewById(R.id.btn_show_gps).setEnabled(false);
+        findViewById(R.id.btn_up_gps).setEnabled(false);
+    }
+
+    private void enableButtons() {
+        findViewById(R.id.addImage).setEnabled(true);
+        findViewById(R.id.saveUpdate).setEnabled(true);
+        findViewById(R.id.button6).setEnabled(true);
+        findViewById(R.id.btn_add_existing).setEnabled(true);
+        //findViewById(R.id.btn_print).setEnabled(true)
+        findViewById(R.id.button7).setEnabled(true);
+        findViewById(R.id.button8).setEnabled(true);
+        findViewById(R.id.remove).setEnabled(true);
+        findViewById(R.id.btn_show_gps).setEnabled(true);
+        findViewById(R.id.btn_up_gps).setEnabled(true);
     }
 
     @Override
@@ -574,6 +601,9 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
         @Override
         protected void onPostExecute(Integer result) {
             findViewById(R.id.progress).setVisibility(View.GONE);
+            enableButtons();
+            Button btn = (Button) findViewById(R.id.saveUpdate);
+            btn.setEnabled(false);
             if (result != 0) {
                 qrCodeImage.setImageBitmap(qrCodeImageBitmap);
 
@@ -585,6 +615,7 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
         @Override
         protected void onPreExecute() {
             findViewById(R.id.progress).setVisibility(View.VISIBLE);
+            disableButtons();
         }
 
         @Override
@@ -609,6 +640,7 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
         @Override
         protected void onPostExecute(Boolean success) {
             findViewById(R.id.progress).setVisibility(View.GONE);
+            enableButtons();
             if (success) {
                 messageManager.show(getApplicationContext(), "Item removed!", false);
             } else {
@@ -624,6 +656,7 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
         @Override
         protected void onPreExecute() {
             findViewById(R.id.progress).setVisibility(View.VISIBLE);
+            disableButtons();
         }
     }
 
@@ -644,6 +677,7 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
         @Override
         protected void onPostExecute(Boolean success) {
             findViewById(R.id.progress).setVisibility(View.GONE);
+            enableButtons();
             if (success)
                 messageManager.show(getApplicationContext(), "Item Saved!", false);
             else
@@ -655,6 +689,7 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
         @Override
         protected void onPreExecute() {
             findViewById(R.id.progress).setVisibility(View.VISIBLE);
+            disableButtons();
         }
     }
 
@@ -675,6 +710,8 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
         @Override
         protected void onPostExecute(Boolean success) {
             findViewById(R.id.progress).setVisibility(View.GONE);
+            enableButtons();
+
             if (success) {
                 messageManager.show(getApplicationContext(), "Item Updated!", false);
             } else {
@@ -690,6 +727,7 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
         @Override
         protected void onPreExecute() {
             findViewById(R.id.progress).setVisibility(View.VISIBLE);
+            disableButtons();
         }
     }
 }
