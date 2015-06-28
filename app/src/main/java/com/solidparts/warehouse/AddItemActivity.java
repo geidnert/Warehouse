@@ -65,7 +65,6 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
     private ImageView itemImage;
     private ImageView qrCodeImage;
     private ItemService itemService;
-    private Bitmap itemImageBitmap;
     private Bitmap qrCodeImageBitmap;
     private ItemDTO intentItemDTO;
     private long cacheId = 0;
@@ -73,25 +72,23 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
     private String lastSearchWorkd;
     private Location itemLocation;
 
-    private FusedLocationProviderApi locationProvicer = LocationServices.FusedLocationApi;
     private GoogleApiClient googleApiClient;
     private LocationRequest locationRequest;
     private MessageManager messageManager;
-
-
-    LocationManager locationManager;
-    String provider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
-
         messageManager = new MessageManager();
-
         itemImage = ((ImageView) findViewById(R.id.itemImage));
         qrCodeImage = ((ImageView) findViewById(R.id.qrCodeImage));
         itemService = new ItemService(this);
+
+        //restore the bitmap for the image
+        if (CommonResources.cameraBmp != null) {
+            showImage(CommonResources.cameraBmp);
+        }
 
         intentItemDTO = (ItemDTO) getIntent().getSerializableExtra("intentItemDTO");
         lastSearchWorkd = getIntent().getStringExtra("searchWord");
@@ -108,8 +105,8 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
             ((EditText) findViewById(R.id.location)).setText(intentItemDTO.getLocation());
 
             itemLocation = new Location("");
-            itemLocation .setLongitude(intentItemDTO.getLongitude());
-            itemLocation .setLatitude(intentItemDTO.getLatitude());
+            itemLocation.setLongitude(intentItemDTO.getLongitude());
+            itemLocation.setLatitude(intentItemDTO.getLatitude());
 
             Bitmap image = BitmapFactory.decodeByteArray(intentItemDTO.getImage(), 0, intentItemDTO.getImage().length);
             showImage(image);
@@ -117,7 +114,6 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
             Bitmap qrCodeImage = BitmapFactory.decodeByteArray(intentItemDTO.getQrCode(), 0, intentItemDTO.getQrCode().length);
             showQRCodeImage(qrCodeImage);
             new AsyncGenerateQRCode().execute(-1);
-
 
 
             update = true;
@@ -230,7 +226,7 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
 
     public void onShowImage(View view) {
         hideButtons();
-        ((ImageView) findViewById(R.id.fullImage)).setImageBitmap(itemImageBitmap);
+        ((ImageView) findViewById(R.id.fullImage)).setImageBitmap(CommonResources.cameraBmp);
         (findViewById(R.id.fullImage)).setVisibility(View.VISIBLE);
     }
 
@@ -276,7 +272,7 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
         findViewById(R.id.button7).setVisibility(View.VISIBLE);
         findViewById(R.id.button8).setVisibility(View.VISIBLE);
 
-        if(intentItemDTO != null)
+        if (intentItemDTO != null)
             findViewById(R.id.remove).setVisibility(View.VISIBLE);
         findViewById(R.id.btn_show_gps).setVisibility(View.VISIBLE);
         findViewById(R.id.btn_up_gps).setVisibility(View.VISIBLE);
@@ -289,7 +285,8 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
         if (resultCode == RESULT_OK) {
             if (requestCode == CAMERA_REQUEST) {
                 Bitmap image = (Bitmap) data.getExtras().get("data");
-                showImage(image);
+                CommonResources.cameraBmp = image;
+                showImage(CommonResources.cameraBmp);
             }
 
             if (requestCode == IMAGE_GALLERY_REQUEST) {
@@ -477,8 +474,8 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
     //---------------------------- PRIVATE --------------------------------------------------------
 
     private void showImage(Bitmap image) {
-        itemImageBitmap = image;
-        itemImage.setImageBitmap(itemImageBitmap);
+        CommonResources.cameraBmp = image;
+        itemImage.setImageBitmap(CommonResources.cameraBmp);
     }
 
     private void showQRCodeImage(Bitmap image) {
@@ -496,7 +493,7 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
         String location = ((EditText) findViewById(R.id.location)).getText().toString();
 
         if (name.equals("") || description.equals("") || amount.equals("") || location.equals("") ||
-                itemImageBitmap == null || qrCodeImage == null || itemLocation == null) {
+                CommonResources.cameraBmp == null || qrCodeImage == null || itemLocation == null) {
 
             messageManager.show(getApplicationContext(), "ERROR: You need to fill in the complete form, generate a qr code, add a image and update GPS position!", false);
 
@@ -516,7 +513,7 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
         ByteArrayOutputStream bos1 = new ByteArrayOutputStream();
         ByteArrayOutputStream bos2 = new ByteArrayOutputStream();
 
-        itemImageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos1);
+        CommonResources.cameraBmp.compress(Bitmap.CompressFormat.JPEG, 100, bos1);
         qrCodeImageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos2);
         byte[] itemImg = bos1.toByteArray();
         byte[] qrCodeImg = bos2.toByteArray();
