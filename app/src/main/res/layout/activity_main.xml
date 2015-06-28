@@ -10,14 +10,14 @@
     <TextView android:text="@string/push_notification" android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/textView"
-        android:textColor="#ffffff"
-        android:textSize="16dp" />
+        android:textSize="16dp"
+        android:textColor="#000" />
 
     <Button
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/action_add_item"
-        android:id="@+id/button2"
+        android:id="@+id/btn_add"
         android:onClick="onAddItem"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
@@ -28,9 +28,9 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/action_search_item"
-        android:id="@+id/button3"
+        android:id="@+id/btn_serach"
         android:onClick="onSearch"
-        android:layout_above="@+id/button2"
+        android:layout_above="@+id/btn_add"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:textSize="16dp" />
@@ -42,9 +42,9 @@
         android:layout_below="@+id/textView"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_above="@+id/button3"
-        android:layout_alignRight="@+id/button3"
-        android:layout_alignEnd="@+id/button3"
+        android:layout_above="@+id/btn_serach"
+        android:layout_alignRight="@+id/btn_serach"
+        android:layout_alignEnd="@+id/btn_serach"
         android:onClick="onChangeBackground" />
 
     <ProgressBar

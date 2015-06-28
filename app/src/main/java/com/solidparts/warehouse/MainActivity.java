@@ -14,9 +14,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-
-
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -54,7 +51,7 @@ public class MainActivity extends ActionBarActivity {
         SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
         Uri backgroundUri = Uri.parse(sharedPref.getString("mainBackground", ""));
 
-        if(sharedPref.getString("mainBackground", "") != "" && backgroundUri != null){
+        if (sharedPref.getString("mainBackground", "") != "" && backgroundUri != null) {
             setBackgroundImage(backgroundUri);
         }
 
@@ -102,10 +99,10 @@ public class MainActivity extends ActionBarActivity {
         startActivity(new Intent(MainActivity.this, SearchActivity.class));
     }
 
-    public void onChangeBackground(View view){
+    public void onChangeBackground(View view) {
         backgroundClicked++;
 
-        if(backgroundClicked == 4) {
+        if (backgroundClicked == 4) {
             Intent intent = new Intent(Intent.ACTION_PICK);
             File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
             String pictureDirectoryPath = pictureDirectory.getPath();
@@ -114,6 +111,16 @@ public class MainActivity extends ActionBarActivity {
             startActivityForResult(intent, IMAGE_GALLERY_REQUEST);
             backgroundClicked = 0;
         }
+    }
+
+    public void hideButtons(){
+        findViewById(R.id.btn_serach).setEnabled(false);
+        findViewById(R.id.btn_add).setEnabled(false);
+    }
+
+    public void showButtons(){
+        findViewById(R.id.btn_serach).setEnabled(true);
+        findViewById(R.id.btn_add).setEnabled(true);
     }
 
     // --------------------------------------------------------------------
@@ -145,16 +152,18 @@ public class MainActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(Integer from) {
             findViewById(R.id.progress).setVisibility(View.GONE);
+            showButtons();
             if (from == 1)
                 messageManager.show(getApplicationContext(), "Items are now synced with the online database.", false);
             //else if (from == -1)
-                //messageManager.show(getApplicationContext(),"Items did not sync correctly.", false);
+            //messageManager.show(getApplicationContext(),"Items did not sync correctly.", false);
         }
 
 
         @Override
         protected void onPreExecute() {
             findViewById(R.id.progress).setVisibility(View.VISIBLE);
+            hideButtons();
         }
     }
 
@@ -181,9 +190,10 @@ public class MainActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(DataDTO dataDTO) {
             findViewById(R.id.progress).setVisibility(View.GONE);
-            if (dataDTO != null && APP_VERSION < dataDTO.getLatestAppVersion()){
+            showButtons();
+            if (dataDTO != null && APP_VERSION < dataDTO.getLatestAppVersion()) {
                 UpdateDialogFragment updateDialogFragment = new UpdateDialogFragment();
-                updateDialogFragment.show(getFragmentManager(),"updateDialog");
+                updateDialogFragment.show(getFragmentManager(), "updateDialog");
             }
         }
 
@@ -191,6 +201,7 @@ public class MainActivity extends ActionBarActivity {
         @Override
         protected void onPreExecute() {
             findViewById(R.id.progress).setVisibility(View.VISIBLE);
+            hideButtons();
         }
     }
 
@@ -202,7 +213,7 @@ public class MainActivity extends ActionBarActivity {
             builder.setMessage("New version of Warehouse is available, please download it now!")
                     .setPositiveButton("Update", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            String url = "http://solidparts.se/warehouse/install/warehouse_1_1.apk";
+                            String url = "http://solidparts.se/warehouse/install/";
                             Intent i = new Intent(Intent.ACTION_VIEW);
                             i.setData(Uri.parse(url));
                             startActivity(i);
@@ -246,7 +257,7 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    private void setBackgroundImage(Uri imageUri){
+    private void setBackgroundImage(Uri imageUri) {
         Bitmap bitmap = null;
         try {
             bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
