@@ -536,8 +536,8 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
         itemDTO.setDescription(description);
         itemDTO.setCount(Integer.parseInt(amount));
         itemDTO.setLocation(location);
-        itemDTO.setLongitude(itemLocation.getLongitude());
-        itemDTO.setLatitude(itemLocation.getLatitude());
+        itemDTO.setLongitude(itemLocation != null ? itemLocation.getLongitude() : 0);
+        itemDTO.setLatitude(itemLocation != null ? itemLocation.getLatitude() : 0);
 
         ByteArrayOutputStream bos1 = new ByteArrayOutputStream();
         ByteArrayOutputStream bos2 = new ByteArrayOutputStream();
