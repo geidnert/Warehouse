@@ -519,10 +519,12 @@ public class AddItemActivity extends FragmentActivity implements GoogleApiClient
         String amount = ((EditText) findViewById(R.id.amount)).getText().toString();
         String location = ((EditText) findViewById(R.id.location)).getText().toString();
 
-        if (name.equals("") || description.equals("") || amount.equals("") || location.equals("") ||
-                CommonResources.cameraBmp == null || qrCodeImage == null || itemLocation == null) {
+        //if (name.equals("") || description.equals("") || amount.equals("") || location.equals("") ||
+        //        CommonResources.cameraBmp == null || qrCodeImage == null || itemLocation == null) {
+        if (name.equals("") || amount.equals("") || location.equals("") ||
+                CommonResources.cameraBmp == null || qrCodeImage == null) {
 
-            messageManager.show(getApplicationContext(), "ERROR: You need to fill in the complete form, generate a qr code, add a image and update GPS position!", false);
+            messageManager.show(getApplicationContext(), "ERROR: You need to fill in the complete form, generate a qr code and add a image!", false);
 
             return null;
         }
