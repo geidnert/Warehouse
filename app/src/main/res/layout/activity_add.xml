@@ -209,7 +209,7 @@
         android:layout_height="fill_parent"
         android:id="@+id/fullImage"
         android:layout_alignParentLeft="true"
-        android:visibility="invisible"
+        android:visibility="gone"
         android:onClick="onHideImage"
         android:layout_alignParentStart="true"
         android:background="@android:color/white"

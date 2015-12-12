@@ -14,6 +14,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,9 +71,9 @@ public class OnlineItemDAO implements IItemDAO {
 
             int id = jsonItem.getInt("id");
             int count = jsonItem.getInt("count");
-            String name = jsonItem.getString("name");
-            String description = jsonItem.getString("description");
-            String location = jsonItem.getString("location");
+            String name = URLDecoder.decode(jsonItem.getString("name"), "UTF-8");
+            String description = URLDecoder.decode(jsonItem.getString("description"), "UTF-8");
+            String location = URLDecoder.decode(jsonItem.getString("location"), "UTF-8");
             double longitude = jsonItem.getDouble("longitude");
             double latitude = jsonItem.getDouble("latitude");
 
@@ -98,10 +100,10 @@ public class OnlineItemDAO implements IItemDAO {
     @Override
     public void addItem(ItemDTO itemDTO, int sync) throws IOException, JSONException {
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-        nameValuePairs.add(new BasicNameValuePair("name", itemDTO.getName()));
-        nameValuePairs.add(new BasicNameValuePair("description", itemDTO.getDescription()));
+        nameValuePairs.add(new BasicNameValuePair("name", URLEncoder.encode(itemDTO.getName(), "UTF-8")));
+        nameValuePairs.add(new BasicNameValuePair("description", URLEncoder.encode(itemDTO.getDescription(), "UTF-8")));
         nameValuePairs.add(new BasicNameValuePair("count", itemDTO.getCount() + ""));
-        nameValuePairs.add(new BasicNameValuePair("location", itemDTO.getLocation()));
+        nameValuePairs.add(new BasicNameValuePair("location", URLEncoder.encode(itemDTO.getLocation(), "UTF-8")));
         nameValuePairs.add(new BasicNameValuePair("image", Base64.encodeToString(itemDTO.getImage(), Base64.DEFAULT)));
         nameValuePairs.add(new BasicNameValuePair("qrcode", Base64.encodeToString(itemDTO.getQrCode(), Base64.DEFAULT)));
         nameValuePairs.add(new BasicNameValuePair("longitude", itemDTO.getLongitude() + ""));
@@ -123,10 +125,10 @@ public class OnlineItemDAO implements IItemDAO {
     public void updateItem(ItemDTO itemDTO, int sync) throws IOException, JSONException {
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
         nameValuePairs.add(new BasicNameValuePair("onlineid", itemDTO.getOnlineid() + ""));
-        nameValuePairs.add(new BasicNameValuePair("name", itemDTO.getName()));
-        nameValuePairs.add(new BasicNameValuePair("description", itemDTO.getDescription()));
+        nameValuePairs.add(new BasicNameValuePair("name", URLEncoder.encode(itemDTO.getName(), "UTF-8")));
+        nameValuePairs.add(new BasicNameValuePair("description", URLEncoder.encode(itemDTO.getDescription(), "UTF-8")));
         nameValuePairs.add(new BasicNameValuePair("count", itemDTO.getCount() + ""));
-        nameValuePairs.add(new BasicNameValuePair("location", itemDTO.getLocation()));
+        nameValuePairs.add(new BasicNameValuePair("location", URLEncoder.encode(itemDTO.getLocation(), "UTF-8")));
         nameValuePairs.add(new BasicNameValuePair("image", Base64.encodeToString(itemDTO.getImage(), Base64.DEFAULT)));
         nameValuePairs.add(new BasicNameValuePair("qrcode", Base64.encodeToString(itemDTO.getQrCode(), Base64.DEFAULT)));
         nameValuePairs.add(new BasicNameValuePair("longitude", itemDTO.getLongitude() + ""));
